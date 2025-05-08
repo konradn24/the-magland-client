@@ -2,7 +2,7 @@ package konradn24.tml.entities.creatures.characters;
 
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
@@ -19,7 +19,7 @@ import konradn24.tml.gfx.components.ProgressBar;
 import konradn24.tml.gfx.images.Assets;
 import konradn24.tml.gfx.images.ImageLoader;
 import konradn24.tml.gfx.widgets.Animation;
-import konradn24.tml.gfx.widgets.msg.MessageBox;
+import konradn24.tml.gfx.widgets.msgbox.MessageBox;
 import konradn24.tml.inventory.Inventory;
 import konradn24.tml.inventory.items.Stick;
 import konradn24.tml.inventory.items.Stone;
@@ -45,7 +45,7 @@ public class Player extends Creature {
 	private static final int SEARCH_GROUND_COOLDOWN = 3 * 1000;
 	private static final int MATH_BASE_XP = 25;
 	
-	public static final List<Integer> LEVELS_THRESHOLD = new ArrayList<>();;
+	public static final List<Integer> LEVELS_THRESHOLD = new ArrayList<>();
 	public static final int MAX_LEVEL = 128;
 	
 	private static final int STAT_BAR_WIDTH = 192;
@@ -89,6 +89,7 @@ public class Player extends Creature {
 		bounds.height = 19;
 		
 		// Animations
+		texture = null;
 		animDown = new Animation(500, Assets.getAnimation("playerDown"), true);
 		animUp = new Animation(500, Assets.getAnimation("playerUp"), true);
 		animLeft = new Animation(500, Assets.getAnimation("playerLeft"), true);
@@ -254,7 +255,7 @@ public class Player extends Creature {
 	}
 
 	@Override
-	public void render(Graphics g) {
+	public void render(Graphics2D g) {
 		g.drawImage(getCurrentAnimationFrame(), (int) (x - handler.getGameCamera().getxOffset()), (int) (y - handler.getGameCamera().getyOffset()), width, height, null);
 		
 //		g.setColor(Color.black);
@@ -274,18 +275,18 @@ public class Player extends Creature {
 		}
 	}
 	
-	public void renderView(Graphics g) {
+	public void renderView(Graphics2D g) {
 		g.drawImage(view, (int) (x - handler.getGameCamera().getxOffset() - 460 - (1025)), (int) (y - handler.getGameCamera().getyOffset() - 360 - (1100)), 3000, 3000, null);
 	}
 	
 	// TODO: render stats' icons
-	public void renderStats(Graphics g) {
+	public void renderStats(Graphics2D g) {
 		healthBar.render(g);
 		thirstBar.render(g);
 		hungerBar.render(g);
 	}
 	
-	public void renderInventory(Graphics g) {
+	public void renderInventory(Graphics2D g) {
 		if(inventory.getCurrentItem() == null) {
 			g.setFont(new Font(Font.DIALOG, Font.BOLD, 18));
 			g.setColor(Color.black);

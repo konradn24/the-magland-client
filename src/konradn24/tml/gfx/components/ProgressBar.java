@@ -1,7 +1,7 @@
 package konradn24.tml.gfx.components;
 
 import java.awt.Color;
-import java.awt.Graphics;
+import java.awt.Graphics2D;
 
 public class ProgressBar extends Component {
 
@@ -37,7 +37,7 @@ public class ProgressBar extends Component {
 		currentFactor = (value - minValue) / (maxValue - minValue);
 	}
 	
-	public void render(Graphics g) {
+	public void render(Graphics2D g) {
 		Color color = null;
 		int green = (int) (510 * currentFactor);
 		

@@ -1,6 +1,6 @@
 package konradn24.tml.entities.buildings;
 
-import java.awt.Graphics;
+import java.awt.Graphics2D;
 
 import konradn24.tml.Handler;
 import konradn24.tml.gfx.images.Assets;
@@ -32,7 +32,7 @@ public class House extends Building {
 	}
 
 	@Override
-	public void render(Graphics g) {
+	public void render(Graphics2D g) {
 		g.drawImage(Assets.house, getScreenX(), getScreenY(), width, height, null);
 	}
 

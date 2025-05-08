@@ -1,8 +1,13 @@
 package konradn24.tml.gfx.images;
 
+import java.awt.Font;
+import java.awt.FontFormatException;
+import java.awt.GraphicsEnvironment;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.Map;
+import java.io.File;
+import java.io.IOException;
 
 import konradn24.tml.debug.Logging;
 
@@ -10,9 +15,13 @@ public class Assets {
 	
 	private static final int width = 32, height = 32;
 	
+	private static final String GLOBAL_FONT_ID = "AH";
+	private static final Font DEFAULT_FONT = new Font("SansSerif", Font.PLAIN, 24);
+	
 	private static Map<String, SpriteSheet> sheets;
 	private static Map<String, BufferedImage> textures;
 	private static Map<String, BufferedImage[]> animations;
+	private static Map<String, Font> fonts;
 	
 	//sheet
 	public static BufferedImage viewfinder, disabledViewfinder;
@@ -26,6 +35,7 @@ public class Assets {
 		sheets = new HashMap<>();
 		textures = new HashMap<>();
 		animations = new HashMap<>();
+		fonts = new HashMap<>();
 		
 		// Sheets
 		registerSheet("general", "/textures/sheet.png");
@@ -122,6 +132,12 @@ public class Assets {
 		register("buildings/shelter", 0, 0, 2, 2);
 		
 		house = ImageLoader.loadImage("/textures/house.png");
+		
+		//fonts
+		registerFont("AH", Font.TRUETYPE_FONT, "AtkinsonHyperlegible-Regular.ttf");
+		registerFont("AHBold", Font.TRUETYPE_FONT, "AtkinsonHyperlegible-Bold.ttf");
+		registerFont("AHItalic", Font.TRUETYPE_FONT, "AtkinsonHyperlegible-Italic.ttf");
+		registerFont("AHBoldItalic", Font.TRUETYPE_FONT, "AtkinsonHyperlegible-Regular.ttf");
 	}
 	
 	public static void registerSheet(String id, String path) {
@@ -226,15 +242,43 @@ public class Assets {
 //		
 //	}
 	
+	public static void registerFont(String id, int type, String path) {
+		try {
+		    Font font = Font.createFont(type, new File("res/fonts/" + path)).deriveFont(24f);
+		    GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+		    ge.registerFont(font);
+		    
+		    fonts.put(id, font);
+		} catch (IOException e) {
+			Logging.error("Assets: cannot load font file \"" + path + "\"");
+		    e.printStackTrace();
+		} catch(FontFormatException e) {
+			Logging.error("Assets: font \"" + path + "\" format error");
+		    e.printStackTrace();
+		}
+	}
+	
 	public static SpriteSheet getSheet(String id) {
 		return sheets.get(id);
 	}
 	
 	public static BufferedImage getTexture(String id) {
-		return textures.get(id);
+		return textures.getOrDefault(id, textures.get("null"));
 	}
 	
 	public static BufferedImage[] getAnimation(String id) {
-		return animations.get(id);
+		return animations.getOrDefault(id, new BufferedImage[] { textures.get("null") });
+	}
+	
+	public static Font getFont(String id) {
+		return fonts.getOrDefault(id, DEFAULT_FONT);
+	}
+	
+	public static Font getGlobalFont() {
+		return getFont(GLOBAL_FONT_ID);
+	}
+	
+	public static Font getGlobalFont(String type) {
+		return getFont(GLOBAL_FONT_ID + type);
 	}
 }

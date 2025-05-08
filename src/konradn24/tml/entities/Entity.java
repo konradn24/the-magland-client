@@ -1,7 +1,7 @@
 package konradn24.tml.entities;
 
 import java.awt.Color;
-import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
@@ -67,11 +67,11 @@ public abstract class Entity {
 	// Abstracts
 	protected abstract void onInit();
 	public abstract void tick();
-	public abstract void render(Graphics g);
+	public abstract void render(Graphics2D g);
 	public abstract void onDead();
 	
 	// Additional methods
-	public void renderGUI(Graphics g) {}
+	public void renderGUI(Graphics2D g) {}
 	
 	@Deprecated
 	public void distantDamage(Item item) {
@@ -227,7 +227,7 @@ public abstract class Entity {
 	}
 	
 	//Rendering stuff on debug mode
-	public void renderDebugMode(Graphics g) {
+	public void renderDebugMode(Graphics2D g) {
 		//Collision boxes
 		if(bounds != null) {
 			g.setColor(Color.black);

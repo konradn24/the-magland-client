@@ -2,7 +2,7 @@ package konradn24.tml.inventory;
 
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -122,7 +122,7 @@ public class Inventory {
 		checkInput();
 	}
 	
-	public void render(Graphics g) {
+	public void render(Graphics2D g) {
 		for(Item item : items.keySet()) item.render(g);
 		
 		if(opened) {
@@ -158,7 +158,7 @@ public class Inventory {
 		crafting.refresh();
 	}
 	
-	public void renderCooldown(Graphics g, int cooldownDuration, long cooldownEndTime) {
+	public void renderCooldown(Graphics2D g, int cooldownDuration, long cooldownEndTime) {
 		g.setColor(Presets.COLOR_COOLDOWN);
 		g.fillRect(handler.getWidth() / 2 - 70 / 2, handler.getHeight() - 9, 70, (int) -(((double) (cooldownEndTime - System.currentTimeMillis()) / cooldownDuration) * 58));
 	}
@@ -178,7 +178,7 @@ public class Inventory {
 	}
 	
 	// Current item slot rendering
-	private void renderCurrentItemSlot(Graphics g) {
+	private void renderCurrentItemSlot(Graphics2D g) {
 		g.drawImage(Assets.currentItemSlot, handler.getWidth() / 2 - 70 / 2, handler.getHeight() - 72, 70, 70, null);
 		
 		if(selected != null) {

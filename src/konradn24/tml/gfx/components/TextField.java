@@ -4,7 +4,6 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Font;
-import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
 import java.awt.event.KeyEvent;
@@ -95,7 +94,7 @@ public class TextField extends Label {
 		awaitUpdateContent = false;
 	}
 	
-	public void render(Graphics g) {
+	public void render(Graphics2D g) {
 		if(invisible)
 			return;
 		
@@ -104,7 +103,7 @@ public class TextField extends Label {
 		renderBlinkingCursor(g);
 	}
 	
-	protected void renderBorder(Graphics g) {
+	protected void renderBorder(Graphics2D g) {
 		fullWidth = (fixedWidth > 0 ? fixedWidth : width) + paddingX - cursorOffset - cursorWidth;
 		
 		if(disabled) {
@@ -113,17 +112,16 @@ public class TextField extends Label {
 			
 			return;
 		}
+
+		Stroke defaultStroke = g.getStroke();
 		
-		Graphics2D g2 = (Graphics2D) g;
-		Stroke defaultStroke = g2.getStroke();
-		
-		g2.setStroke(new BasicStroke(isOn() ? 2 : 1));
-		g2.setColor(focus ? Color.gray : Color.black);
-		g2.drawRoundRect(x, y, fullWidth, height, 5, 5);
-		g2.setStroke(defaultStroke);
+		g.setStroke(new BasicStroke(isOn() ? 2 : 1));
+		g.setColor(focus ? Color.gray : Color.black);
+		g.drawRoundRect(x, y, fullWidth, height, 5, 5);
+		g.setStroke(defaultStroke);
 	}
 	
-	protected void renderBlinkingCursor(Graphics g) {
+	protected void renderBlinkingCursor(Graphics2D g) {
 		if(!focus) return;
 		
 		if(System.currentTimeMillis() - lastCursorBlink <= CURSOR_BLINK_TIME / 2) {
@@ -134,7 +132,7 @@ public class TextField extends Label {
 		}
 	}
 	
-	protected void calculateSize(Graphics g, Font font, String content) {
+	protected void calculateSize(Graphics2D g, Font font, String content) {
 		width = fullWidth;
 		height = g.getFontMetrics(font).getHeight() + paddingY;
 	}

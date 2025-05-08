@@ -1,6 +1,5 @@
 package konradn24.tml.debug;
 
-import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -12,7 +11,7 @@ import konradn24.tml.Launcher;
 import konradn24.tml.entities.Entity;
 import konradn24.tml.entities.EntityManager;
 import konradn24.tml.gfx.widgets.DebugConsole;
-import konradn24.tml.gfx.widgets.msg.MessageBox;
+import konradn24.tml.gfx.widgets.msgbox.MessageBox;
 import konradn24.tml.inventory.items.Item;
 import konradn24.tml.states.State;
 import konradn24.tml.tiles.Tile;
@@ -195,24 +194,9 @@ public final class DebugCommands {
 		}
 		
 		if(module.equals("clearAll")) {
-			File dir = new File(Logging.PATH);
-			int deleted = 0;
-			int all = dir.listFiles().length;
+			int[] result = Logging.clearLogs();
 			
-			for(File file : dir.listFiles())
-				if(file.delete())
-					deleted++;
-			
-			Logging.getFileWriter().close();
-			
-			if(Logging.getFile().delete()) deleted++;
-			
-			Logging.init();
-			
-			if(Logging.isFileWriterStopped())
-				return "~E_IO_FS: deleted " + deleted + " of " + all + " files, check logs for more information";
-			
-			return "Deleted " + deleted + " of " + all + " files";
+			return "Deleted " + result[0] + " of " + result[1] + " files";
 		}
 		
 		if(module.equals("date")) {

@@ -1,7 +1,7 @@
 package konradn24.tml.gfx.components;
 
 import java.awt.Cursor;
-import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
 import konradn24.tml.Handler;
@@ -31,7 +31,7 @@ public class Switch extends Button {
 		else currentTexture = isOn() ? texture[1] : texture[0];
 	}
 	
-	public void render(Graphics g) {
+	public void render(Graphics2D g) {
 		if(invisible)
 			return;
 		

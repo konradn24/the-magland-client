@@ -3,7 +3,7 @@ package konradn24.tml.gfx.components;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Font;
-import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -58,8 +58,9 @@ public class Dropdown extends Component {
 			AdvancedLabel label = entry.getKey();
 			Runnable action = entry.getValue();
 			
-			
 			if(handler.getMouseManager().isLeftReleasedOn(x, label.getY(), width, label.getHeight()) && action != null) {
+				handler.getMouseManager().lock();
+				
 				action.run();
 				if(onFocusLost != null) onFocusLost.run();
 				
@@ -68,13 +69,15 @@ public class Dropdown extends Component {
 		}
 		
 		if(closeOnFocusLost && (handler.getMouseManager().isLeftPressed() || handler.getMouseManager().isRightPressed()) && !isOn()) {
+			handler.getMouseManager().lock();
+			
 			if(onFocusLost != null) onFocusLost.run();
 			
 			setInvisible(true);
 		}
 	}
 	
-	public void render(Graphics g) {
+	public void render(Graphics2D g) {
 		if(invisible)
 			return;
 		

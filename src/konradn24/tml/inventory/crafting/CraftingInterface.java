@@ -3,7 +3,7 @@ package konradn24.tml.inventory.crafting;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Font;
-import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -80,7 +80,7 @@ public class CraftingInterface {
 		}
 	}
 	
-	public void render(Graphics g) {
+	public void render(Graphics2D g) {
 		g.setColor(Presets.COLOR_BACKGROUND);
 		g.fillRect(x, y, width, height);
 		

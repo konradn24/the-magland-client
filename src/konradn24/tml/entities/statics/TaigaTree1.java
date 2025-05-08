@@ -1,6 +1,6 @@
 package konradn24.tml.entities.statics;
 
-import java.awt.Graphics;
+import java.awt.Graphics2D;
 
 import konradn24.tml.Handler;
 import konradn24.tml.inventory.tools.Tool;
@@ -39,7 +39,7 @@ public class TaigaTree1 extends StaticEntity {
 	}
 
 	@Override
-	public void render(Graphics g) {
+	public void render(Graphics2D g) {
 		
 	}
 

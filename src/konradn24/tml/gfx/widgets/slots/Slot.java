@@ -2,7 +2,7 @@ package konradn24.tml.gfx.widgets.slots;
 
 import java.awt.Color;
 import java.awt.Cursor;
-import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
@@ -92,7 +92,7 @@ public class Slot extends Component {
 		}
 	}
 	
-	public void render(Graphics g) {
+	public void render(Graphics2D g) {
 		if(invisible)
 			return;
 		

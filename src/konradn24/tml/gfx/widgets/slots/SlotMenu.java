@@ -2,7 +2,7 @@ package konradn24.tml.gfx.widgets.slots;
 
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
@@ -61,7 +61,7 @@ public class SlotMenu {
 		dropdown.tick();
 	}
 	
-	public void render(Graphics g) {
+	public void render(Graphics2D g) {
 		slots.forEach(slot -> slot.render(g));
 		
 		dropdown.render(g);

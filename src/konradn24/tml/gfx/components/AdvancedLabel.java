@@ -1,7 +1,7 @@
 package konradn24.tml.gfx.components;
 
 import java.awt.Font;
-import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +39,7 @@ public class AdvancedLabel extends Label {
 		iconSizeScale = 1f;
 	}
 	
-	public void render(Graphics g) {
+	public void render(Graphics2D g) {
 		if(invisible)
 			return;
 		
@@ -48,7 +48,7 @@ public class AdvancedLabel extends Label {
 		renderIcons(g);
 	}
 	
-	public void render(Graphics g, Handler handler) {
+	public void render(Graphics2D g, Handler handler) {
 		if(invisible)
 			return;
 		
@@ -79,7 +79,7 @@ public class AdvancedLabel extends Label {
 		return str;
 	}
 	
-	public void calculateSize(Graphics g, Font font) {
+	public void calculateSize(Graphics2D g, Font font) {
 		super.calculateSize(g, font);
 		
 		for(Icon icon : icons) {
@@ -105,7 +105,7 @@ public class AdvancedLabel extends Label {
 		}
 	}
 	
-	private void renderIcons(Graphics g) {
+	private void renderIcons(Graphics2D g) {
 		for(Icon icon : icons) {
 			g.drawImage(icon.img, x + icon.x + marginX, y + icon.y + marginY + ICON_Y_OFFSET, icon.size, icon.size, null);
 //			g.drawRect(x + icon.x + marginX, y + ICON_Y_OFFSET + marginY, icon.size, icon.size);

@@ -2,7 +2,7 @@ package konradn24.tml.inventory.gfx;
 
 import konradn24.tml.Handler;
 import konradn24.tml.gfx.components.AdvancedLabel;
-import konradn24.tml.gfx.widgets.msg.MessageBox;
+import konradn24.tml.gfx.widgets.msgbox.MessageBox;
 import konradn24.tml.gfx.widgets.slots.Slot;
 import konradn24.tml.gfx.widgets.slots.SlotMenu;
 import konradn24.tml.inventory.items.Item;

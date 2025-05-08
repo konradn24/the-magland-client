@@ -49,23 +49,16 @@ public class Earth extends World {
 	public static final String RAINFOREST = "rainforest";
 	public static final String DENSE_RAINFOREST = "dense_rainforest";
 	
-	public Earth(Handler handler) {
+	public Earth(long seed, Handler handler) {
 		super(handler);
+		super.seed = seed;
 		
 		worldName = "Earth";
 		
-		generate(120, 150);
+		generate(seed, 120, 150);
 		
-		int spawnTileX = width / 2;
-		int spawnTileY = height / 2;
-		spawnX = spawnTileX * Tile.TILE_WIDTH;
-		spawnY = spawnTileY * Tile.TILE_HEIGHT;
-		
-		if(getTile(spawnTileX, spawnTileY).hasAttribute(Tile.ATTRIB_NO_SPAWN)) // TODO
-			setTile(spawnTileX, spawnTileY, Tile.getTile(Sand.class));
-		
-		handler.getPlayer().setX(spawnX);
-		handler.getPlayer().setY(spawnY);
+//		if(getTile(spawnTileX, spawnTileY).hasAttribute(Tile.ATTRIB_NO_SPAWN))
+//			setTile(spawnTileX, spawnTileY, Tile.getTile(Sand.class));
 		
 //		entityManager.addEntity(new House(handler, 64 * 16, 64 * 7));
 	}

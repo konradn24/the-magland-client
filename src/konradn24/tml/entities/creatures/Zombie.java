@@ -1,6 +1,6 @@
 package konradn24.tml.entities.creatures;
 
-import java.awt.Graphics;
+import java.awt.Graphics2D;
 
 import konradn24.tml.Handler;
 import konradn24.tml.AI.AI;
@@ -37,7 +37,7 @@ public class Zombie extends Creature {
 	}
 
 	@Override
-	public void render(Graphics g) {
+	public void render(Graphics2D g) {
 		g.drawImage(texture, (int) (x - handler.getGameCamera().getxOffset()), (int) (y - handler.getGameCamera().getyOffset()), width, height, null);
 	}
 	

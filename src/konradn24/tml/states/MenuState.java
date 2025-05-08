@@ -1,6 +1,6 @@
 package konradn24.tml.states;
 
-import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
 import konradn24.tml.Handler;
@@ -81,6 +81,23 @@ public class MenuState extends State {
 		credits.refresh();
 		quit.refresh();
 		
+		singleplayer.setOnLeftClick(() -> {
+			State.setState(handler.getGame().singleplayerLoadSaveState);
+		});
+		
+		settings.setOnLeftClick(() -> {
+			SettingsState.lastState = this;
+			State.setState(handler.getGame().settingsState);
+		});
+		
+		credits.setOnLeftClick(() -> {
+			State.setState(handler.getGame().creditsState);
+		});
+		
+		quit.setOnLeftClick(() -> {
+			handler.getGame().close();
+		});
+		
 		Logging.info("Menu State initialized");
 	}
 
@@ -93,19 +110,19 @@ public class MenuState extends State {
 		quit.tick();
 		
 		//When mouse button released on btn
-		if(singleplayer.isLeftReleased()) {
-			State.setState(handler.getGame().gameState);
-		} else if(settings.isLeftReleased()) {
-			SettingsState.lastState = this;
-			State.setState(handler.getGame().settingsState);
-		} else if(credits.isLeftReleased()) {
-			State.setState(handler.getGame().creditsState);
-		} else if(quit.isLeftReleased())
-			handler.getGame().getDisplay().getFrame().dispose();
+//		if(singleplayer.isLeftReleased()) {
+//			State.setState(handler.getGame().gameState);
+//		} else if(settings.isLeftReleased()) {
+//			SettingsState.lastState = this;
+//			State.setState(handler.getGame().settingsState);
+//		} else if(credits.isLeftReleased()) {
+//			State.setState(handler.getGame().creditsState);
+//		} else if(quit.isLeftReleased())
+//			handler.getGame().getDisplay().getFrame().dispose();
 	}
 
 	@Override
-	public void render(Graphics g) {
+	public void render(Graphics2D g) {
 		g.drawImage(background, 0, 0, handler.getWidth(), handler.getHeight(), null);
 		
 		title.render(g, handler);

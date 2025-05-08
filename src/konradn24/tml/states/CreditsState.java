@@ -1,6 +1,6 @@
 package konradn24.tml.states;
 
-import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
 import konradn24.tml.Handler;
@@ -43,7 +43,7 @@ public class CreditsState extends State {
 	}
 
 	@Override
-	public void render(Graphics g) {
+	public void render(Graphics2D g) {
 		g.drawImage(background, 0, 0, handler.getWidth(), handler.getHeight(), null);
 		
 		title.render(g, handler);

@@ -1,9 +1,9 @@
-package konradn24.tml.gfx.widgets.msg;
+package konradn24.tml.gfx.widgets.msgbox;
 
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
-import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -123,6 +123,15 @@ public class MessageBox {
 		case TYPE_OK: {
 			buttonOk = new Button(labelOk, x + width / 2 - BUTTON_WIDTH / 2, buttonsY, BUTTON_WIDTH, BUTTON_HEIGHT, handler);
 			
+			buttonOk.setOnLeftClick(() -> {
+				State.getState().getDialogsManager().queueCloseMessageBox(this);
+				
+				if(callback != null)
+					callback.execute(YES);
+				
+				Logging.info("MessageBox (title: " + title + ") callback: " + YES);
+			});
+			
 			this.buttons.add(buttonOk);
 			this.responseCodes.add(YES);
 			
@@ -135,6 +144,24 @@ public class MessageBox {
 			buttonYes = new Button(labelYes, x + width / 2 - buttonsWidth / 2, buttonsY, BUTTON_WIDTH, BUTTON_HEIGHT, handler);
 			buttonNo = new Button(labelNo, x + width / 2 - buttonsWidth / 2 + BUTTON_WIDTH + BUTTON_MARGIN, buttonsY, BUTTON_WIDTH, BUTTON_HEIGHT, handler);
 		
+			buttonYes.setOnLeftClick(() -> {
+				State.getState().getDialogsManager().queueCloseMessageBox(this);
+				
+				if(callback != null)
+					callback.execute(YES);
+				
+				Logging.info("MessageBox (title: " + title + ") callback: " + YES);
+			});
+			
+			buttonNo.setOnLeftClick(() -> {
+				State.getState().getDialogsManager().queueCloseMessageBox(this);
+				
+				if(callback != null)
+					callback.execute(NO);
+				
+				Logging.info("MessageBox (title: " + title + ") callback: " + NO);
+			});
+			
 			this.buttons.add(buttonYes);
 			this.buttons.add(buttonNo);
 			this.responseCodes.add(YES);
@@ -150,6 +177,33 @@ public class MessageBox {
 			buttonNo = new Button(labelNo, x + width / 2 - buttonsWidth / 2 + BUTTON_WIDTH + BUTTON_MARGIN, buttonsY, BUTTON_WIDTH, BUTTON_HEIGHT, handler);
 			buttonCancel = new Button(labelCancel, x + width / 2 - buttonsWidth / 2 + (BUTTON_WIDTH + BUTTON_MARGIN) * 2, buttonsY, BUTTON_WIDTH, BUTTON_HEIGHT, handler);
 		
+			buttonYes.setOnLeftClick(() -> {
+				State.getState().getDialogsManager().queueCloseMessageBox(this);
+				
+				if(callback != null)
+					callback.execute(YES);
+				
+				Logging.info("MessageBox (title: " + title + ") callback: " + YES);
+			});
+			
+			buttonNo.setOnLeftClick(() -> {
+				State.getState().getDialogsManager().queueCloseMessageBox(this);
+				
+				if(callback != null)
+					callback.execute(NO);
+				
+				Logging.info("MessageBox (title: " + title + ") callback: " + NO);
+			});
+			
+			buttonCancel.setOnLeftClick(() -> {
+				State.getState().getDialogsManager().queueCloseMessageBox(this);
+				
+				if(callback != null)
+					callback.execute(CANCEL);
+				
+				Logging.info("MessageBox (title: " + title + ") callback: " + CANCEL);
+			});
+			
 			this.buttons.add(buttonYes);
 			this.buttons.add(buttonNo);
 			this.buttons.add(buttonCancel);
@@ -167,20 +221,20 @@ public class MessageBox {
 			Button button = buttons.get(i);
 			button.tick();
 			
-			if(button.isLeftReleased()) {
-				State.getState().getDialogsManager().queueCloseMessageBox(this);
-				
-				byte response = responseCodes.get(i) != null ? responseCodes.get(i) : 0;
-				
-				if(callback != null)
-					callback.execute(response);
-				
-				Logging.info("MessageBox (title: " + title + ") callback: " + response);
-			}
+//			if(button.isLeftPressed()) {
+//				State.getState().getDialogsManager().queueCloseMessageBox(this);
+//				
+//				byte response = responseCodes.get(i) != null ? responseCodes.get(i) : 0;
+//				
+//				if(callback != null)
+//					callback.execute(response);
+//				
+//				Logging.info("MessageBox (title: " + title + ") callback: " + response);
+//			}
 		}
 	}
 	
-	public void render(Graphics g) {
+	public void render(Graphics2D g) {
 		g.setColor(windowColor);
 		g.fillRect(x, y + BAR_HEIGHT, width, height - BAR_HEIGHT);
 		

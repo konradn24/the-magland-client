@@ -1,7 +1,7 @@
 package konradn24.tml.building;
 
 import java.awt.Color;
-import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -63,7 +63,7 @@ public class BuildingsMenu {
 		}
 	}
 	
-	public void render(Graphics g) {
+	public void render(Graphics2D g) {
 		if(opened) {
 			g.setColor(Presets.COLOR_BACKGROUND);
 			g.fillRect(POS_X, POS_Y, SECTION_WIDTH, SECTION_HEIGHT);

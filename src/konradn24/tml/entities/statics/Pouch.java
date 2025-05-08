@@ -1,6 +1,6 @@
 package konradn24.tml.entities.statics;
 
-import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -8,7 +8,7 @@ import konradn24.tml.Handler;
 import konradn24.tml.gfx.components.AdvancedLabel;
 import konradn24.tml.gfx.components.Dropdown;
 import konradn24.tml.gfx.images.Assets;
-import konradn24.tml.gfx.widgets.msg.MessageBox;
+import konradn24.tml.gfx.widgets.msgbox.MessageBox;
 import konradn24.tml.inventory.items.Item;
 import konradn24.tml.states.State;
 import konradn24.tml.tiles.Tile;
@@ -62,12 +62,12 @@ public class Pouch extends StaticEntity {
 	}
 
 	@Override
-	public void render(Graphics g) {
+	public void render(Graphics2D g) {
 		
 	}
 	
 	@Override
-	public void renderGUI(Graphics g) {
+	public void renderGUI(Graphics2D g) {
 		dropdown.render(g);
 	}
 

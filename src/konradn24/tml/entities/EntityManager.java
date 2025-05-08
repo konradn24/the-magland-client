@@ -1,6 +1,6 @@
 package konradn24.tml.entities;
 
-import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -145,7 +145,7 @@ public class EntityManager {
 		removeStack.clear();
 	}
 	
-	public void render(Graphics g) {
+	public void render(Graphics2D g) {
 		// Sorting entities to make good-looking depth illusion
 		sortedEntities.clear();
 		
@@ -185,7 +185,7 @@ public class EntityManager {
 		handler.getPlayer().getBuildingsMenu().render(g);
 	}
 	
-	private void renderActionIcon(Graphics g, Entity entity) {
+	private void renderActionIcon(Graphics2D g, Entity entity) {
 		if(!entity.hover())
 			return;
 		

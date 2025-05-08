@@ -2,7 +2,7 @@ package konradn24.tml.gfx.widgets;
 
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -164,7 +164,7 @@ public class DebugConsole {
 		}
 	}
 	
-	public void render(Graphics g) {
+	public void render(Graphics2D g) {
 		if(!open) return;
 		
 		g.setColor(BACKGROUND_COLOR);

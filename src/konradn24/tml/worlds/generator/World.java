@@ -2,7 +2,7 @@ package konradn24.tml.worlds.generator;
 
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 import java.util.List;
 import java.util.Random;
@@ -21,6 +21,9 @@ public class World {
 	public static final int WORLD_WIDTH = 1024;
 	public static final int WORLD_HEIGHT = 1024;
 	
+	public static final float PLAYER_SPAWN_TILE_X = WORLD_WIDTH / 2;
+	public static final float PLAYER_SPAWN_TILE_Y = WORLD_HEIGHT / 2;
+	
 	public static final List<String> ALL_BIOMES = List.of(Earth.FROZEN_OCEAN, Earth.HALF_FROZEN_OCEAN, 
 			Earth.OCEAN, Earth.FROZEN_SEA, Earth.HALF_FROZEN_SEA, Earth.SEA, Earth.TUNDRA_BEACH, Earth.GRAVEL_BEACH,
 			Earth.BEACH, Earth.SNOW_DESERT, Earth.TUNDRA, Earth.DRY_TAIGA, Earth.TAIGA, Earth.PLAINS, Earth.HILLS,
@@ -29,7 +32,6 @@ public class World {
 	protected Handler handler;
 	protected int width, height;
 	protected long seed;
-	protected int spawnX, spawnY;
 	protected Tile[][] tiles;
 	
 	public boolean minimap = true;
@@ -71,12 +73,9 @@ public class World {
 	}
 	
 	protected void tick() {}
-	protected void render(Graphics g) {}
+	protected void render(Graphics2D g) {}
 	
-	protected void generate(float smoothness, float biomeSize) {
-		Random random = new Random();
-		seed = random.nextLong();
-		
+	protected void generate(long seed, float smoothness, float biomeSize) {
 		this.random = new Random(seed);
 		
 		for(int x = 0; x < width; x++) {
@@ -97,7 +96,7 @@ public class World {
 		entityManager.tick();
 	}
 	
-	public void renderAll(Graphics g){
+	public void renderAll(Graphics2D g){
 		int xStart = (int) Math.max(0, handler.getGameCamera().getxOffset() / Tile.TILE_WIDTH);
 		int xEnd = (int) Math.min(width, (handler.getGameCamera().getxOffset() + handler.getWidth()) / Tile.TILE_WIDTH + 1);
 		int yStart = (int) Math.max(0, handler.getGameCamera().getyOffset() / Tile.TILE_HEIGHT);
@@ -113,7 +112,7 @@ public class World {
 		entityManager.render(g);
 	}
 	
-	public void renderMinimap(Graphics g) {
+	public void renderMinimap(Graphics2D g) {
 		if(minimap) {
 			for(int y = 0; y < height; y++) {
 				for(int x = 0; x < width; x++) {
@@ -204,8 +203,8 @@ public class World {
 		String[] tokens = file.split("\\s+");
 		width = Utils.parseInt(tokens[0]);
 		height = Utils.parseInt(tokens[1]);
-		spawnX = Utils.parseInt(tokens[2]);
-		spawnY = Utils.parseInt(tokens[3]);
+		float spawnX = Utils.parseInt(tokens[2]);
+		float spawnY = Utils.parseInt(tokens[3]);
 		
 		tiles = new Tile[width][height];
 		for(int y = 0;y < height;y++){
@@ -244,22 +243,6 @@ public class World {
 		this.worldName = worldName;
 	}
 
-	public int getSpawnX() {
-		return spawnX;
-	}
-
-	public void setSpawnX(int spawnX) {
-		this.spawnX = spawnX;
-	}
-
-	public int getSpawnY() {
-		return spawnY;
-	}
-
-	public void setSpawnY(int spawnY) {
-		this.spawnY = spawnY;
-	}
-
 	public long getSeed() {
 		return seed;
 	}
@@ -273,11 +256,11 @@ public class World {
 				+ "Minimap key: " + KeyEvent.getKeyText(minimapKey)
 				+ " | Minimap: " + minimap
 				+ " | Seed: " + seed
-				+ " | Spawn point: (" + spawnX / Tile.TILE_WIDTH + ", " + spawnY / Tile.TILE_HEIGHT + ")\n"
+				+ " | Spawn point: (" + PLAYER_SPAWN_TILE_X + ", " + PLAYER_SPAWN_TILE_Y + ")\n"
 				+ "Tiles: " + width * height
 				+ " | Entities: " + entityManager.getEntities().size()
 				+ " | Render distance: " + EntityManager.RENDER_DISTANCE + "px"
-				+ " | Visible distance: " + EntityManager.VISIBLE_DISTANCE + "px (UNUSED)";
+				+ " | Visible distance: " + EntityManager.VISIBLE_DISTANCE + "px (DEPRECATED)";
 	}
 }
 

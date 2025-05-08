@@ -2,13 +2,13 @@ package konradn24.tml.inventory;
 
 import java.awt.Color;
 import java.awt.Cursor;
-import java.awt.Graphics;
+import java.awt.Graphics2D;
 
 import konradn24.tml.Handler;
 import konradn24.tml.debug.Logging;
 import konradn24.tml.gfx.Presets;
 import konradn24.tml.gfx.components.AdvancedLabel;
-import konradn24.tml.gfx.widgets.msg.MessageBox;
+import konradn24.tml.gfx.widgets.msgbox.MessageBox;
 import konradn24.tml.inventory.items.Item;
 import konradn24.tml.inventory.tools.Tool;
 import konradn24.tml.states.State;
@@ -141,7 +141,7 @@ public class Slot {
 		}
 	}
 	
-	public void render(Graphics g) {
+	public void render(Graphics2D g) {
 		if(item == null)
 			return;
 		
@@ -170,7 +170,7 @@ public class Slot {
 		}
 	}
 	
-	public static void renderActions(Graphics g) {
+	public static void renderActions(Graphics2D g) {
 		g.setColor(Presets.COLOR_BACKGROUND);
 		g.fillRect(actionsX, actionsY, actionsWidth, actionsHeight);
 		

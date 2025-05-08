@@ -4,11 +4,12 @@ import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Font;
 import java.awt.FontMetrics;
-import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
 import konradn24.tml.Handler;
 import konradn24.tml.gfx.Presets;
+import konradn24.tml.utils.Function;
 
 public class Button extends Component {
 	
@@ -26,6 +27,8 @@ public class Button extends Component {
 	protected float hoverSizeFactor = HOVER_SIZE_FACTOR;
 	
 	protected boolean autoSize;
+	
+	protected Function onLeftClick, onRightClick;
 	
 	public Button(BufferedImage[] texture, int x, int y, int width, int height, Handler handler) {
 		super(x, y, width, height);
@@ -100,18 +103,26 @@ public class Button extends Component {
 		
 		hoverCursor(Cursor.HAND_CURSOR);
 		
-		if(isOn() && !isLeftPressed()) {
-			realWidth = (int) (width * HOVER_SIZE_FACTOR);
-			realHeight = (int) (height * HOVER_SIZE_FACTOR);
-			
-			realX = x - (realWidth - width) / 2;
-			realY = y - (realHeight - height) / 2;
-			
-			if(color != null)
-				currentColor = isLeftPressed() ? color : color.brighter();
-			
-			if(texture != null)
-				currentTexture = isLeftPressed() ? texture[0] : texture[1];
+		if(isOn()) {
+			if(isLeftPressed() && onLeftClick != null) {
+				handler.getMouseManager().lock();
+				onLeftClick.run();
+			} else if(isRightPressed() && onRightClick != null) {
+				handler.getMouseManager().lock();
+				onRightClick.run();
+			} else {
+				realWidth = (int) (width * hoverSizeFactor);
+				realHeight = (int) (height * hoverSizeFactor);
+				
+				realX = x - (realWidth - width) / 2;
+				realY = y - (realHeight - height) / 2;
+				
+				if(color != null)
+					currentColor = isLeftPressed() ? color : color.brighter();
+				
+				if(texture != null)
+					currentTexture = isLeftPressed() ? texture[0] : texture[1];
+			}
 		} else {
 			realWidth = width;
 			realHeight = height;
@@ -127,7 +138,7 @@ public class Button extends Component {
 		}
 	}
 	
-	public void render(Graphics g) {
+	public void render(Graphics2D g) {
 		if(invisible)
 			return;
 		
@@ -216,5 +227,13 @@ public class Button extends Component {
 
 	public void setHoverSizeFactor(float hoverSizeFactor) {
 		this.hoverSizeFactor = hoverSizeFactor;
+	}
+	
+	public void setOnLeftClick(Function function) {
+		this.onLeftClick = function;
+	}
+	
+	public void setOnRightClick(Function function) {
+		this.onRightClick = function;
 	}
 }

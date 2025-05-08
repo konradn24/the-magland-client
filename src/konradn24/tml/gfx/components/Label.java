@@ -3,7 +3,7 @@ package konradn24.tml.gfx.components;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Font;
-import java.awt.Graphics;
+import java.awt.Graphics2D;
 
 import konradn24.tml.Handler;
 
@@ -12,6 +12,7 @@ public class Label extends Component {
 	protected String content;
 	protected Font font, currentFont;
 	protected Color color, background;
+	protected int fade = 0;
 	
 	protected int cursor;
 	
@@ -27,7 +28,7 @@ public class Label extends Component {
 		this.content = content;
 	}
 	
-	public void render(Graphics g) {
+	public void render(Graphics2D g) {
 		if(cursor != Cursor.DEFAULT_CURSOR) hoverCursor(cursor);
 		
 		Font font = this.font != null ? this.font : g.getFont();
@@ -46,7 +47,7 @@ public class Label extends Component {
 		g.drawString(content, x + marginX, y + height - height / 5 + marginY);
 	}
 	
-	public void render(Graphics g, Handler handler) {
+	public void render(Graphics2D g, Handler handler) {
 		if(super.handler == null) super.handler = handler;
 		
 		if(cursor != Cursor.DEFAULT_CURSOR) hoverCursor(cursor);
@@ -79,7 +80,7 @@ public class Label extends Component {
 		g.drawString(content, x + marginX, y + height - height / 5 + marginY / 2);
 	}
 	
-	public void calculateSize(Graphics g, Font font) {
+	public void calculateSize(Graphics2D g, Font font) {
 		width = g.getFontMetrics(font).stringWidth(content) + marginX * 2;
 		height = g.getFontMetrics(font).getHeight() + marginY * 2;
 	}
@@ -119,6 +120,14 @@ public class Label extends Component {
 
 	public void setBackground(Color background) {
 		this.background = background;
+	}
+	
+	public int getFade() {
+		return fade;
+	}
+
+	public void setFade(int fade) {
+		this.fade = fade;
 	}
 
 	public int getCursor() {

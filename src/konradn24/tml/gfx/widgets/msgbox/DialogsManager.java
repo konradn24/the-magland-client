@@ -1,6 +1,6 @@
-package konradn24.tml.gfx.widgets.msg;
+package konradn24.tml.gfx.widgets.msgbox;
 
-import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,7 +37,7 @@ public class DialogsManager {
 		removeQueue.clear();
 	}
 	
-	public void render(Graphics g) {
+	public void render(Graphics2D g) {
 		if(!messageBoxes.isEmpty())
 			messageBoxes.get(0).render(g);
 	}

@@ -2,7 +2,7 @@ package konradn24.tml.states;
 
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
 import konradn24.tml.Handler;
@@ -17,8 +17,9 @@ public class SettingsState extends State {
 
 	private static final int CHECKBOX_SIZE = 32;
 	
-	private BufferedImage background;
 	public static State lastState;
+	
+	private BufferedImage background;
 	private Button back;
 	
 	private Checkbox showFPS;
@@ -63,7 +64,7 @@ public class SettingsState extends State {
 	}
 
 	@Override
-	public void render(Graphics g) {
+	public void render(Graphics2D g) {
 		g.drawImage(background, 0, 0, handler.getWidth(), handler.getHeight(), null);
 		
 		//Back button

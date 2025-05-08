@@ -11,16 +11,48 @@ public class MouseManager implements MouseListener, MouseMotionListener {
 	private boolean leftPressed, rightPressed, leftReleased, rightReleased;
 	private int mouseX, mouseY;
 	
+	private boolean locked;
+	
 	public MouseManager() {
 		Logging.info("Mouse Manager initialized");
 	}
 	
 	public boolean isLeftPressed() {
-		return leftPressed;
+		return leftPressed && !locked;
+	}
+	
+	public boolean isLeftPressed(boolean lock) {
+		if(leftPressed) {
+			if(locked) {
+				return false;
+			}
+			
+			if(lock) {
+				lock();
+			}
+			
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	public boolean isRightPressed() {
-		return rightPressed;
+		return rightPressed && !locked;
+	}
+	
+	public boolean isRightPressed(boolean lock) {
+		if(rightPressed) {
+			if(locked) {
+				return false;
+			}
+			
+			if(lock) {
+				lock();
+			}
+			
+			return true;
+		} else return false;
 	}
 	
 	public boolean isLeftReleased() {
@@ -44,11 +76,19 @@ public class MouseManager implements MouseListener, MouseMotionListener {
 	}
 	
 	public boolean isLeftPressedOn(int x, int y, int width, int height) {
-		return leftPressed && isOn(x, y, width, height);
+		return isLeftPressed() && isOn(x, y, width, height);
+	}
+	
+	public boolean isLeftPressedOn(int x, int y, int width, int height, boolean lock) {
+		return isLeftPressed(lock) && isOn(x, y, width, height);
 	}
 	
 	public boolean isRightPressedOn(int x, int y, int width, int height) {
-		return rightPressed && isOn(x, y, width, height);
+		return isRightPressed() && isOn(x, y, width, height);
+	}
+	
+	public boolean isRightPressedOn(int x, int y, int width, int height, boolean lock) {
+		return isRightPressed(lock) && isOn(x, y, width, height);
 	}
 	
 	public boolean isLeftReleasedOn(int x, int y, int width, int height) {
@@ -59,11 +99,27 @@ public class MouseManager implements MouseListener, MouseMotionListener {
 		return rightReleased && isOn(x, y, width, height);
 	}
 	
+	public boolean isLocked() {
+		return locked;
+	}
+	
+	public void lock() {
+		locked = true;
+	}
+	
+	public void unlock() {
+		locked = false;
+	}
+	
 	public void tick() {
 		if(leftReleased)
 			leftReleased = false;
 		if(rightReleased)
 			rightReleased = false;
+		
+		if(!leftPressed && !rightPressed && locked) {
+			unlock();
+		}
 	}
 	
 	@Override
