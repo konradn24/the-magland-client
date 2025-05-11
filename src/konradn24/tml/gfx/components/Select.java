@@ -8,7 +8,7 @@ public class Select { // TODO
 	private int selected;
 	private String layoutID;
 	
-	private List<AdvancedLabel> options;
+	private List<Label> options;
 	
 	public Select(String layoutID) {
 		this.layoutID = layoutID;
@@ -31,7 +31,7 @@ public class Select { // TODO
 		this.layoutID = layoutID;
 	}
 
-	public List<AdvancedLabel> getOptions() {
+	public List<Label> getOptions() {
 		return options;
 	}
 }

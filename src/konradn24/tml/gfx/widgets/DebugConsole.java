@@ -15,7 +15,6 @@ import konradn24.tml.debug.CommandHandler;
 import konradn24.tml.debug.Logging;
 import konradn24.tml.gfx.components.Label;
 import konradn24.tml.gfx.components.TextField;
-import konradn24.tml.states.GameState;
 import konradn24.tml.utils.Utils;
 
 public class DebugConsole {
@@ -41,7 +40,6 @@ public class DebugConsole {
 	private int lineHeight, minimumLineHeight, textLinesHeight;
 	private int commandLineHeight;
 	
-	private String layoutID;
 	private TextField commandLine;
 	private Label[] textLines;
 	private Font font;
@@ -58,13 +56,12 @@ public class DebugConsole {
 	
 	private boolean clickCooldown;
 	
-	public DebugConsole(String layoutID, Handler handler) {
-		this.layoutID = layoutID;
+	public DebugConsole(Handler handler) {
 		this.handler = handler;
 		this.x = 0;
 		this.y = 0;
-		this.width = handler.getWidth();
-		this.height = handler.getHeight();
+		this.width = handler.getDisplayWidth();
+		this.height = handler.getDisplayHeight();
 		this.minimumLineHeight = MINIMUM_LINE_HEIGHT;
 		this.commandLineHeight = COMMAND_LINE_HEIGHT;
 		this.textLinesHeight = (int) Math.floor(height - minimumLineHeight * 1.2);
@@ -85,8 +82,7 @@ public class DebugConsole {
 		useGraphics();
 	}
 	
-	public DebugConsole(String layoutID, int x, int y, int width, int height, Handler handler) {
-		this.layoutID = layoutID;
+	public DebugConsole(int x, int y, int width, int height, Handler handler) {
 		this.handler = handler;
 		this.x = x;
 		this.y = y;
@@ -171,7 +167,7 @@ public class DebugConsole {
 		g.fillRect(x, y, width, height + commandLineHeight);
 		
 		for(int i = 0; i < lines; i++) {
-			textLines[i].render(g, handler);
+			textLines[i].render(g);
 		}
 		
 		commandLine.render(g);
@@ -314,9 +310,7 @@ public class DebugConsole {
 	}
 	
 	private void useGraphics() {
-		handler.getStyle().addLayout(GameState.class, layoutID, 1, 1);
-		
-		for(int i = 0; i < TEXT_LINES_AMOUNT; i++) textLines[i] = new Label("");
+		for(int i = 0; i < TEXT_LINES_AMOUNT; i++) textLines[i] = new Label("", handler);
 		
 		for(int i = 0; i < lines; i++) {
 			int index = lines - i - 1;

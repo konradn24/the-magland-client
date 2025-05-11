@@ -20,7 +20,7 @@ import konradn24.tml.states.GameState;
 
 public class EntityManager {
 	
-	public static final int RENDER_DISTANCE = 1024;
+	public static final int RENDER_DISTANCE = 1248;
 	public static final int VISIBLE_DISTANCE = 640;
 	
 	public static final int ACTION_ICON_SIZE = 48;
@@ -37,9 +37,16 @@ public class EntityManager {
 	private Comparator<Entity> renderSorter = new Comparator<Entity>() {
 		@Override
 		public int compare(Entity a, Entity b) {
-			if(a.getY() + a.getHeight() < b.getY() + b.getHeight())
+			float y1 = a.getY() + a.getHeight();
+			float y2 = b.getY() + b.getHeight();
+			
+			if(y1 < y2)
 				return -1;
-			return 1;
+			else if(y1 > y2) {
+				return 1;
+			}
+			
+			return 0;
 		}
 	};
 	
@@ -73,11 +80,13 @@ public class EntityManager {
 	}
 	
 	private void tickActions(Entity entity) {
-		if(!entity.leftClicked())
-			return;
-		
 		Item currentItem = handler.getPlayer().getInventory().getCurrentItem();
 		Class<? extends Item> currentItemClass = currentItem != null ? currentItem.getClass() : null;
+		
+		showActionIcon(currentItem, currentItemClass, entity);
+		
+		if(!entity.leftClicked())
+			return;
 		
 		// First, try to get action associated with -1
 		Action action = entity.getAction(-1);
@@ -175,7 +184,6 @@ public class EntityManager {
 		
 		// Action (second loop to render on top of entities' textures)
 		for(Entity entity : sortedEntities) {
-			renderActionIcon(g, entity);
 			entity.renderGUI(g);
 		}
 		
@@ -185,20 +193,15 @@ public class EntityManager {
 		handler.getPlayer().getBuildingsMenu().render(g);
 	}
 	
-	private void renderActionIcon(Graphics2D g, Entity entity) {
+	private void showActionIcon(Item currentItem, Class<? extends Item> currentItemClass, Entity entity) {
 		if(!entity.hover())
 			return;
-		
-		Item currentItem = handler.getPlayer().getInventory().getCurrentItem();
-		Class<? extends Item> currentItemClass = currentItem != null ? currentItem.getClass() : null;
 		
 		List<Integer> actionsAttributes = new ArrayList<>(entity.actionsByAttribute.keySet());
 		
 		// When actionsAttributes has -1, show hand icon
 		if(actionsAttributes.contains(-1)) {
-			g.drawImage(Assets.handIcon, handler.getMouseManager().getMouseX() + 8, 
-					handler.getMouseManager().getMouseY(), 
-					ACTION_ICON_SIZE, ACTION_ICON_SIZE, null);
+			handler.getGame().getDisplay().setCursor(Assets.handIcon);
 			
 			return;
 		}
@@ -207,9 +210,7 @@ public class EntityManager {
 		if(currentItemClass != null && entity.actionsByItem.containsKey(currentItemClass)) {
 			BufferedImage icon = entity.getCustomActionIcon() != null ? entity.getCustomActionIcon() : currentItem.getTexture();
 			
-			g.drawImage(icon, handler.getMouseManager().getMouseX() + 8, 
-					handler.getMouseManager().getMouseY(), 
-					ACTION_ICON_SIZE, ACTION_ICON_SIZE, null);
+			handler.getGame().getDisplay().setCursor(icon);
 			
 			return;
 		}
@@ -218,9 +219,7 @@ public class EntityManager {
 		if(currentItem != null && currentItem.hasAttributeAny(actionsAttributes)) {
 			BufferedImage icon = entity.getCustomActionIcon() != null ? entity.getCustomActionIcon() : currentItem.getTexture();
 			
-			g.drawImage(icon, handler.getMouseManager().getMouseX() + 8, 
-					handler.getMouseManager().getMouseY(), 
-					ACTION_ICON_SIZE, ACTION_ICON_SIZE, null);
+			handler.getGame().getDisplay().setCursor(icon);
 			
 			return;
 		}

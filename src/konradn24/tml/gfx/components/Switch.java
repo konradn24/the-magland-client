@@ -13,6 +13,10 @@ public class Switch extends Button {
 	
 	private BufferedImage currentTexture;
 	
+	public Switch(Handler handler) {
+		super(handler);
+	}
+	
 	public Switch(BufferedImage[] texture1, BufferedImage[] texture2, int x, int y, int width, int height, Handler handler) {
 		super(texture1, x, y, width, height, handler);
 		
@@ -22,6 +26,8 @@ public class Switch extends Button {
 	public void tick() {
 		if(invisible)
 			return;
+		
+		super.tick();
 		
 		hoverCursor(Cursor.HAND_CURSOR);
 		
@@ -34,9 +40,6 @@ public class Switch extends Button {
 	public void render(Graphics2D g) {
 		if(invisible)
 			return;
-		
-		int x = cameraRelative ? getWorldX() : this.x;
-		int y = cameraRelative ? getWorldY() : this.y;
 		
 		g.drawImage(currentTexture, x, y, width, height, null);
 	}

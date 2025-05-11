@@ -1,7 +1,6 @@
 package konradn24.tml.entities.creatures.characters;
 
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
@@ -12,6 +11,7 @@ import konradn24.tml.Handler;
 import konradn24.tml.building.BuildingsMenu;
 import konradn24.tml.building.BuildingsPlacer;
 import konradn24.tml.debug.Logging;
+import konradn24.tml.display.Display;
 import konradn24.tml.entities.Entity;
 import konradn24.tml.entities.creatures.Creature;
 import konradn24.tml.gfx.Presets;
@@ -50,7 +50,7 @@ public class Player extends Creature {
 	
 	private static final int STAT_BAR_WIDTH = 192;
 	private static final int STAT_BAR_HEIGHT = 24;
-	private static final int STAT_BAR_MARGIN_X = 48;
+	private static final int STAT_BAR_MARGIN_X = 0;
 	private static final int STAT_BAR_MARGIN_Y = 16;
 	
 	// Animations
@@ -119,9 +119,9 @@ public class Player extends Creature {
 		experienceLevel = 0;
 		nextLevelThreshold = LEVELS_THRESHOLD.get(experienceLevel + 1) - LEVELS_THRESHOLD.get(experienceLevel);
 		
-		healthBar = new ProgressBar(STAT_BAR_MARGIN_X, handler.getStyle().getScreenHeight() - STAT_BAR_MARGIN_Y * 3 - STAT_BAR_HEIGHT * 3, STAT_BAR_WIDTH, STAT_BAR_HEIGHT, DEFAULT_HEALTH);
-		thirstBar = new ProgressBar(STAT_BAR_MARGIN_X, handler.getStyle().getScreenHeight() - STAT_BAR_MARGIN_Y * 2 - STAT_BAR_HEIGHT * 2, STAT_BAR_WIDTH, STAT_BAR_HEIGHT, DEFAULT_THIRST);
-		hungerBar = new ProgressBar(STAT_BAR_MARGIN_X, handler.getStyle().getScreenHeight() - STAT_BAR_MARGIN_Y - STAT_BAR_HEIGHT, STAT_BAR_WIDTH, STAT_BAR_HEIGHT, DEFAULT_HUNGER);
+		healthBar = new ProgressBar(STAT_BAR_MARGIN_X, Display.LOGICAL_HEIGHT - STAT_BAR_MARGIN_Y * 3 - STAT_BAR_HEIGHT * 3, STAT_BAR_WIDTH, STAT_BAR_HEIGHT, DEFAULT_HEALTH, handler);
+		thirstBar = new ProgressBar(STAT_BAR_MARGIN_X, Display.LOGICAL_HEIGHT - STAT_BAR_MARGIN_Y * 2 - STAT_BAR_HEIGHT * 2, STAT_BAR_WIDTH, STAT_BAR_HEIGHT, DEFAULT_THIRST, handler);
+		hungerBar = new ProgressBar(STAT_BAR_MARGIN_X, Display.LOGICAL_HEIGHT - STAT_BAR_MARGIN_Y - STAT_BAR_HEIGHT, STAT_BAR_WIDTH, STAT_BAR_HEIGHT, DEFAULT_HUNGER, handler);
 		
 		// Log
 		Logging.info("Player initialized");
@@ -287,12 +287,6 @@ public class Player extends Creature {
 	}
 	
 	public void renderInventory(Graphics2D g) {
-		if(inventory.getCurrentItem() == null) {
-			g.setFont(new Font(Font.DIALOG, Font.BOLD, 18));
-			g.setColor(Color.black);
-			g.drawString("[SPACE] to search ground...", handler.getWidth() / 2 - 230 / 2, handler.getHeight() - 80);
-		}
-		
 		if(lastSearchGroundTime + SEARCH_GROUND_COOLDOWN > System.currentTimeMillis())
 			inventory.renderCooldown(g, SEARCH_GROUND_COOLDOWN, lastSearchGroundTime + SEARCH_GROUND_COOLDOWN);
 		
@@ -387,21 +381,21 @@ public class Player extends Creature {
 	
 	private BufferedImage getCurrentAnimationFrame() {
 		switch(lookingDirection) {
-		case UP: {
-			return animUp.getCurrentFrame();
-		}
-		
-		case RIGHT: {
-			return animRight.getCurrentFrame();
-		}
-		
-		case DOWN: {
-			return animDown.getCurrentFrame();
-		}
-		
-		default: {
-			return animLeft.getCurrentFrame();
-		}
+			case UP: {
+				return animUp.getCurrentFrame();
+			}
+			
+			case RIGHT: {
+				return animRight.getCurrentFrame();
+			}
+			
+			case DOWN: {
+				return animDown.getCurrentFrame();
+			}
+			
+			default: {
+				return animLeft.getCurrentFrame();
+			}
 		}
 	}
 	

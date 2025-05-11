@@ -3,8 +3,6 @@ package konradn24.tml.gfx;
 import java.awt.Color;
 import java.awt.Font;
 
-import konradn24.tml.gfx.components.AdvancedLabel;
-
 public final class Presets {
 	
 	// Fonts
@@ -48,9 +46,4 @@ public final class Presets {
         return new Color(red, green, blue, alpha);
 
     }
-	
-	// Objects
-	public static AdvancedLabel emptyLabel() {
-		return new AdvancedLabel("");
-	}
 }

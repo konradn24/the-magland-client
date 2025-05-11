@@ -8,54 +8,104 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import konradn24.tml.Handler;
+import konradn24.tml.debug.Logging;
 import konradn24.tml.gfx.Presets;
-import konradn24.tml.states.MenuState;
-import konradn24.tml.states.State;
+import konradn24.tml.gfx.components.Label.DisplayType;
+import konradn24.tml.gfx.style.StyleText.AlignX;
+import konradn24.tml.gfx.style.StyleText.AlignY;
 
 public class Dropdown extends Component {
 	
-	public static final int DEFAULT_WIDTH = 120;
-	public static final int DEFAULT_HEIGHT = 180;
+	public static final int DEFAULT_WIDTH = 240;
 
-	private String layoutID;
-	private LinkedHashMap<AdvancedLabel, Runnable> options;
+	private LinkedHashMap<Label, Runnable> options;
 	
 	private Font font;
 	private Color color, background;
+
+	private int optionHeight;
 	
-	private boolean autoWidth, autoHeight;
 	private boolean closeOnFocusLost;
 	
 	private Runnable onFocusLost;
 	
-	public Dropdown(String layoutID, int x, int y, Handler handler) {
-		this.layoutID = layoutID;
-		this.x = x;
-		this.y = y;
-		this.handler = handler;
+	public Dropdown(Handler handler) {
+		super(handler);
 		
+		width = DEFAULT_WIDTH;
+		
+		init();
+	}
+	
+	public Dropdown(int optionHeight, Handler handler) {
+		super(handler);
+		
+		this.optionHeight = optionHeight;
+		
+		width = DEFAULT_WIDTH;
+		
+		init();
+	}
+	
+	public Dropdown(int x, int y, int optionHeight, Handler handler) {
+		super(x, y, handler);
+		
+		this.optionHeight = optionHeight;
+		
+		width = DEFAULT_WIDTH;
+		
+		init();
+	}
+
+	private void init() {
 		font = Presets.FONT_GLOBAL;
 		color = Presets.COLOR_TEXT_LIGHT;
 		background = Presets.COLOR_BACKGROUND;
 		
-		autoWidth = true;
-		autoHeight = true;
-		
 		options = new LinkedHashMap<>();
 		closeOnFocusLost = true;
+	}
+	
+	public void pack() {
+		if(options.isEmpty()) {
+			Logging.warning("GFX: Cannot pack dropdown - no options provided");
+			return;
+		}
 		
-		State state = State.getState();
-		handler.getStyle().addLayout(state != null ? state.getClass() : MenuState.class, layoutID, x, y, width, height, 1, 1);
+		int i = 0;
+		
+		for(Label label : options.keySet()) {
+			label.setPos(x, y + i * optionHeight, width, optionHeight);
+			label.setFont(font);
+			label.setColor(color);
+			label.setBackground(background);
+			
+			i++;
+		}
+		
+		height = options.size() * optionHeight;
 	}
 	
 	public void tick() {
 		if(invisible)
 			return;
 		
+		if(cameraRelative) {
+			int i = 0;
+			
+			for(Label label : options.keySet()) {
+				label.setPos(x, y + i * optionHeight);
+				
+				i++;
+			}
+		}
+		
+		super.tick();
+		
 		hoverCursor(Cursor.HAND_CURSOR);
 		
-		for(Map.Entry<AdvancedLabel, Runnable> entry : options.entrySet()) {
-			AdvancedLabel label = entry.getKey();
+		for(Map.Entry<Label, Runnable> entry : options.entrySet()) {
+			Label label = entry.getKey();
 			Runnable action = entry.getValue();
 			
 			if(handler.getMouseManager().isLeftReleasedOn(x, label.getY(), width, label.getHeight()) && action != null) {
@@ -81,69 +131,68 @@ public class Dropdown extends Component {
 		if(invisible)
 			return;
 		
-		for(AdvancedLabel label : options.keySet()) {
+		for(Label label : options.keySet()) {
 			if(background != null) {
-				int x = label.isCameraRelative() ? label.getWorldX() : label.x;
-				int y = label.isCameraRelative() ? label.getWorldY() : label.y;
-				
 				Color tempBackground = background;
-				if(isOn() && handler.getMouseManager().getMouseY() >= y && 
-						handler.getMouseManager().getMouseY() < y + label.getHeight())
+				if(label.isOn()) {
 					tempBackground = Presets.brighten(background, 0.25);
+				}
 				
 				g.setColor(tempBackground);
-				g.fillRect(x, y, width, label.getHeight());
+				g.fillRect(label.x, label.y, width, optionHeight);
 			}
 			
-			label.render(g, handler);
+			label.render(g);
 		}
-		
-		if(height == 0 || width == 0)
-			refreshGraphics();
 	}
 	
-	public void addOption(AdvancedLabel label, Runnable action) {
+	public void addOption(String text, Runnable action) {
+		Label label = new Label(text, handler);
+		label.setDisplayType(DisplayType.BOX);
+		label.setAlignX(AlignX.LEFT);
+		label.setAlignY(AlignY.CENTER);
+		
 		options.put(label, action);
 	}
 	
 	/** Use after changing position, size, font or color **/
-	public void refreshGraphics() {
-		width = width <= 0 ? DEFAULT_WIDTH : width;
-		height = height <= 0 ? DEFAULT_HEIGHT : height;
-		
-		int x = cameraRelative ? getWorldX() : this.x;
-		int y = cameraRelative ? getWorldY() : this.y;
-		
-		handler.getStyle().getLayout(layoutID).x = x;
-		handler.getStyle().getLayout(layoutID).y = y;
-		handler.getStyle().getLayout(layoutID).rows = options.size();
-		
-		if(autoWidth) width = 0;
-		if(autoHeight) height = 0;
-		
-		int i = 0;
-		for(AdvancedLabel label : options.keySet()) {
-			label.setFont(font);
-			label.setColor(color);
-			label.setMarginX(marginX);
-			label.setMarginY(marginY);
-			label.setCameraRelative(cameraRelative, handler);
-			
-			label.calculateSize(handler, font);
-			
-			label.setX(x);
-			label.setPositionY(true, layoutID, i);
-
-			if(autoWidth) width = Math.max(width, label.getWidth());
-			if(autoHeight) height += label.getHeight();
-			
-			i++;
-		}
-		
-		handler.getStyle().getLayout(layoutID).width = width;
-		handler.getStyle().getLayout(layoutID).height = height;
-		handler.getStyle().getLayout(layoutID).refresh();
-	}
+//	public void refreshGraphics() {
+//		width = width <= 0 ? DEFAULT_WIDTH : width;
+//		height = height <= 0 ? DEFAULT_HEIGHT : height;
+//		
+//		int x = cameraRelative ? getWorldX() : this.x;
+//		int y = cameraRelative ? getWorldY() : this.y;
+//		
+//		handler.getStyle().getLayout(layoutID).x = x;
+//		handler.getStyle().getLayout(layoutID).y = y;
+//		handler.getStyle().getLayout(layoutID).rows = options.size();
+//		
+//		if(autoWidth) width = 0;
+//		if(autoHeight) height = 0;
+//		
+//		int i = 0;
+//		for(AdvancedLabel label : options.keySet()) {
+//			label.setFont(font);
+//			label.setColor(color);
+//			label.setMarginX(marginX);
+//			label.setMarginY(marginY);
+//			label.setCameraRelative(cameraRelative, handler);
+//			
+//			label.calculateSize(handler, font);
+//			
+//			label.setX(x);
+//			label.setPositionY(true, layoutID, i);
+//
+//			if(autoWidth) width = Math.max(width, label.getWidth());
+//			if(autoHeight) height += label.getHeight();
+//			
+//			i++;
+//		}
+//		
+//		handler.getStyle().getLayout(layoutID).width = width;
+//		handler.getStyle().getLayout(layoutID).height = height;
+//		handler.getStyle().getLayout(layoutID).refresh();
+//	}
 	
 	public String getLayoutID() {
 		return layoutID;
@@ -153,7 +202,7 @@ public class Dropdown extends Component {
 		this.layoutID = layoutID;
 	}
 
-	public Map<AdvancedLabel, Runnable> getOptions() {
+	public Map<Label, Runnable> getOptions() {
 		return options;
 	}
 
@@ -164,7 +213,7 @@ public class Dropdown extends Component {
 	public void setFont(Font font) {
 		this.font = font;
 		
-		for(AdvancedLabel label : options.keySet())
+		for(Label label : options.keySet())
 			label.setFont(font);
 	}
 
@@ -175,7 +224,7 @@ public class Dropdown extends Component {
 	public void setColor(Color color) {
 		this.color = color;
 		
-		for(AdvancedLabel label : options.keySet())
+		for(Label label : options.keySet())
 			label.setColor(color);
 	}
 
@@ -186,24 +235,16 @@ public class Dropdown extends Component {
 	public void setBackground(Color background) {
 		this.background = background;
 		
-		for(AdvancedLabel label : options.keySet())
+		for(Label label : options.keySet())
 			label.setBackground(background);
 	}
 
-	public boolean isAutoWidth() {
-		return autoWidth;
+	public int getOptionHeight() {
+		return optionHeight;
 	}
 
-	public void setAutoWidth(boolean autoWidth) {
-		this.autoWidth = autoWidth;
-	}
-
-	public boolean isAutoHeight() {
-		return autoHeight;
-	}
-
-	public void setAutoHeight(boolean autoHeight) {
-		this.autoHeight = autoHeight;
+	public void setOptionHeight(int optionHeight) {
+		this.optionHeight = optionHeight;
 	}
 
 	public boolean isCloseOnFocusLost() {

@@ -1,136 +1,100 @@
 package konradn24.tml.states;
 
 import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
 
 import konradn24.tml.Handler;
 import konradn24.tml.debug.Logging;
+import konradn24.tml.display.Display;
 import konradn24.tml.gfx.Presets;
-import konradn24.tml.gfx.components.AdvancedLabel;
 import konradn24.tml.gfx.components.Button;
 import konradn24.tml.gfx.components.Label;
-import konradn24.tml.gfx.images.ImageLoader;
+import konradn24.tml.gfx.style.Style;
+import konradn24.tml.gfx.style.layouts.ColumnLayout;
+import konradn24.tml.utils.Function;
 
 public class MenuState extends State {
 
-	private static final int BUTTON_SIZE_X = 212;
-	private static final int BUTTON_SIZE_Y = 48;
+	private static final int BUTTONS_Y = 400;
+	private static final int BUTTON_WIDTH = 636;
+	private static final int BUTTON_HEIGHT = 48;
+	private static final int SPACING = 20;
 	
-	private BufferedImage background;
 	private Label title;
-	private Button singleplayer, multiplayer, settings, credits, quit;
+	
+	ColumnLayout<Button> buttons;
 	
 	public MenuState(Handler handler){
 		super(handler);
-		handler.getStyle().addLayout(this.getClass(), "menu", 12, 1);
 		
-		background = ImageLoader.loadImage("/textures/background.png");
-		
-		title = new Label("The Magland");
-		title.setCenterX(true);
-		title.setPositionCenterY(true, "menu", 2);
+		title = new Label("The Magland", Display.LOGICAL_WIDTH / 2, 200, handler);
 		title.setColor(Presets.COLOR_SECONDARY);
-		title.setFont(Presets.FONT_GLOBAL.deriveFont(68f));
+		title.setFont(Presets.FONT_GLOBAL.deriveFont(114f));
 		
-		singleplayer = new Button(new AdvancedLabel("Singleplayer"), 
-				handler.getStyle().centerX(BUTTON_SIZE_X), 
-				handler.getStyle().positionCenterY("menu", 4, BUTTON_SIZE_Y), 
-				BUTTON_SIZE_X, BUTTON_SIZE_Y, handler);
-		
-		multiplayer = new Button(new AdvancedLabel("Multiplayer"), 
-				handler.getStyle().centerX(BUTTON_SIZE_X), 
-				handler.getStyle().positionCenterY("menu", 5, BUTTON_SIZE_Y), 
-				BUTTON_SIZE_X, BUTTON_SIZE_Y, handler);
-		
-		settings = new Button(new AdvancedLabel("Settings"), 
-				handler.getStyle().centerX(BUTTON_SIZE_X), 
-				handler.getStyle().positionCenterY("menu", 6, BUTTON_SIZE_Y), 
-				BUTTON_SIZE_X, BUTTON_SIZE_Y, handler);
-		
-		credits = new Button(new AdvancedLabel("Credits"), 
-				handler.getStyle().centerX(BUTTON_SIZE_X), 
-				handler.getStyle().positionCenterY("menu", 7, BUTTON_SIZE_Y), 
-				BUTTON_SIZE_X, BUTTON_SIZE_Y, handler);
-		
-		quit = new Button(new AdvancedLabel("Quit"), 
-				handler.getStyle().centerX(BUTTON_SIZE_X), 
-				handler.getStyle().positionCenterY("menu", 8, BUTTON_SIZE_Y), 
-				BUTTON_SIZE_X, BUTTON_SIZE_Y, handler);
-		
-		singleplayer.setColor(Presets.COLOR_PRIMARY);
-		multiplayer.setColor(Presets.COLOR_PRIMARY);
-		settings.setColor(Presets.COLOR_PRIMARY);
-		credits.setColor(Presets.COLOR_PRIMARY);
-		quit.setColor(Presets.COLOR_PRIMARY);
-		
-		singleplayer.getLabel().setColor(Presets.COLOR_SECONDARY);
-		multiplayer.getLabel().setColor(Presets.COLOR_SECONDARY);
-		settings.getLabel().setColor(Presets.COLOR_SECONDARY);
-		credits.getLabel().setColor(Presets.COLOR_SECONDARY);
-		quit.getLabel().setColor(Presets.COLOR_SECONDARY);
-		
-		singleplayer.getLabel().setFont(Presets.FONT_GLOBAL.deriveFont(24f));
-		multiplayer.getLabel().setFont(Presets.FONT_GLOBAL.deriveFont(24f));
-		settings.getLabel().setFont(Presets.FONT_GLOBAL.deriveFont(24f));
-		credits.getLabel().setFont(Presets.FONT_GLOBAL.deriveFont(24f));
-		quit.getLabel().setFont(Presets.FONT_GLOBAL.deriveFont(24f));
-		
-		singleplayer.refresh();
-		multiplayer.refresh();
-		settings.refresh();
-		credits.refresh();
-		quit.refresh();
-		
-		singleplayer.setOnLeftClick(() -> {
-			State.setState(handler.getGame().singleplayerLoadSaveState);
-		});
-		
-		settings.setOnLeftClick(() -> {
-			SettingsState.lastState = this;
-			State.setState(handler.getGame().settingsState);
-		});
-		
-		credits.setOnLeftClick(() -> {
-			State.setState(handler.getGame().creditsState);
-		});
-		
-		quit.setOnLeftClick(() -> {
-			handler.getGame().close();
+		buttons = new ColumnLayout<>(
+				Button.class, 5, 
+				Style.centerX(BUTTON_WIDTH), BUTTONS_Y,
+				BUTTON_WIDTH, BUTTON_HEIGHT, SPACING, handler
+		).customize((button, i) -> {
+			String text = switch(i) {
+				case 0 -> "Singleplayer";
+				case 1 -> "Multiplayer";
+				case 2 -> "Settings";
+				case 3 -> "Credits";
+				case 4 -> "Quit";
+				default -> "";
+			};
+			
+			Function function = switch(i) {
+				case 0 -> () -> {
+					State.setState(handler.getGame().singleplayerLoadSaveState);
+				};
+				
+				case 1 -> () -> {
+					// TODO multiplayer
+				};
+				
+				case 2 -> () -> {
+					SettingsState.lastState = this;
+					State.setState(handler.getGame().settingsState);
+				};
+								
+				case 3 -> () -> {
+					State.setState(handler.getGame().creditsState);
+				};
+				
+				case 4 -> () -> {
+					handler.getGame().close();
+				};
+				
+				default -> () -> {};
+			};
+			
+			button.getLabel().setContent(text);
+			button.getLabel().setColor(Presets.COLOR_SECONDARY);
+			button.getLabel().setFont(Presets.FONT_GLOBAL.deriveFont(24f));
+			button.setHoverSizeFactor(1.04f);
+			button.setColor(Presets.COLOR_PRIMARY);
+			button.setOnLeftClick(function);
+			
+			button.refreshLabelPosition();
 		});
 		
 		Logging.info("Menu State initialized");
 	}
+	
+	@Override
+	public void onLoad() {
+		
+	}
 
 	@Override
 	public void tick() {
-		singleplayer.tick();
-		multiplayer.tick();
-		settings.tick();
-		credits.tick();
-		quit.tick();
-		
-		//When mouse button released on btn
-//		if(singleplayer.isLeftReleased()) {
-//			State.setState(handler.getGame().gameState);
-//		} else if(settings.isLeftReleased()) {
-//			SettingsState.lastState = this;
-//			State.setState(handler.getGame().settingsState);
-//		} else if(credits.isLeftReleased()) {
-//			State.setState(handler.getGame().creditsState);
-//		} else if(quit.isLeftReleased())
-//			handler.getGame().getDisplay().getFrame().dispose();
+		buttons.tick();
 	}
 
 	@Override
 	public void render(Graphics2D g) {
-		g.drawImage(background, 0, 0, handler.getWidth(), handler.getHeight(), null);
-		
-		title.render(g, handler);
-		
-		singleplayer.render(g);
-		multiplayer.render(g);
-		settings.render(g);
-		credits.render(g);
-		quit.render(g);
+		title.render(g);
+		buttons.render(g);
 	}
 }

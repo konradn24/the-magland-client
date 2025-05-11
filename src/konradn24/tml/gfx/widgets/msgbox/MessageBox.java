@@ -10,7 +10,7 @@ import java.util.List;
 import konradn24.tml.Handler;
 import konradn24.tml.debug.Logging;
 import konradn24.tml.gfx.Presets;
-import konradn24.tml.gfx.components.AdvancedLabel;
+import konradn24.tml.gfx.components.Label;
 import konradn24.tml.gfx.components.Button;
 import konradn24.tml.states.State;
 import konradn24.tml.utils.Utils;
@@ -40,7 +40,7 @@ public class MessageBox {
 	private int type;
 	
 	private String title, message;
-	private List<AdvancedLabel> labels;
+	private List<Label> labels;
 	
 	private Font titleFont, messageFont;
 	private Color barColor, windowColor;
@@ -84,18 +84,16 @@ public class MessageBox {
 		List<String> breakedMessage = Utils.breakString(message, charsPerLine, true);
 		width = Math.max(MIN_WIDTH, metrics.stringWidth(Utils.getLongest(breakedMessage))) + TEXT_MARGIN_X * 2;
 		height = MIN_HEIGHT + breakedMessage.size() * metrics.getHeight();
-		x = handler.getStyle().centerX(width);
-		y = handler.getStyle().centerY(height);
 		
 		labels.clear();
 		
-		AdvancedLabel titleLabel = new AdvancedLabel(title, x + TEXT_MARGIN_X, y);
+		Label titleLabel = new Label(title, x + TEXT_MARGIN_X, y, handler);
 		titleLabel.setFont(titleFont);
 		titleLabel.setColor(Presets.COLOR_WINDOW_TEXT);
 		labels.add(titleLabel);
 		
 		for(int i = 0; i < breakedMessage.size(); i++) {
-			AdvancedLabel label = new AdvancedLabel(breakedMessage.get(i), x + TEXT_MARGIN_X, y + (i * metrics.getHeight()) + BAR_HEIGHT + TEXT_MARGIN_Y);
+			Label label = new Label(breakedMessage.get(i), x + TEXT_MARGIN_X, y + (i * metrics.getHeight()) + BAR_HEIGHT + TEXT_MARGIN_Y, handler);
 			label.setFont(messageFont);
 			label.setColor(Presets.COLOR_WINDOW_TEXT);
 			
@@ -110,18 +108,13 @@ public class MessageBox {
 			return;
 		}
 		
-		AdvancedLabel labelOk = new AdvancedLabel("Ok");
-		AdvancedLabel labelYes = new AdvancedLabel("Yes");
-		AdvancedLabel labelNo = new AdvancedLabel("No");
-		AdvancedLabel labelCancel = new AdvancedLabel("Cancel");
-		
 		int buttonsY = y + height - BUTTON_HEIGHT - BUTTON_MARGIN;
 		
 		switch(type) {
 		default: type = TYPE_OK;
 		
 		case TYPE_OK: {
-			buttonOk = new Button(labelOk, x + width / 2 - BUTTON_WIDTH / 2, buttonsY, BUTTON_WIDTH, BUTTON_HEIGHT, handler);
+			buttonOk = new Button("Ok", x + width / 2 - BUTTON_WIDTH / 2, buttonsY, BUTTON_WIDTH, BUTTON_HEIGHT, handler);
 			
 			buttonOk.setOnLeftClick(() -> {
 				State.getState().getDialogsManager().queueCloseMessageBox(this);
@@ -141,8 +134,8 @@ public class MessageBox {
 		case TYPE_YES_NO: {
 			int buttonsWidth = BUTTON_WIDTH * 2 + BUTTON_MARGIN;
 			
-			buttonYes = new Button(labelYes, x + width / 2 - buttonsWidth / 2, buttonsY, BUTTON_WIDTH, BUTTON_HEIGHT, handler);
-			buttonNo = new Button(labelNo, x + width / 2 - buttonsWidth / 2 + BUTTON_WIDTH + BUTTON_MARGIN, buttonsY, BUTTON_WIDTH, BUTTON_HEIGHT, handler);
+			buttonYes = new Button("Yes", x + width / 2 - buttonsWidth / 2, buttonsY, BUTTON_WIDTH, BUTTON_HEIGHT, handler);
+			buttonNo = new Button("No", x + width / 2 - buttonsWidth / 2 + BUTTON_WIDTH + BUTTON_MARGIN, buttonsY, BUTTON_WIDTH, BUTTON_HEIGHT, handler);
 		
 			buttonYes.setOnLeftClick(() -> {
 				State.getState().getDialogsManager().queueCloseMessageBox(this);
@@ -173,9 +166,9 @@ public class MessageBox {
 		case TYPE_YES_NO_CANCEL: {
 			int buttonsWidth = BUTTON_WIDTH * 3 + BUTTON_MARGIN * 2;
 			
-			buttonYes = new Button(labelYes, x + width / 2 - buttonsWidth / 2, buttonsY, BUTTON_WIDTH, BUTTON_HEIGHT, handler);
-			buttonNo = new Button(labelNo, x + width / 2 - buttonsWidth / 2 + BUTTON_WIDTH + BUTTON_MARGIN, buttonsY, BUTTON_WIDTH, BUTTON_HEIGHT, handler);
-			buttonCancel = new Button(labelCancel, x + width / 2 - buttonsWidth / 2 + (BUTTON_WIDTH + BUTTON_MARGIN) * 2, buttonsY, BUTTON_WIDTH, BUTTON_HEIGHT, handler);
+			buttonYes = new Button("Yes", x + width / 2 - buttonsWidth / 2, buttonsY, BUTTON_WIDTH, BUTTON_HEIGHT, handler);
+			buttonNo = new Button("No", x + width / 2 - buttonsWidth / 2 + BUTTON_WIDTH + BUTTON_MARGIN, buttonsY, BUTTON_WIDTH, BUTTON_HEIGHT, handler);
+			buttonCancel = new Button("Cancel", x + width / 2 - buttonsWidth / 2 + (BUTTON_WIDTH + BUTTON_MARGIN) * 2, buttonsY, BUTTON_WIDTH, BUTTON_HEIGHT, handler);
 		
 			buttonYes.setOnLeftClick(() -> {
 				State.getState().getDialogsManager().queueCloseMessageBox(this);
@@ -242,7 +235,7 @@ public class MessageBox {
 		g.fillRect(x, y, width, BAR_HEIGHT);
 		g.drawRect(x, y, width, height);
 		
-		for(AdvancedLabel label : labels) label.render(g, handler);
+		for(Label label : labels) label.render(g);
 		for(Button button : buttons) button.render(g);
 	}
 

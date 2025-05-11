@@ -13,6 +13,7 @@ import konradn24.tml.entities.EntityManager;
 import konradn24.tml.gfx.widgets.DebugConsole;
 import konradn24.tml.gfx.widgets.msgbox.MessageBox;
 import konradn24.tml.inventory.items.Item;
+import konradn24.tml.states.GameState;
 import konradn24.tml.states.State;
 import konradn24.tml.tiles.Tile;
 import konradn24.tml.utils.Modules;
@@ -367,23 +368,34 @@ public final class DebugCommands {
 		String actionStr = args[0];
 		String rule = args[1];
 		
-		if(!actionStr.equals("get") && !actionStr.equals("enable") && !actionStr.equals("disable"))
-			return "~E_BAD_ARGS: action must be 'get', 'enable' or 'disable'";
-		
-		if(!handler.getRenderingRules().checkExistance(rule))
-			return "~E_BAD_ARGS: rule " + rule + " does not exist";
-		
 		boolean get = actionStr.equals("get");
 		boolean action = actionStr.equals("enable");
+		boolean isRuleDebug = rule.equals("debug");
+		
+		if(!get && !actionStr.equals("enable") && !actionStr.equals("disable"))
+			return "~E_BAD_ARGS: action must be 'get', 'enable' or 'disable'";
+		
+		if(!isRuleDebug && !handler.getRenderingRules().checkExistance(rule)) {
+			return "~E_BAD_ARGS: rule " + rule + " does not exist";
+		}
 		
 		if(get) {
-			boolean enabled = handler.getRenderingRules().isEnabled(rule);
+			boolean enabled;
+			
+			if(isRuleDebug) {
+				enabled = GameState.debugMode;
+			} else {
+				enabled = handler.getRenderingRules().isEnabled(rule);
+			}
 			
 			return "Rule " + rule + " is currently " + (enabled ? "enabled" : "disabled");
 		}
 		
-		if(!handler.getRenderingRules().set(rule, action))
+		if(isRuleDebug) {
+			GameState.debugMode = action;
+		} else if(!handler.getRenderingRules().set(rule, action)) {
 			return "~E_???: failed to change rule";
+		}
 		
 		return "Renderer rule " + rule + " " + actionStr + "d";
 	}

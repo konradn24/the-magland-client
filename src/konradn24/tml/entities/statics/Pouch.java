@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import konradn24.tml.Handler;
-import konradn24.tml.gfx.components.AdvancedLabel;
 import konradn24.tml.gfx.components.Dropdown;
 import konradn24.tml.gfx.images.Assets;
 import konradn24.tml.gfx.widgets.msgbox.MessageBox;
@@ -34,23 +33,22 @@ public class Pouch extends StaticEntity {
 		
 		customActionIcon = Assets.handIcon;
 		
-		dropdown = new Dropdown("Pouch_" + this.hashCode() + "_Dropdown", 0, 0, handler);
+		dropdown = new Dropdown(30, handler);
 		
-		dropdown.addOption(new AdvancedLabel("Take"), () -> collect());
-		dropdown.addOption(new AdvancedLabel("Examine"), () -> examine());
+		dropdown.addOption("Take", () -> collect());
+		dropdown.addOption("Examine", () -> examine());
 		
-		dropdown.setMarginX(10);
-		dropdown.setMarginY(2);
 		dropdown.setInvisible(true);
 		
 		actionsByAttribute.put(-1, (item, handler) -> {
 			dropdown.setInvisible(false);
-			dropdown.setCameraRelative(true, handler);
 			
 			dropdown.setX(handler.getMouseManager().getMouseX());
 			dropdown.setY(handler.getMouseManager().getMouseY());
 			
-			dropdown.refreshGraphics();
+			dropdown.enableCameraRelative(handler);
+			
+			dropdown.pack();
 		});
 		
 		items = new HashMap<>();

@@ -13,10 +13,9 @@ import java.util.Map;
 import konradn24.tml.Handler;
 import konradn24.tml.debug.Logging;
 import konradn24.tml.gfx.Presets;
-import konradn24.tml.gfx.components.AdvancedLabel;
+import konradn24.tml.gfx.components.Label;
 import konradn24.tml.inventory.Inventory;
 import konradn24.tml.inventory.items.Item;
-import konradn24.tml.states.GameState;
 
 public class CraftingInterface {
 
@@ -28,7 +27,7 @@ public class CraftingInterface {
 	
 	private Map<CraftingRecipe, Boolean> recipes = new HashMap<>();
 	
-	private Map<String, AdvancedLabel> labels;
+	private Map<String, Label> labels;
 	private Font font;
 	private String layoutID;
 	private int x, y, width, height;
@@ -61,15 +60,13 @@ public class CraftingInterface {
 		this.columns = Math.max(width / LAYOUT_LABEL_WIDTH, 1);
 		this.labelsPerColumn = (int) Math.max(Math.ceil(labels.size() / columns), rows);
 		
-		handler.getStyle().addLayout(GameState.class, layoutID, x, y, width, height, rows, columns);
-		
 		Logging.info("Crafting Interface (layoutID: " + layoutID + ") initialized");
 	}
 	
 	public void tick() {
-		for(Map.Entry<String, AdvancedLabel> entry : labels.entrySet()) {
+		for(Map.Entry<String, Label> entry : labels.entrySet()) {
 			String recipeID = entry.getKey();
-			AdvancedLabel label = entry.getValue();
+			Label label = entry.getValue();
 			
 			if(handler.getMouseManager().isLeftPressed() && label.isOn()) {
 				if(clickCooldown) break;
@@ -84,8 +81,8 @@ public class CraftingInterface {
 		g.setColor(Presets.COLOR_BACKGROUND);
 		g.fillRect(x, y, width, height);
 		
-		for(AdvancedLabel label : labels.values()) {
-			label.render(g, handler);
+		for(Label label : labels.values()) {
+			label.render(g);
 		}
 	}
 	
@@ -184,9 +181,8 @@ public class CraftingInterface {
 				str = str.substring(0, str.length() - 2).concat("{arrow} " + recipe.getResultAmount() + " {" + recipe.getResultItem().getName() + "}");
 				labels.get(recipe.getId()).setContent(str);
 			} else {
-				AdvancedLabel label = new AdvancedLabel("");
+				Label label = new Label("", handler);
 				label.setFont(font);
-				label.setIconSizeScale(1.25f);
 				label.setColor(available ? Color.GREEN : Color.RED);
 				label.setCursor(available ? Cursor.HAND_CURSOR : Cursor.DEFAULT_CURSOR);
 				
@@ -207,12 +203,12 @@ public class CraftingInterface {
 		}
 		
 		int i = 0;
-		for(Iterator<Map.Entry<String, AdvancedLabel>> iEntry = labels.entrySet().iterator(); iEntry.hasNext();) {
+		for(Iterator<Map.Entry<String, Label>> iEntry = labels.entrySet().iterator(); iEntry.hasNext();) {
 			boolean foundRecipe = false;
 			
-			Map.Entry<String, AdvancedLabel> entry = iEntry.next();
+			Map.Entry<String, Label> entry = iEntry.next();
 			String recipeID = entry.getKey();
-			AdvancedLabel label = entry.getValue();
+			Label label = entry.getValue();
 			
 			for(CraftingRecipe recipe : recipes.keySet()) {
 				if(recipe.getId() == recipeID) {
@@ -293,7 +289,7 @@ public class CraftingInterface {
 		this.attributes = attributes;
 	}
 
-	public Map<String, AdvancedLabel> getLabels() {
+	public Map<String, Label> getLabels() {
 		return labels;
 	}
 

@@ -7,8 +7,10 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
+import konradn24.tml.Handler;
 import konradn24.tml.gfx.Presets;
-import konradn24.tml.gfx.components.AdvancedLabel;
+import konradn24.tml.gfx.components.Label;
+import konradn24.tml.gfx.components.Label.DisplayType;
 import konradn24.tml.gfx.components.Component;
 
 public class Slot extends Component {
@@ -18,18 +20,14 @@ public class Slot extends Component {
 	public static final int ACTIONS_MARGIN_X = 4;
 	public static final int ACTIONS_MARGIN_Y = 2;
 	
-	public static final int TOOLTIP_TOP_OFFSET = 28;
-	
-	protected SlotMenu menu;
+	protected SlotMenu<?> menu;
 	protected BufferedImage icon;
 	protected int index;
-	
-	protected float iconScale;
 	
 	protected Runnable primaryAction;
 	protected List<SlotAction> actions;
 	
-	protected AdvancedLabel bottomText;
+	protected Label bottomText;
 	
 	protected Color hoverColor;
 	protected int hoverCursor;
@@ -37,27 +35,32 @@ public class Slot extends Component {
 	protected boolean disabled;
 	protected Color disabledColor;
 	
-	protected AdvancedLabel tooltip;
+	protected Label tooltip;
 	protected Color tooltipBackgroundColor;
 	
-	public Slot(SlotMenu menu) {
+	public Slot(Handler handler) {
+		super(handler);
+	}
+	
+	public Slot(SlotMenu<?> menu) {
+		super(menu.getHandler());
+		
 		init(menu, null);
 	}
 	
-	public Slot(SlotMenu menu, BufferedImage icon) {
+	public Slot(SlotMenu<?> menu, BufferedImage icon) {
+		super(menu.getHandler());
+		
 		init(menu, icon);
 	}
 	
-	private void init(SlotMenu menu, BufferedImage icon) {
-		super.handler = menu.getHandler();
-		super.layoutID = menu.getLayoutID();
-		
+	private void init(SlotMenu<?> menu, BufferedImage icon) {
 		this.menu = menu;
 		this.icon = icon;
 		
 		actions = new ArrayList<>();
 		
-		bottomText = new AdvancedLabel("");
+		bottomText = new Label("", x + width / 2, y + height - menu.getBottomTextOffsetY(),  handler);
 		bottomText.setFont(menu.getFont());
 		bottomText.setColor(menu.getTextColor());
 		
@@ -66,12 +69,11 @@ public class Slot extends Component {
 		
 		disabledColor = Presets.COLOR_LIGHT;
 		
-		tooltip = Presets.emptyLabel();
+		tooltip = new Label(handler);
 		tooltip.setFont(Presets.FONT_GLOBAL);
 		tooltip.setColor(Presets.COLOR_TEXT_LIGHT);
 		tooltip.setBackground(Presets.COLOR_SHADE_3);
-		tooltip.setMarginX(6);
-		tooltip.setMarginY(1);
+		tooltip.setDisplayType(DisplayType.ORIGIN);
 	}
 	
 	public void tick() {
@@ -96,11 +98,14 @@ public class Slot extends Component {
 		if(invisible)
 			return;
 		
-		g.drawImage(icon, x + menu.getIconsOffsetX(), y + menu.getIconsOffsetY(), 
-				menu.getFixedIconsWidth() > 0 ? menu.getFixedIconsWidth() : (width - menu.getIconsOffsetX() * 2), 
-				menu.getFixedIconsHeight() > 0 ? menu.getFixedIconsHeight() : (height - menu.getIconsOffsetY() * 2), null);
+		int iconWidth = (int) (width * menu.getIconsScale());
+		int iconHeight = (int) (height * menu.getIconsScale());
+		int iconX = x + width / 2 - iconWidth / 2;
+		int iconY = y + height / 2 - iconHeight / 2;
 		
-		bottomText.render(g, handler);
+		g.drawImage(icon, iconX, iconY, iconWidth, iconHeight, null);
+		
+		bottomText.render(g);
 		
 		if(disabled) {
 			g.setColor(Presets.COLOR_LIGHT);
@@ -116,35 +121,28 @@ public class Slot extends Component {
 				// Tooltip
 				if(!tooltip.getContent().isEmpty() && menu.getSelectedSlot() == -1) {
 					tooltip.setX(handler.getMouseManager().getMouseX());
-					tooltip.setY(handler.getMouseManager().getMouseY() + TOOLTIP_TOP_OFFSET);
-					tooltip.render(g, handler);
+					tooltip.setY(handler.getMouseManager().getMouseY());
+					tooltip.render(g);
 				}
 			}
 		}
 	}
 	
-	public void refresh() {
-		bottomText.calculateSize(handler, bottomText.getFont());
-		
-		bottomText.setPositionCenterX(true, layoutID, column);
-		bottomText.setY(y + height - bottomText.getHeight());
-	}
-	
 	public class SlotAction {
-		private AdvancedLabel label;
+		private String text;
 		private Runnable callback;
 		
-		public SlotAction(AdvancedLabel label, Runnable callback) {
-			this.label = label;
+		public SlotAction(String text, Runnable callback) {
+			this.text = text;
 			this.callback = callback;
 		}
 
-		public AdvancedLabel getLabel() {
-			return label;
+		public String getText() {
+			return text;
 		}
 
-		public void setLabel(AdvancedLabel label) {
-			this.label = label;
+		public void setText(String text) {
+			this.text = text;
 		}
 
 		public Runnable getCallback() {
@@ -162,20 +160,22 @@ public class Slot extends Component {
 	
 	// GETTERS AND SETTERS
 
+	public SlotMenu<?> getMenu() {
+		return menu;
+	}
+	
+	public void setMenu(SlotMenu<?> menu) {
+		this.menu = menu;
+		
+		init(menu, null);
+	}
+	
 	public void setColumn(int column) {
 		super.column = column;
 	}
 	
 	public void setRow(int row) {
 		super.row = row;
-	}
-	
-	public SlotMenu getMenu() {
-		return menu;
-	}
-
-	public void setMenu(SlotMenu menu) {
-		this.menu = menu;
 	}
 
 	public BufferedImage getIcon() {
@@ -192,14 +192,6 @@ public class Slot extends Component {
 	
 	void setIndex(int index) {
 		this.index = index;
-	}
-
-	public float getIconScale() {
-		return iconScale;
-	}
-
-	public void setIconScale(float iconScale) {
-		this.iconScale = iconScale;
 	}
 
 	public Runnable getPrimaryAction() {
@@ -230,7 +222,7 @@ public class Slot extends Component {
 		return actions;
 	}
 
-	public AdvancedLabel getBottomText() {
+	public Label getBottomText() {
 		return bottomText;
 	}
 	
@@ -254,11 +246,11 @@ public class Slot extends Component {
 		this.disabledColor = disabledColor;
 	}
 
-	public AdvancedLabel getTooltip() {
+	public Label getTooltip() {
 		return tooltip;
 	}
 
-	public void setTooltip(AdvancedLabel tooltip) {
+	public void setTooltip(Label tooltip) {
 		this.tooltip = tooltip;
 	}
 

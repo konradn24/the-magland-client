@@ -15,7 +15,7 @@ import konradn24.tml.gfx.images.ImageLoader;
 
 public class SettingsState extends State {
 
-	private static final int CHECKBOX_SIZE = 32;
+//	private static final int CHECKBOX_SIZE = 32;
 	
 	public static State lastState;
 	
@@ -29,17 +29,16 @@ public class SettingsState extends State {
 	
 	public SettingsState(Handler handler) {
 		super(handler);
-		handler.getStyle().addLayout(this.getClass(), "settings", 12, 2);
 		
 		background = ImageLoader.loadImage("/textures/background.png");
 		
 		back = new Button(Assets.getAnimation("iconBack"), 5, 5, 32, 32, handler);
 		
-		showFPS = new Checkbox(handler.getStyle().positionCenterX("settings", 0, CHECKBOX_SIZE), 
-				handler.getStyle().positionCenterY("settings", 0, CHECKBOX_SIZE), 
-				CHECKBOX_SIZE, CHECKBOX_SIZE, handler); // 50, 70, 32, 32
+//		showFPS = new Checkbox(handler.getStyle().positionCenterX("settings", 0, CHECKBOX_SIZE), 
+//				handler.getStyle().positionCenterY("settings", 0, CHECKBOX_SIZE), 
+//				CHECKBOX_SIZE, CHECKBOX_SIZE, handler); // 50, 70, 32, 32
 		
-		showFPSLabel = new Label("Show FPS counter");
+		showFPSLabel = new Label("Show FPS counter", handler);
 		showFPSLabel.setPositionCenterX(true, "settings", 0);
 		showFPSLabel.setPositionCenterY(true, "settings", 0);
 		showFPSLabel.setFont(new Font(Font.DIALOG, Font.BOLD, 15));
@@ -59,19 +58,19 @@ public class SettingsState extends State {
 			State.setState(lastState);
 		}
 		
-		showFPS.tick();
+//		showFPS.tick();
 		showFPSCounter = showFPS.getState();
 	}
 
 	@Override
 	public void render(Graphics2D g) {
-		g.drawImage(background, 0, 0, handler.getWidth(), handler.getHeight(), null);
+		g.drawImage(background, 0, 0, handler.getDisplayWidth(), handler.getDisplayHeight(), null);
 		
 		//Back button
 		back.render(g);
 		
 		//FPS counter
-		showFPS.render(g);
+//		showFPS.render(g);
 		showFPSLabel.render(g);
 	}
 }

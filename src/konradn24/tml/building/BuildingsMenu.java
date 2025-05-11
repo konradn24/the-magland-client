@@ -39,18 +39,18 @@ public class BuildingsMenu {
 		
 		buildings = new LinkedHashMap<>();
 		
-		slotMenu = new SlotMenu(layoutID + "_slotMenu", handler, COLUMNS); // TODO: init slot menu
-		slotMenu.setFixedIconsWidth(48);
-		slotMenu.setFixedIconsHeight(48);
-		slotMenu.setFont(Presets.FONT_INVENTORY);
-		slotMenu.setTextColor(Color.WHITE);
-		slotMenu.setPosition(POS_X, POS_Y, SECTION_WIDTH, SECTION_HEIGHT);
-		
-		BuildingSlot[] slots = new BuildingSlot[ROWS * COLUMNS];
-		for(int i = 0; i < ROWS * COLUMNS; i++)
-			slots[i] = new BuildingSlot(slotMenu, handler);
-		
-		slotMenu.addSlots(slots);
+//		slotMenu = new SlotMenu(layoutID + "_slotMenu", handler, COLUMNS); // TODO: init slot menu
+//		slotMenu.setFixedIconsWidth(48);
+//		slotMenu.setFixedIconsHeight(48);
+//		slotMenu.setFont(Presets.FONT_INVENTORY);
+//		slotMenu.setTextColor(Color.WHITE);
+//		slotMenu.setPosition(POS_X, POS_Y, SECTION_WIDTH, SECTION_HEIGHT);
+//		
+//		BuildingSlot[] slots = new BuildingSlot[ROWS * COLUMNS];
+//		for(int i = 0; i < ROWS * COLUMNS; i++)
+//			slots[i] = new BuildingSlot(slotMenu, handler);
+//		
+//		slotMenu.addSlots(slots);
 		
 		keyToOpen = DEFAULT_OPEN_KEY;
 	}

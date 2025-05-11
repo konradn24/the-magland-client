@@ -28,6 +28,8 @@ public abstract class State {
 			currentState.onClose();
 		}
 		
+		state.handler.getGame().clearBackground();
+		
 		Overlay.clear();
 		state.onLoad();
 		

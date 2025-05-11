@@ -2,6 +2,7 @@ package konradn24.tml.gfx;
 
 import konradn24.tml.Handler;
 import konradn24.tml.debug.Logging;
+import konradn24.tml.display.Display;
 import konradn24.tml.entities.Entity;
 import konradn24.tml.tiles.Tile;
 
@@ -24,8 +25,8 @@ public class GameCamera {
 		if(xOffset < 0) {
 			xOffset = 0;
 			blocking = true;
-		} else if(xOffset > handler.getWorld().getWidth() * Tile.TILE_WIDTH - handler.getWidth()) {
-			xOffset = handler.getWorld().getWidth() * Tile.TILE_WIDTH - handler.getWidth();
+		} else if(xOffset > handler.getWorld().getWidth() * Tile.TILE_WIDTH - Display.LOGICAL_WIDTH) {
+			xOffset = handler.getWorld().getWidth() * Tile.TILE_WIDTH - Display.LOGICAL_WIDTH;
 			blocking = true;
 		} else
 			blocking = false;
@@ -33,16 +34,16 @@ public class GameCamera {
 		if(yOffset < 0) {
 			yOffset = 0;
 			blocking = true;
-		} else if(yOffset > handler.getWorld().getHeight() * Tile.TILE_HEIGHT - handler.getHeight()) {
-			yOffset = handler.getWorld().getHeight() * Tile.TILE_HEIGHT - handler.getHeight();
+		} else if(yOffset > handler.getWorld().getHeight() * Tile.TILE_HEIGHT - Display.LOGICAL_HEIGHT) {
+			yOffset = handler.getWorld().getHeight() * Tile.TILE_HEIGHT - Display.LOGICAL_HEIGHT;
 			blocking = true;
 		} else
 			blocking = false;
 	}
 	
 	public void centerOnEntity(Entity e){
-		xOffset = e.getX() - handler.getWidth() / 2 + e.getWidth() / 2;
-		yOffset = e.getY() - handler.getHeight() / 2 + e.getHeight() / 2;
+		xOffset = e.getX() - Display.LOGICAL_WIDTH / 2 + e.getWidth() / 2;
+		yOffset = e.getY() - Display.LOGICAL_HEIGHT / 2 + e.getHeight() / 2;
 		checkBlankSpace();
 	}
 	

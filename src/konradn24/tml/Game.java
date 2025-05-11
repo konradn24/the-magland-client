@@ -5,11 +5,13 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferStrategy;
+import java.awt.image.BufferedImage;
 
 import konradn24.tml.debug.CommandHandler;
 import konradn24.tml.debug.Logging;
 import konradn24.tml.display.Display;
 import konradn24.tml.gfx.images.Assets;
+import konradn24.tml.gfx.images.ImageLoader;
 import konradn24.tml.input.KeyManager;
 import konradn24.tml.input.MouseManager;
 import konradn24.tml.states.CreditsState;
@@ -23,7 +25,6 @@ import konradn24.tml.states.overlays.Overlay;
 public class Game implements Runnable {
 
 	private Display display;
-	private int width, height;
 	public String title;
 	
 	private String initializingInfo = "";
@@ -33,6 +34,9 @@ public class Game implements Runnable {
 	
 	private BufferStrategy bs;
 	private Graphics2D g;
+	
+	private final BufferedImage defaultBackground;
+	private BufferedImage background;
 	
 	// States
 	public State gameState;
@@ -60,19 +64,23 @@ public class Game implements Runnable {
 	
 	private boolean locked;
 	
-	public Game(String title, int width, int height){
-		this.width = width;
-		this.height = height;
+	public Game(String title){
 		this.title = title;
-		keyManager = new KeyManager();
-		mouseManager = new MouseManager();
+		this.defaultBackground = ImageLoader.loadImage("/textures/background.png");
+		this.background = defaultBackground;
 	}
 	
 	private void init(){
 		display = new Display(title);
 		
 		new Thread(() -> {
+			initializingInfo = "Creating handler";
+			handler = new Handler(this);
+			
 			initializingInfo = "Initializing display";
+			keyManager = new KeyManager();
+			mouseManager = new MouseManager(handler);
+			
 			display.getFrame().addKeyListener(keyManager);
 			display.getFrame().addMouseListener(mouseManager);
 			display.getFrame().addMouseMotionListener(mouseManager);
@@ -81,9 +89,6 @@ public class Game implements Runnable {
 			
 			initializingInfo = "Loading assets";
 			Assets.init();
-			
-			initializingInfo = "Creating handler";
-			handler = new Handler(this);
 			
 			initializingInfo = "Initializing game states";
 			gameState = new GameState(handler);
@@ -148,30 +153,17 @@ public class Game implements Runnable {
 		}
 		
 		g = (Graphics2D) bs.getDrawGraphics();
-		
-		// Obliczanie skali i marginesów
-	    int actualWidth = display.getCanvas().getWidth();
-	    int actualHeight = display.getCanvas().getHeight();
+	    
+	    if(background == null) {
+	    	g.setColor(Color.black);
+		    g.fillRect(0, 0, handler.getDisplayWidth(), handler.getDisplayHeight());
+	    } else {
+	    	g.drawImage(background, 0, 0, handler.getDisplayWidth(), handler.getDisplayHeight(), null);
+	    }
 
-	    double scaleX = actualWidth / (double) Display.LOGICAL_WIDTH;
-	    double scaleY = actualHeight / (double) Display.LOGICAL_HEIGHT;
-	    double scale = Math.min(scaleX, scaleY);
-
-	    // Wycentrowanie (opcjonalnie)
-	    int xOffset = (int) ((actualWidth - (Display.LOGICAL_WIDTH * scale)) / 2);
-	    int yOffset = (int) ((actualHeight - (Display.LOGICAL_HEIGHT * scale)) / 2);
-
-	    // Czyszczenie tła
-	    g.setColor(Color.BLACK);
-	    g.fillRect(0, 0, actualWidth, actualHeight);
-
-	    // Translacja i skalowanie sceny
-	    g.translate(xOffset, yOffset);  // Przesunięcie żeby wycentrować
-	    g.scale(scale, scale);          // Skalowanie względem logicznych wymiarów
-		
-		g.setColor(Color.black);
-		g.fillRect(0, 0, width, height);
-		
+	    g.translate(display.getXOffset(), display.getYOffset());
+	    g.scale(display.getScale(), display.getScale());
+	    
 		if(State.getState() != null) {
 			State.getState().render(g);
 			Overlay.renderIfActive(g);
@@ -188,6 +180,14 @@ public class Game implements Runnable {
 		
 		bs.show();
 		g.dispose();
+	}
+	
+	public void setBackground(BufferedImage background) {
+		this.background = background;
+	}
+	
+	public void clearBackground() {
+		this.background = defaultBackground;
 	}
 	
 	public void run(){
@@ -230,14 +230,6 @@ public class Game implements Runnable {
 	
 	public MouseManager getMouseManager() {
 		return mouseManager;
-	}
-	
-	public int getWidth(){
-		return width;
-	}
-	
-	public int getHeight(){
-		return height;
 	}
 	
 	public Display getDisplay() {

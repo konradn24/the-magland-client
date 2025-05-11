@@ -4,7 +4,6 @@ import java.util.List;
 
 import konradn24.tml.Handler;
 import konradn24.tml.entities.buildings.Building;
-import konradn24.tml.gfx.components.AdvancedLabel;
 import konradn24.tml.gfx.widgets.msgbox.MessageBox;
 import konradn24.tml.gfx.widgets.slots.Slot;
 import konradn24.tml.gfx.widgets.slots.SlotMenu;
@@ -16,10 +15,10 @@ public class BuildingSlot extends Slot {
 	private Handler handler;
 	
 	public final SlotAction[] ACTIONS = {
-		new SlotAction(new AdvancedLabel("Required resources"), () -> {
+		new SlotAction("Required resources", () -> {
 			// TODO show MessageBox
 		}),
-		new SlotAction(new AdvancedLabel("Information"), () ->  {
+		new SlotAction("Information", () ->  {
 			MessageBox messageBox = new MessageBox(MessageBox.TYPE_OK, "Item info", building.getInfo(), handler);
 			State.getState().getDialogsManager().showMessageBox(messageBox);
 		}),

@@ -2,13 +2,12 @@ package konradn24.tml.gfx.components;
 
 import java.awt.Color;
 import java.awt.Cursor;
-import java.awt.Font;
-import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
 import konradn24.tml.Handler;
 import konradn24.tml.gfx.Presets;
+import konradn24.tml.gfx.components.Label.DisplayType;
 import konradn24.tml.utils.Function;
 
 public class Button extends Component {
@@ -26,12 +25,23 @@ public class Button extends Component {
 	protected int labelPadding = LABEL_PADDING;
 	protected float hoverSizeFactor = HOVER_SIZE_FACTOR;
 	
-	protected boolean autoSize;
-	
 	protected Function onLeftClick, onRightClick;
 	
+	protected boolean sizeFromLabel;
+	
+	public Button(Handler handler) {
+		super(handler);
+		
+		this.label = new Label("", x, y, width, height, LABEL_PADDING, handler);
+		this.label.setDisplayType(DisplayType.BOX);
+		
+		init();
+		
+		sizeFromLabel = false;
+	}
+	
 	public Button(BufferedImage[] texture, int x, int y, int width, int height, Handler handler) {
-		super(x, y, width, height);
+		super(x, y, width, height, handler);
 		
 		this.texture = texture;
 		this.currentTexture = texture[0];
@@ -39,67 +49,59 @@ public class Button extends Component {
 		this.realY = y;
 		this.realWidth = width;
 		this.realHeight = height;
-		this.handler = handler;
 		
-		autoSize = false;
+		init();
+		
+		sizeFromLabel = false;
 	}
 	
-	public Button(AdvancedLabel label, int x, int y, int width, int height, Handler handler) {
-		super(x, y, width, height);
+	public Button(String text, int x, int y, int width, int height, Handler handler) {
+		super(x, y, width, height, handler);
 		
-		this.label = label;
+		this.label = new Label(text, x, y, width, height, 10, handler);
+		this.label.setDisplayType(DisplayType.BOX);
 		this.realX = x;
 		this.realY = y;
 		this.realWidth = width;
 		this.realHeight = height;
-		this.handler = handler;
 		
-		Font font = label.font != null ? label.font : handler.getGame().getDisplay().getCanvas().getFont();
-		FontMetrics metrics = handler.getGame().getDisplay().getCanvas().getFontMetrics(font);
-		int labelWidth = metrics.stringWidth(label.getContent());
-		int labelHeight = metrics.getHeight();
-		
-		this.label.setX((int) (x + width / 2 - labelWidth / 1.5) + 2);
-		this.label.setY((int) (y + height / 2 - labelHeight / 1.5));
 		this.label.setColor(Presets.COLOR_WINDOW_TEXT.brighter());
 		
-		color = Presets.COLOR_BUTTON;
-		currentColor = color;
+		init();
 		
-		autoSize = false;
+		sizeFromLabel = false;
 	}
 	
-	public Button(AdvancedLabel label, int x, int y, Handler handler) {
-		super(x, y, 0, 0);
+	public Button(String text, int x, int y, Handler handler) {
+		super(x, y, 0, 0, handler);
 		
-		this.label = label;
-		this.realX = x;
-		this.realY = y;
-		this.handler = handler;
+		this.label = new Label(text, x, y, handler);
+		this.label.setDisplayType(DisplayType.ORIGIN);
+		this.x = x - LABEL_PADDING;
+		this.y = y - LABEL_PADDING;
 		
-		Font font = label.font != null ? label.font : handler.getGame().getDisplay().getCanvas().getFont();
-		FontMetrics metrics = handler.getGame().getDisplay().getCanvas().getFontMetrics(font);
-		int labelWidth = metrics.stringWidth(label.getContent());
-		int labelHeight = metrics.getHeight();
-		
-		super.width = labelWidth + labelPadding * 2;
-		super.height = labelHeight + labelPadding * 2;
+		super.width = 0;
+		super.height = 0;
 		this.realWidth = width;
 		this.realHeight = height;
 		
-		this.label.setX((int) (x + width / 2 - labelWidth / 2) + 2);
-		this.label.setY((int) (y + height / 2 - labelHeight / 2));
 		this.label.setColor(Presets.COLOR_WINDOW_TEXT.brighter());
 		
+		init();
+		
+		sizeFromLabel = true;
+	}
+	
+	private void init() {
 		color = Presets.COLOR_BUTTON;
 		currentColor = color;
-		
-		autoSize = true;
 	}
 	
 	public void tick() {
 		if(invisible)
 			return;
+		
+		super.tick();
 		
 		hoverCursor(Cursor.HAND_CURSOR);
 		
@@ -142,10 +144,7 @@ public class Button extends Component {
 		if(invisible)
 			return;
 		
-		int x = cameraRelative ? getWorldX() : this.realX;
-		int y = cameraRelative ? getWorldY() : this.realY;
-		
-		if(color != null) {
+		if(color != null && texture == null) {
 			g.setColor(currentColor);
 			g.fillRoundRect(x, y, realWidth, realHeight, ROUND, ROUND);
 			
@@ -158,25 +157,41 @@ public class Button extends Component {
 		}
 			
 		if(label != null) {
-			label.render(g, handler);
+			label.render(g);
+			
+			if(sizeFromLabel) {
+				width = label.width + LABEL_PADDING * 2;
+				height = label.height + LABEL_PADDING * 2;
+			}
 		}
 	}
 	
-	public void refresh() {
-		Font font = label.font != null ? label.font : handler.getGame().getDisplay().getCanvas().getFont();
-		FontMetrics metrics = handler.getGame().getDisplay().getCanvas().getFontMetrics(font);
-		int labelWidth = metrics.stringWidth(label.getContent());
-		int labelHeight = metrics.getHeight();
+	public void refreshLabelPosition() {
+		label.setPos(x, y, width, height);
+	}
+	
+	public void setPos(int x, int y) {
+		super.setPos(x, y, width, height);
 		
-		if(autoSize) {
-			super.width = labelWidth + labelPadding * 2;
-			super.height = labelHeight + labelPadding * 2;
-			this.realWidth = width;
-			this.realHeight = height;
+		if(label != null) {
+			label.setPos(x, y, width, height);
 		}
+	}
+	
+	public void setPos(int x, int y, int width, int height) {
+		super.setPos(x, y, width, height);
 		
-		this.label.setX((int) (x + width / 2 - labelWidth / 2) + 2);
-		this.label.setY((int) (y + height / 2 - labelHeight / 2));
+		if(label != null) {
+			label.setPos(x, y, width, height);
+		}
+	}
+	
+	public void setSize(int width, int height) {
+		super.setPos(x, y, width, height);
+		
+		if(label != null) {
+			label.setPos(x, y, width, height);
+		}
 	}
 	
 	//GETTERS AND SETTERS
@@ -235,5 +250,13 @@ public class Button extends Component {
 	
 	public void setOnRightClick(Function function) {
 		this.onRightClick = function;
+	}
+
+	public boolean isSizeFromLabel() {
+		return sizeFromLabel;
+	}
+
+	public void setSizeFromLabel(boolean sizeFromLabel) {
+		this.sizeFromLabel = sizeFromLabel;
 	}
 }

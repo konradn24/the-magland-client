@@ -11,30 +11,31 @@ import java.util.Map;
 
 import konradn24.tml.Handler;
 import konradn24.tml.debug.Logging;
+import konradn24.tml.display.Display;
 import konradn24.tml.entities.statics.Pouch;
 import konradn24.tml.gfx.Presets;
 import konradn24.tml.gfx.images.Assets;
+import konradn24.tml.gfx.style.Style;
+import konradn24.tml.gfx.style.StyleText;
+import konradn24.tml.gfx.widgets.slots.InventorySlot;
 import konradn24.tml.gfx.widgets.slots.SlotMenu;
 import konradn24.tml.inventory.crafting.CraftingInterface;
-import konradn24.tml.inventory.gfx.InventorySlot;
 import konradn24.tml.inventory.items.Item;
 import konradn24.tml.inventory.tools.Tool;
-import konradn24.tml.states.GameState;
 
 public class Inventory {
 	
 	public static final int DEFAULT_OPEN_KEY = KeyEvent.VK_E;
-	private static final byte ROWS = 8;
-	private static final byte COLUMNS = 3;
+//	private static final byte ROWS = 8;
+	private static final byte COLUMNS = 4;
 	private static final int POS_X = 20;
 	private static final int POS_Y = 20;
 	private static final int SECTION_WIDTH = 350;
 	private static final int SECTION_HEIGHT = 600;
 	private static final int SECTION_SPACE = 40;
-//	private static final int SLOT_WIDTH = SECTION_WIDTH / COLUMNS;
-//	private static final int SLOT_HEIGHT = SECTION_HEIGHT / ROWS;
+	private static final int CURRENT_ITEM_SLOT_SIZE = 100;
 	
-	private SlotMenu slotMenu;
+	private SlotMenu<InventorySlot> slotMenu;
 	
 	private Item selected;
 	private Handler handler;
@@ -55,20 +56,10 @@ public class Inventory {
 		this.layoutID = layoutID;
 		this.handler = handler;
 		
-		handler.getStyle().addLayout(GameState.class, layoutID, POS_X, POS_Y, SECTION_WIDTH, SECTION_HEIGHT, ROWS, COLUMNS);
-		
-		slotMenu = new SlotMenu(layoutID + "_slots", handler, COLUMNS);
-		slotMenu.setFixedIconsWidth(48);
-		slotMenu.setFixedIconsHeight(48);
+		slotMenu = new SlotMenu<>(InventorySlot.class, POS_X, POS_Y, SECTION_WIDTH / COLUMNS, COLUMNS, handler);
 		slotMenu.setFont(Presets.FONT_INVENTORY);
 		slotMenu.setTextColor(Color.WHITE);
-		slotMenu.setPosition(POS_X, POS_Y, SECTION_WIDTH, SECTION_HEIGHT);
-		
-		InventorySlot[] slots = new InventorySlot[ROWS * COLUMNS];
-		for(int i = 0; i < ROWS * COLUMNS; i++)
-			slots[i] = new InventorySlot(slotMenu, handler);
-		
-		slotMenu.addSlots(slots);
+		slotMenu.getDropdown().setWidth(150);
 		
 		crafting = new CraftingInterface(this, Item.ATTRIB_HAND_CRAFTABLE);
 		crafting.useGraphics("inventory_crafting", handler, POS_X + SECTION_WIDTH + SECTION_SPACE, POS_Y, SECTION_WIDTH, SECTION_HEIGHT);
@@ -141,7 +132,9 @@ public class Inventory {
 	}
 	
 	public void refresh() {
-		slotMenu.getSlots().forEach(slot -> ((InventorySlot) slot).setItem(null, 0));
+		slotMenu.getSlotsLayout().forEach((slot, i) -> {
+			((InventorySlot) slot).setItem(null, 0);
+		});
 		
 		int i = 0;
 		for(Map.Entry<Item, Integer> entry : getItemsAndTools().entrySet()) {
@@ -153,14 +146,19 @@ public class Inventory {
 			i++;
 		}
 		
-		Logging.info("Inventory (layoutID: " + layoutID + ") refreshed - " + i + "/" + slotMenu.getSlotsAmount() + " slots in use");
+		Logging.info("Inventory refreshed - " + i + "/" + slotMenu.getSlotsAmount() + " slots in use");
 		
 		crafting.refresh();
 	}
 	
 	public void renderCooldown(Graphics2D g, int cooldownDuration, long cooldownEndTime) {
+		int x = Style.centerX(CURRENT_ITEM_SLOT_SIZE);
+		int y = Display.LOGICAL_HEIGHT - CURRENT_ITEM_SLOT_SIZE - 10;
+		
+		double yOffset = ((double) (cooldownEndTime - System.currentTimeMillis()) / cooldownDuration) * CURRENT_ITEM_SLOT_SIZE;
+		
 		g.setColor(Presets.COLOR_COOLDOWN);
-		g.fillRect(handler.getWidth() / 2 - 70 / 2, handler.getHeight() - 9, 70, (int) -(((double) (cooldownEndTime - System.currentTimeMillis()) / cooldownDuration) * 58));
+		g.fillRect(x, y + CURRENT_ITEM_SLOT_SIZE - (int) yOffset, CURRENT_ITEM_SLOT_SIZE, (int) yOffset);
 	}
 
 	private void checkInput() {
@@ -179,27 +177,30 @@ public class Inventory {
 	
 	// Current item slot rendering
 	private void renderCurrentItemSlot(Graphics2D g) {
-		g.drawImage(Assets.currentItemSlot, handler.getWidth() / 2 - 70 / 2, handler.getHeight() - 72, 70, 70, null);
+		int x = Style.centerX(CURRENT_ITEM_SLOT_SIZE);
+		int y = Display.LOGICAL_HEIGHT - CURRENT_ITEM_SLOT_SIZE - 10;
+		
+		g.drawImage(Assets.currentItemSlot, x, y, CURRENT_ITEM_SLOT_SIZE, CURRENT_ITEM_SLOT_SIZE, null);
 		
 		if(selected != null) {
-			g.drawImage(selected.getTexture(), handler.getWidth() / 2 - 70 / 2 + 4, handler.getHeight() - 77, 64, 70, null);
+			g.drawImage(selected.getTexture(), x + 6, y + 6, CURRENT_ITEM_SLOT_SIZE - 12, CURRENT_ITEM_SLOT_SIZE - 12, null);
 			
 			g.setFont(new Font(Font.DIALOG, Font.BOLD, 25));
 			g.setColor(Color.yellow);
 			if(selected.isTool()) {
 				Tool selectedTool = (Tool) selected;
-				g.drawString(selectedTool.getDurability() + " / " + selectedTool.getMaxDurability(), handler.getWidth() / 2 - 70 / 2 + 30, handler.getHeight() - 77);
-				
-				g.setFont(new Font(Font.DIALOG, Font.BOLD, 15));
-				g.drawString("Attack: " + selectedTool.getDamage(), handler.getWidth() / 2 - 70 / 2 + 75, handler.getHeight() - 55);
-				g.drawString("Range: " + selectedTool.getRange(), handler.getWidth() / 2 - 70 / 2 + 75, handler.getHeight() - 37);
+				StyleText.drawCenteredString(g, selectedTool.getDurability() + " / " + selectedTool.getMaxDurability(), x + CURRENT_ITEM_SLOT_SIZE / 2, y - 20);
 			}
+		} else {
+			g.setFont(new Font(Font.DIALOG, Font.BOLD, 18));
+			g.setColor(Color.black);
+			StyleText.drawCenteredString(g, "[SPACE] to search ground...", x + CURRENT_ITEM_SLOT_SIZE / 2, y - 20);
 		}
 	}
 	
 	//GETTERS AND SETTERS
 	
-	public SlotMenu getSlotMenu() {
+	public SlotMenu<InventorySlot> getSlotMenu() {
 		return slotMenu;
 	}
 
@@ -342,29 +343,39 @@ public class Inventory {
 	}
 	
 	public boolean remove(Item item, int amount) {
-		if(item instanceof Tool) {
-			for(int i = 0; i < amount; i++) {
-				if(!tools.remove((Tool) item)) {
-					if(i > 0) refresh();
-					
-					return false;
+		if(item instanceof Tool && tools.contains(item)) {
+			int i = 0;
+			
+			while(i < amount) {
+				if(tools.remove((Tool) item)) {
+					i++;
+				} else {
+					break;
 				}
 			}
+			
+			Logging.info("Inventory: removed " + i + " " + item.getName());
+			
+			return true;
 		} else if(items.get(item) != null) {
-			items.replace(item, items.get(item) - amount);
+			int currentAmount = items.get(item);
+			int removeCount = currentAmount <= amount ? currentAmount : amount;
+			
+			if(removeCount == currentAmount) {
+				items.remove(item);
+			} else {
+				items.replace(item, currentAmount - removeCount);
+			}
 			
 			refresh();
 			
-			Logging.info("Inventory: removed " + amount + " " + item.getName());
-			return items.get(item) >= 0;
+			Logging.info("Inventory: removed " + removeCount + " " + item.getName());
+			
+			return true;
 		} else {
-			Logging.info("Inventory: cannot remove " + amount + " " + item.getName() + " - item not found in inventory");
+			Logging.error("Inventory: cannot remove " + amount + " " + item.getName() + " - item not found in inventory");
 			return false;
 		}
-		
-		refresh();
-		
-		return true;
 	}
 	
 	public boolean remove(Tool tool) {
@@ -376,7 +387,7 @@ public class Inventory {
 			return true;
 		}
 		
-		Logging.info("Inventory: cannot remove 1 " + tool.getName() + " - tool not found in inventory");
+		Logging.error("Inventory: cannot remove 1 " + tool.getName() + " - tool not found in inventory");
 		
 		return false;
 	}

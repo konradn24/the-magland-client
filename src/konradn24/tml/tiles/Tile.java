@@ -9,6 +9,7 @@ import java.util.List;
 
 import konradn24.tml.Handler;
 import konradn24.tml.debug.Logging;
+import konradn24.tml.display.Display;
 import konradn24.tml.gfx.images.Assets;
 
 public class Tile {
@@ -23,7 +24,7 @@ public class Tile {
 	public static final int ATTRIB_NO_SPAWN = 3;
 	public static final int ATTRIB_SEARCHABLE = 4;
 	
-	public static final int TILE_WIDTH = 64, TILE_HEIGHT = 64;
+	public static final int TILE_WIDTH = Display.LOGICAL_WIDTH / 30, TILE_HEIGHT = Display.LOGICAL_WIDTH / 30;
 	
 	protected BufferedImage texture;
 	protected int id;

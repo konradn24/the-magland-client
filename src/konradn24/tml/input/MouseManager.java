@@ -4,6 +4,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 
+import konradn24.tml.Handler;
 import konradn24.tml.debug.Logging;
 
 public class MouseManager implements MouseListener, MouseMotionListener {
@@ -13,7 +14,11 @@ public class MouseManager implements MouseListener, MouseMotionListener {
 	
 	private boolean locked;
 	
-	public MouseManager() {
+	private Handler handler;
+	
+	public MouseManager(Handler handler) {
+		this.handler = handler;
+		
 		Logging.info("Mouse Manager initialized");
 	}
 	
@@ -148,8 +153,8 @@ public class MouseManager implements MouseListener, MouseMotionListener {
 
 	@Override
 	public void mouseMoved(MouseEvent e) {
-		mouseX = e.getX();
-		mouseY = e.getY();
+		mouseX = (int) ((e.getX() - handler.getGame().getDisplay().getXOffset()) / handler.getGame().getDisplay().getScale());
+		mouseY = (int) ((e.getY() - handler.getGame().getDisplay().getYOffset()) / handler.getGame().getDisplay().getScale());
 	}
 
 	@Override

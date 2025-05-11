@@ -27,19 +27,18 @@ public class TextField extends Label {
 	private boolean awaitUpdateContent;
 	
 	public TextField(Handler handler) {
-		super("");
-
-		this.handler = handler;
-		this.cursorOffset = 5;
-		this.cursorWidth = 1;
-		this.content = "";
-		this.fullContent = "";
+		super("", handler);
+		
+		init();
 	}
 	
 	public TextField(int x, int y, Handler handler) {
-		super("", x, y);
+		super("", x, y, handler);
 		
-		this.handler = handler;
+		init();
+	}
+	
+	private void init() {
 		this.cursorOffset = 5;
 		this.cursorWidth = 1;
 		this.content = "";
@@ -56,7 +55,13 @@ public class TextField extends Label {
 	}
 	
 	public void tick() {
-		if(disabled || invisible) return;
+		if(invisible) 
+			return;
+		
+		super.tick();
+		
+		if(disabled) 
+			return;
 		
 		hoverCursor(Cursor.TEXT_CURSOR);
 		
@@ -99,7 +104,7 @@ public class TextField extends Label {
 			return;
 		
 		renderBorder(g);
-		super.render(g, handler);
+		super.render(g);
 		renderBlinkingCursor(g);
 	}
 	

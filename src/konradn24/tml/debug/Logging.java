@@ -56,12 +56,12 @@ public final class Logging {
 	}
 	
 	public static void info(String str) {
-		System.out.println(prefix() + "INFO: " + str);
+		System.out.println(prefix(false) + "INFO: " + str);
 		
 		if(fileWriter == null || fileWriterStop) return;
 		
 		try {
-			fileWriter.append(prefix() + "INFO: " + str);
+			fileWriter.append(prefix(true) + "INFO: " + str);
 			fileWriter.flush();
 		} catch(IOException e) {
 			stopFileWriter();
@@ -72,12 +72,12 @@ public final class Logging {
 	}
 	
 	public static void warning(String str) {
-		System.out.println(prefix() + "WARNING: " + str);
+		System.out.println(prefix(false) + "WARNING: " + str);
 
 		if(fileWriter == null || fileWriterStop) return;
 		
 		try {
-			fileWriter.append(prefix() + "WARNING: " + str);
+			fileWriter.append(prefix(true) + "WARNING: " + str);
 			fileWriter.flush();
 		} catch(IOException e) {
 			stopFileWriter();
@@ -88,12 +88,12 @@ public final class Logging {
 	}
 	
 	public static void error(String str) {
-		System.err.println(prefix() + "ERROR: " + str);
+		System.err.println(prefix(false) + "ERROR: " + str);
 
 		if(fileWriter == null || fileWriterStop) return;
 		
 		try {
-			fileWriter.append(prefix() + "ERROR: " + str);
+			fileWriter.append(prefix(true) + "ERROR: " + str);
 			fileWriter.flush();
 		} catch(IOException e) {
 			stopFileWriter();
@@ -158,8 +158,12 @@ public final class Logging {
 		return sdf.format(new Date());
 	}
 	
-	public static String prefix() {
-		return "<" + now() + "> [" + Thread.currentThread().threadId() + "] ";
+	public static String prefix(boolean newLine) {
+		if(newLine) {
+			return "\n<" + now() + "> [" + Thread.currentThread().getId() + "] ";
+		}
+		
+		return "<" + now() + "> [" + Thread.currentThread().getId() + "] ";
 	}
 	
 	public static boolean isFileWriterStopped() {

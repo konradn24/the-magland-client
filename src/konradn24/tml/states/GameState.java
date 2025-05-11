@@ -49,7 +49,7 @@ public class GameState extends State {
 		noHistory = true;
 		
 		//Player
-		player = new Player(handler, 0, 0); //TODO: save game
+		player = new Player(handler, 0, 0);
 		gameCamera = new GameCamera(handler, 0, 0);
 		gameCamera.centerOnEntity(player);
 		
@@ -66,7 +66,7 @@ public class GameState extends State {
 		pauseOverlay = new PauseOverlay(GameState.class, handler);
 		
 		// Debug
-		debugConsole = new DebugConsole("debug_console", 0, 0, handler.getWidth(), (int) (handler.getHeight() / 3), handler);
+		debugConsole = new DebugConsole(0, 0, handler.getDisplayWidth(), (int) (handler.getDisplayHeight() / 3), handler);
 		debugConsole.setKey(DEBUG_CONSOLE_KEY);
 		debugConsole.loadFromFile("config/console.txt");
 		
@@ -124,12 +124,7 @@ public class GameState extends State {
 		}
 		
 		debugConsole.tick();
-		
 		if(debugConsole.isOpen()) return;
-		
-		if(handler.getKeyManager().isKeyPressed(DEBUG_CONSOLE_KEY)) {
-			debugMode = !debugMode;
-		}
 		
 		if(handler.getKeyManager().isKeyPressed(KeyEvent.VK_ESCAPE)) {
 			Overlay.setOverlay(pauseOverlay);
@@ -159,8 +154,6 @@ public class GameState extends State {
 			g.setColor(Color.black);
 			g.drawString("Biome: " + player.standsOnTile().getBiome(), 10, 85);
 		}
-		
-//		world.renderMinimap(g);
 	}
 
 	public static DebugConsole getDebugConsole() {

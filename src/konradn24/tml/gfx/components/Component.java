@@ -1,8 +1,10 @@
 package konradn24.tml.gfx.components;
 
+import java.awt.Graphics2D;
+
 import konradn24.tml.Handler;
 
-public class Component {
+public abstract class Component {
 	
 	protected int x, y, marginX, marginY, width, height;
 	
@@ -11,38 +13,42 @@ public class Component {
 	protected int row, column;
 	
 	protected boolean cameraRelative, invisible;
-	protected float initialCameraOffsetX, initialCameraOffsetY;
+	protected int initialX, initialY;
+	protected float initialCameraXOffset, initialCameraYOffset;
 	
 	protected Handler handler;
 	
-	public Component() {
+	public Component(Handler handler) {
 		this.x = 0;
 		this.y = 0;
 		this.marginX = 0;
 		this.marginY = 0;
 		this.width = 0;
 		this.height = 0;
+		this.handler = handler;
 	}
 	
-	public Component(int x, int y) {
+	public Component(int x, int y, Handler handler) {
 		this.x = x;
 		this.y = y;
 		this.marginX = 0;
 		this.marginY = 0;
 		this.width = 0;
 		this.height = 0;
+		this.handler = handler;
 	}
 	
-	public Component(int x, int y, int width, int height) {
+	public Component(int x, int y, int width, int height, Handler handler) {
 		this.x = x;
 		this.y = y;
 		this.marginX = 0;
 		this.marginY = 0;
 		this.width = width;
 		this.height = height;
+		this.handler = handler;
 	}
 	
-	public Component(int x, int y, int marginX, int marginY, int width, int height) {
+	public Component(int x, int y, int marginX, int marginY, int width, int height, Handler handler) {
 		this.x = x;
 		this.y = y;
 		this.marginX = marginX;
@@ -51,6 +57,15 @@ public class Component {
 		this.height = height;
 	}
 	
+	public void tick() {
+		if(cameraRelative && handler != null && handler.getGameCamera() != null) {
+			x = (int) (initialX - (handler.getGameCamera().getxOffset() - initialCameraXOffset));
+			y = (int) (initialY - (handler.getGameCamera().getyOffset() - initialCameraYOffset));
+		}
+	}
+	
+	public void render(Graphics2D g) {}
+	
 	protected void hoverCursor(int cursor) {
 		if(isOn()) handler.getGame().getDisplay().setCursor(cursor);
 	}
@@ -58,9 +73,6 @@ public class Component {
 	public boolean isOn() {
 		if(handler == null)
 			return false;
-		
-		int x = cameraRelative ? getWorldX() : this.x;
-		int y = cameraRelative ? getWorldY() : this.y;
 		
 		if(handler.getMouseManager().isOn(x, y, width, height)) {
 			return true;
@@ -109,6 +121,11 @@ public class Component {
 			return false;
 	}
 	
+	public void setPos(int x, int y) {
+		this.x = x;
+		this.y = y;
+	}
+	
 	public void setPos(int x, int y, int width, int height) {
 		this.x = x;
 		this.y = y;
@@ -116,19 +133,19 @@ public class Component {
 		this.height = height;
 	}
 	
-	public int getWorldX() {
-		if(handler == null || handler.getGameCamera() == null)
-			return x;
-		
-		return (int) (x - (handler.getGameCamera().getxOffset() - initialCameraOffsetX));
-	}
-	
-	public int getWorldY() {
-		if(handler == null || handler.getGameCamera() == null)
-			return y;
-		
-		return (int) (y - (handler.getGameCamera().getyOffset() - initialCameraOffsetY));
-	}
+//	public int getWorldX() {
+//		if(handler == null || handler.getGameCamera() == null)
+//			return x;
+//		
+//		return (int) (initialX - (handler.getGameCamera().getxOffset()));
+//	}
+//	
+//	public int getWorldY() {
+//		if(handler == null || handler.getGameCamera() == null)
+//			return y;
+//		
+//		return (int) (initialY - (handler.getGameCamera().getyOffset()));
+//	}
 	
 	public int getX() {
 		return x;
@@ -270,24 +287,19 @@ public class Component {
 		return cameraRelative;
 	}
 
-	public void setCameraRelative(boolean cameraRelative) {
-		this.cameraRelative = cameraRelative;
+	public void disableCameraRelative() {
+		this.cameraRelative = false;
 		
-		if(!cameraRelative) {
-			initialCameraOffsetX = 0;
-			initialCameraOffsetY = 0;
-		}
+		x = initialX;
+		y = initialY;
 	}
 	
-	public void setCameraRelative(boolean cameraRelative, Handler handler) {
-		this.cameraRelative = cameraRelative;
+	public void enableCameraRelative(Handler handler) {
+		this.cameraRelative = true;
 		
-		if(cameraRelative) {
-			initialCameraOffsetX = handler.getGameCamera().getxOffset();
-			initialCameraOffsetY = handler.getGameCamera().getyOffset();
-		} else {
-			initialCameraOffsetX = 0;
-			initialCameraOffsetY = 0;
-		}
+		initialX = x;
+		initialY = y;
+		initialCameraXOffset = handler.getGameCamera().getxOffset();
+		initialCameraYOffset = handler.getGameCamera().getyOffset();
 	}
 }

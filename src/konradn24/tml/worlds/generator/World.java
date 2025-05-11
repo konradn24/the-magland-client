@@ -3,12 +3,15 @@ package konradn24.tml.worlds.generator;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.RadialGradientPaint;
 import java.awt.event.KeyEvent;
 import java.util.List;
 import java.util.Random;
 
 import konradn24.tml.Handler;
 import konradn24.tml.debug.Logging;
+import konradn24.tml.display.Display;
 import konradn24.tml.entities.EntityManager;
 import konradn24.tml.tiles.Grass;
 import konradn24.tml.tiles.Tile;
@@ -40,6 +43,8 @@ public class World {
 	//Meta
 	protected String worldName = "";
 	protected Random random;
+	protected float visibleDistance = 1200;
+	protected float fogDistance = 1500;
 	
 	//Entities
 	protected EntityManager entityManager;
@@ -97,12 +102,12 @@ public class World {
 	}
 	
 	public void renderAll(Graphics2D g){
-		int xStart = (int) Math.max(0, handler.getGameCamera().getxOffset() / Tile.TILE_WIDTH);
-		int xEnd = (int) Math.min(width, (handler.getGameCamera().getxOffset() + handler.getWidth()) / Tile.TILE_WIDTH + 1);
-		int yStart = (int) Math.max(0, handler.getGameCamera().getyOffset() / Tile.TILE_HEIGHT);
-		int yEnd = (int) Math.min(height, (handler.getGameCamera().getyOffset() + handler.getHeight()) / Tile.TILE_HEIGHT + 1);
-		for(int y = (int) (yStart);y < yEnd;y++){ // + (entityManager.getPlayer().getY() - handler.getGameCamera().getyOffset()) / 64 - 2)
-			for(int x = (int) (xStart);x < xEnd;x++){ // + (entityManager.getPlayer().getX() - handler.getGameCamera().getyOffset()) / 64 - 2)
+		int xStart = (int) Math.max(0, handler.getGameCamera().getxOffset() / Tile.TILE_WIDTH) - 1;
+		int xEnd = (int) Math.min(width, Math.ceil((handler.getGameCamera().getxOffset() + Display.LOGICAL_WIDTH) / Tile.TILE_WIDTH) + 1);
+		int yStart = (int) Math.max(0, handler.getGameCamera().getyOffset() / Tile.TILE_HEIGHT) - 1;
+		int yEnd = (int) Math.min(height, Math.ceil((handler.getGameCamera().getyOffset() + Display.LOGICAL_HEIGHT) / Tile.TILE_HEIGHT) + 1);
+		for(int y = (int) (yStart);y < yEnd;y++) {
+			for(int x = (int) (xStart);x < xEnd;x++) {
 				getTile(x, y).render(g, (int) (x * Tile.TILE_WIDTH - handler.getGameCamera().getxOffset()),
 										(int) (y * Tile.TILE_HEIGHT - handler.getGameCamera().getyOffset()));
 			}
@@ -110,8 +115,35 @@ public class World {
 		
 		render(g);
 		entityManager.render(g);
+//		renderFog(g); // TODO Weather
 	}
 	
+	@SuppressWarnings("unused")
+	private void renderFog(Graphics2D g) {
+		float[] dist = { 
+			0.0f,
+			visibleDistance / fogDistance,
+			1.0f
+		};
+		
+		Color[] colors = {
+		    new Color(255, 255, 255, 0),
+		    new Color(0, 0, 0, 0),
+		    new Color(255, 255, 255, 255)
+		};
+
+		RadialGradientPaint fog = new RadialGradientPaint(
+		    new Point(Display.LOGICAL_WIDTH / 2, Display.LOGICAL_HEIGHT / 2),
+		    visibleDistance,
+		    dist,
+		    colors
+		);
+
+		g.setPaint(fog);
+		g.fillRect(-Display.LOGICAL_WIDTH / 3 - handler.getGame().getDisplay().getXOffset(), -Display.LOGICAL_HEIGHT / 3 -handler.getGame().getDisplay().getYOffset(), (int) ((Display.LOGICAL_WIDTH / handler.getGame().getDisplay().getScale()) * 2), (int) ((Display.LOGICAL_HEIGHT / handler.getGame().getDisplay().getScale()) * 2));
+	}
+	
+	@Deprecated
 	public void renderMinimap(Graphics2D g) {
 		if(minimap) {
 			for(int y = 0; y < height; y++) {

@@ -43,7 +43,7 @@ public class Launcher {
 			Logging.error("Failed to initialize saves directory");
 		}
 		
-		game = new Game("The Magland", 960, 720); //640 480
+		game = new Game("The Magland"); //640 480
 		game.start();
 		
 		Logging.info("Main thread started. Elapsed time: " + (System.currentTimeMillis() - time) + "ms");
@@ -87,8 +87,6 @@ public class Launcher {
 				Logging.error("Runtime shutdown: auto save failed");
 			}
 		}
-		
-//		Logging.info("aa");
 		
 		if(Logging.saveLog()) {
 			Logging.info("Runtime shutdown: save log success");

@@ -1,10 +1,7 @@
-package konradn24.tml.inventory.gfx;
+package konradn24.tml.gfx.widgets.slots;
 
 import konradn24.tml.Handler;
-import konradn24.tml.gfx.components.AdvancedLabel;
 import konradn24.tml.gfx.widgets.msgbox.MessageBox;
-import konradn24.tml.gfx.widgets.slots.Slot;
-import konradn24.tml.gfx.widgets.slots.SlotMenu;
 import konradn24.tml.inventory.items.Item;
 import konradn24.tml.states.State;
 
@@ -13,20 +10,18 @@ public class InventorySlot extends Slot {
 	private Item item;
 	private int amount;
 	
-	private Handler handler;
-	
 	public final SlotAction[] ACTIONS = {
-		new SlotAction(new AdvancedLabel("Equip"), () -> {
+		new SlotAction("Equip", () -> {
 			handler.getPlayer().getInventory().setCurrent(item);
 			refreshActions();
 		}),
-		new SlotAction(new AdvancedLabel("Unequip"), () -> {
+		new SlotAction("Unequip", () -> {
 			handler.getPlayer().getInventory().setCurrent(null);
 			refreshActions();
 		}),
-		new SlotAction(new AdvancedLabel("Eat"), () -> {}),
-		new SlotAction(new AdvancedLabel("Drop"), () -> handler.getPlayer().getInventory().drop(item, 1)),
-		new SlotAction(new AdvancedLabel("Information"), () ->  {
+		new SlotAction("Eat", () -> {}),
+		new SlotAction("Drop", () -> handler.getPlayer().getInventory().drop(item, 1)),
+		new SlotAction("Information", () ->  {
 			MessageBox messageBox = new MessageBox(MessageBox.TYPE_OK, "Item info", item.getInfo(), handler);
 			State.getState().getDialogsManager().showMessageBox(messageBox);
 		}),
@@ -40,7 +35,11 @@ public class InventorySlot extends Slot {
 		-1
 	};
 	
-	public InventorySlot(SlotMenu menu, Handler handler) {
+	public InventorySlot(Handler handler) {
+		super(handler);
+	}
+	
+	public InventorySlot(SlotMenu<?> menu, Handler handler) {
 		super(menu);
 		
 		this.handler = handler;
