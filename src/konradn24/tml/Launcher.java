@@ -14,10 +14,10 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
-import konradn24.tml.debug.Logging;
+import konradn24.tml.utils.Logging;
 
 public class Launcher {
-public static final String VERSION = "ALPHA.2";
+public static final String VERSION = "ALPHA3";
 	
 	public static long time;
 	
@@ -40,7 +40,7 @@ public static final String VERSION = "ALPHA.2";
 			Logging.error("Failed to initialize saves directory");
 		}
 		
-		game = new Game("The Magland"); //640 480
+		game = new Game("The Magland");
 		game.start();
 		
 		Logging.info("Main thread started. Elapsed time: " + (System.currentTimeMillis() - time) + "ms");

@@ -1,0 +1,4 @@
+game enable flying
+add ancientAxe 3
+add stone 4
+add stick 4
