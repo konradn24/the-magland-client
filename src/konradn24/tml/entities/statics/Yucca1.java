@@ -1,7 +1,7 @@
 package konradn24.tml.entities.statics;
 
 import konradn24.tml.Handler;
-import konradn24.tml.inventory.tools.Tool;
+import konradn24.tml.items.tools.Tool;
 
 public class Yucca1 extends StaticEntity {
 

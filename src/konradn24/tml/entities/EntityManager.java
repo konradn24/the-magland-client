@@ -1,14 +1,14 @@
 package konradn24.tml.entities;
 
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
+
+import org.joml.Matrix4f;
 
 import konradn24.tml.Handler;
 import konradn24.tml.entities.actions.Action;
@@ -16,7 +16,7 @@ import konradn24.tml.graphics.Assets;
 import konradn24.tml.graphics.renderer.BatchRenderer;
 import konradn24.tml.graphics.renderer.Texture;
 import konradn24.tml.inventory.InventoryProperty;
-import konradn24.tml.inventory.items.Item;
+import konradn24.tml.items.Item;
 import konradn24.tml.utils.Logging;
 import konradn24.tml.worlds.generator.Chunk;
 
@@ -29,37 +29,15 @@ public class EntityManager {
 	
 	private static final String VANISH_REMOVE_STACK_TAG = "#VANISH";
 	
-	private BatchRenderer renderer;
 	private Handler handler;
 	
 	private ArrayList<Entity> entities;
-	private ArrayList<Entity> sortedEntities;
-	
 	private HashMap<Entity, String> removeStack;
 	
-	private Comparator<Entity> renderSorter = new Comparator<Entity>() {
-		@Override
-		public int compare(Entity a, Entity b) {
-			float y1 = a.getRealY() + a.getHeight();
-			float y2 = b.getRealY() + b.getHeight();
-			
-			if(y1 < y2)
-				return -1;
-			else if(y1 > y2) {
-				return 1;
-			}
-			
-			return 0;
-		}
-	};
-	
-	public EntityManager(Handler handler) throws IOException {
-		this.renderer = new BatchRenderer(1024);
+	public EntityManager(Handler handler) {
 		this.handler = handler;
 		
 		entities = new ArrayList<>();
-		sortedEntities = new ArrayList<>();
-		
 		removeStack = new HashMap<>();
 		
 		addEntity(handler.getPlayer());
@@ -73,8 +51,6 @@ public class EntityManager {
 			
 			// Check for uncaught entity dead from previous tick
 			entity.checkHealth(null);
-			
-			entity.updateSprite();
 			entity.update(dt);
 			
 			// Action
@@ -142,8 +118,6 @@ public class EntityManager {
 			return;
 		}
 		
-		renderer.removeSprites(removeStack.keySet().stream().map(Entity::getSprite).toList());
-		
 		for(Map.Entry<Entity, String> entry : removeStack.entrySet()) {
 			Entity entity = entry.getKey();
 			String text = entry.getValue();
@@ -165,7 +139,7 @@ public class EntityManager {
 		removeStack.clear();
 	}
 	
-	public void render() {
+	public void render(Matrix4f viewMatrix) {
 		// Sorting entities to make good-looking depth illusion
 //		sortedEntities.clear();
 //		
@@ -181,17 +155,10 @@ public class EntityManager {
 //		try {
 //			sortedEntities.sort(renderSorter);
 //		} catch(IllegalArgumentException e) {}
-//		
-//		for(Entity entity : sortedEntities) {
-//			InstanceRenderer.render(entity.texture, entity.getModelMatrix());
-//		}
-//
-//		InstanceRenderer.renderInstances(handler.getCamera().getViewMatrix());
-//		InstanceRenderer.clearInstances();
 		
-		renderer.render(handler.getCamera().getViewMatrix());
+		BatchRenderer.render(entities, handler.getCamera().getViewMatrix());
 		
-		for(Entity entity : sortedEntities) {
+		for(Entity entity : entities) {
 			entity.render();
 			entity.renderDebug();
 		}
@@ -207,7 +174,7 @@ public class EntityManager {
 	}
 	
 	public void renderGUI(long vg) {
-		for(Entity entity : sortedEntities) {
+		for(Entity entity : entities) {
 			entity.renderGUI(vg);
 		}
 	}
@@ -244,7 +211,6 @@ public class EntityManager {
 	}
 	
 	public void addEntity(Entity entity) {
-		renderer.addSprite(entity.sprite);
 		entities.add(entity);
 	}
 	
@@ -257,7 +223,6 @@ public class EntityManager {
 			return false;
 		}
 		
-		renderer.addSprite(entity.sprite);
 		return entities.add(entity);
 	}
 	
@@ -335,9 +300,10 @@ public class EntityManager {
 			Entity entity = entityClass.getConstructor(Handler.class, float.class, float.class).newInstance(handler, x, y);
 		
 			return entity;
-		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
+		} catch(InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
 				| NoSuchMethodException | SecurityException e) {
-			e.printStackTrace();
+			Logging.error("Entity Manager: failed to create " + entityClass.getSimpleName() + " entity instance");
+			Logging.error(e);
 			
 			return null;
 		}

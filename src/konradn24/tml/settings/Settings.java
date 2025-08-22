@@ -10,12 +10,19 @@ import konradn24.tml.utils.Logging;
 public class Settings {
 	
 	// Graphics
+	public static final transient boolean DEFAULT_FULLSCREEN = false;
+	public static final transient int DEFAULT_FPS_LIMIT = 60;
+	
 	private boolean fullscreen;
 	private int fpsLimit;
-	private int chunkLoadRadius;
 	
 	// Gameplay
+	public static final transient int DEFAULT_AUTO_SAVE_INTERVAL = 1;
+	
 	private int autoSaveInterval;
+	
+	// Controls
+	private Controls controls;
 	
 	private transient Handler handler;
 	
@@ -23,10 +30,12 @@ public class Settings {
 		// Graphics
 		fullscreen = false;
 		fpsLimit = 60;
-		chunkLoadRadius = 1;
 		
 		// Gameplay
 		autoSaveInterval = 1;
+		
+		// Controls
+		controls = new Controls();
 		
 		this.handler = handler;
 	}
@@ -61,16 +70,18 @@ public class Settings {
 			changed.add("fps");
 		}
 		
-		if(chunkLoadRadius != settings.chunkLoadRadius) {
-			chunkLoadRadius = settings.chunkLoadRadius <= 0 ? chunkLoadRadius : settings.chunkLoadRadius;
-			changed.add("chunk_load_radius");
-		}
-		
 		// Gameplay
 		
 		if(autoSaveInterval != settings.autoSaveInterval) {
 			autoSaveInterval = settings.autoSaveInterval;
 			changed.add("autosave");
+		}
+		
+		// Controls
+		
+		if(!controls.equals(settings.controls)) {
+			controls = settings.controls;
+			changed.add("controls");
 		}
 		
 		if(handler != null && refreshGame) {
@@ -96,19 +107,15 @@ public class Settings {
 		this.fpsLimit = fpsLimit;
 	}
 
-	public int getChunkLoadRadius() {
-		return chunkLoadRadius;
-	}
-
-	public void setChunkLoadRadius(int chunkLoadRadius) {
-		this.chunkLoadRadius = chunkLoadRadius;
-	}
-
 	public int getAutoSaveInterval() {
 		return autoSaveInterval;
 	}
 
 	public void setAutoSaveInterval(int autoSaveInterval) {
 		this.autoSaveInterval = autoSaveInterval;
+	}
+
+	public Controls getControls() {
+		return controls;
 	}
 }

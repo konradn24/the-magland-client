@@ -7,7 +7,7 @@ import java.util.Map;
 
 import konradn24.tml.Handler;
 import konradn24.tml.gui.graphics.widgets.slots.SlotMenu;
-import konradn24.tml.inventory.items.Item;
+import konradn24.tml.items.Item;
 import konradn24.tml.utils.Logging;
 
 public class Crafting {

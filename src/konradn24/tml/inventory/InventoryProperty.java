@@ -3,7 +3,7 @@ package konradn24.tml.inventory;
 import java.util.ArrayList;
 import java.util.List;
 
-import konradn24.tml.inventory.items.Item;
+import konradn24.tml.items.Item;
 
 public class InventoryProperty {
 

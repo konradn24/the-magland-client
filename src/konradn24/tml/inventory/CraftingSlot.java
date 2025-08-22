@@ -22,7 +22,7 @@ public class CraftingSlot extends Slot {
 		}),
 		new SlotAction("Information", () ->  {
 			MessageBox messageBox = new MessageBox(MessageBox.TYPE_OK, "Item info", recipe.getResultProperties().get(0).item.getInfo(), handler);
-			State.getState().getDialogsManager().showMessageBox(messageBox);
+			State.showMessageBox(messageBox);
 		}),
 	};
 	

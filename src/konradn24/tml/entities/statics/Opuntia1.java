@@ -1,7 +1,7 @@
 package konradn24.tml.entities.statics;
 
 import konradn24.tml.Handler;
-import konradn24.tml.inventory.tools.Tool;
+import konradn24.tml.items.tools.Tool;
 
 public class Opuntia1 extends StaticEntity {
 
@@ -12,7 +12,7 @@ public class Opuntia1 extends StaticEntity {
 	@Override
 	protected void init() {
 		setOrigin(Origin.BOTTOM);
-		setHealth(140);
+		setHealth(80);
 		
 		actionsByAttribute.put(Tool.ACTION_CHOP, (item, handler) -> {
 			damage(item);

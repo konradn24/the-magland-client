@@ -10,6 +10,7 @@ import org.lwjgl.glfw.GLFWImage;
 import org.lwjgl.stb.STBImage;
 import org.lwjgl.system.MemoryStack;
 
+import konradn24.tml.graphics.Assets;
 import konradn24.tml.utils.Logging;
 
 public class Texture {
@@ -17,6 +18,7 @@ public class Texture {
 	public final SpriteSheet sheet;
 	public final float u0, v0, u1, v1;
 	public final float width, height;
+	public final float assetWidth, assetHeight;
 	
 	public long cursor;
 	
@@ -24,6 +26,8 @@ public class Texture {
 		this.sheet = sheet;
 		this.width = width;
 		this.height = height;
+		this.assetWidth = width / Assets.WIDTH;
+		this.assetHeight = height / Assets.HEIGHT;
 		
 		float sheetWidth = sheet.getWidth();
 		float sheetHeight = sheet.getHeight();
@@ -36,10 +40,26 @@ public class Texture {
 		if(generateCursor) generateCursor((int) x, (int) y, (int) width, (int) height, 0, 0);
 	}
 	
+	public Texture(SpriteSheet sheet, boolean generateCursor) {
+		this.sheet = sheet;
+		this.width = sheet.getWidth();
+		this.height = sheet.getHeight();
+		this.assetWidth = width / Assets.WIDTH;
+		this.assetHeight = height / Assets.HEIGHT;
+		this.u0 = 0;
+		this.v0 = 0;
+		this.u1 = 1;
+		this.v1 = 1;
+		
+		if(generateCursor) generateCursor(0, 0, (int) width, (int) height, 0, 0);
+	}
+	
 	public Texture(long vg, String path, boolean generateCursor) {
 		this.sheet = new SpriteSheet(vg, path);
 		this.width = sheet.getWidth();
 		this.height = sheet.getHeight();
+		this.assetWidth = width / Assets.WIDTH;
+		this.assetHeight = height / Assets.HEIGHT;
 		this.u0 = 0;
 		this.v0 = 0;
 		this.u1 = 1;
@@ -93,5 +113,10 @@ public class Texture {
 	
 	public void unbind() {
 		sheet.unbind();
+	}
+	
+	@Override
+	public String toString() {
+		return "Texture<uv0(" + u0 + ", " + v0 + "), uv1(" + u1 + ", " + v1 +"), sheet(" + sheet + ")>";
 	}
 }

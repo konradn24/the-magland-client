@@ -40,6 +40,7 @@ public class ContextPanel {
 		
 		PlayGUI.renderBackground(vg, X, TITLE_Y, WIDTH, TITLE_HEIGHT);
 		
+		nvgBeginPath(vg);
 		nvgFillColor(vg, context.getContextTitleColor());
 		TextRenderer.renderString(vg, context.getContextTitle(), X, TITLE_Y, WIDTH, TITLE_HEIGHT, AlignX.CENTER, AlignY.CENTER, Overflow.ELLIPSIS);
 		

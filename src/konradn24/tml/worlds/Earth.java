@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
+import org.joml.Vector3f;
+
 import konradn24.tml.Handler;
 import konradn24.tml.entities.Entity;
 import konradn24.tml.entities.statics.Aloe1;
@@ -22,7 +24,7 @@ import konradn24.tml.entities.statics.SaguaroCactus1;
 import konradn24.tml.entities.statics.SaguaroCactus2;
 import konradn24.tml.entities.statics.Spruce1;
 import konradn24.tml.entities.statics.Yucca1;
-import konradn24.tml.graphics.shaders.ShaderUtils;
+import konradn24.tml.graphics.shaders.Shader;
 import konradn24.tml.tiles.DeepWater;
 import konradn24.tml.tiles.Dirt;
 import konradn24.tml.tiles.Grass;
@@ -66,29 +68,6 @@ public class Earth extends World {
 	public static final String RAINFOREST = "rainforest";
 	public static final String DENSE_RAINFOREST = "dense_rainforest";
 	
-	public static final Map<String, float[]> BIOME_COLORS = Map.ofEntries(
-		    Map.entry(FROZEN_OCEAN, new float[] {180, 200, 255}),
-			Map.entry(HALF_FROZEN_OCEAN, new float[] {150, 180, 240}),
-			Map.entry(OCEAN, new float[] {0, 80, 160}),
-			Map.entry(FROZEN_SEA, new float[] {170, 190, 255}),
-			Map.entry(HALF_FROZEN_SEA, new float[] {130, 170, 240}),
-			Map.entry(SEA, new float[] {0, 120, 200}),
-			Map.entry(TUNDRA_BEACH, new float[] {220, 230, 240}),
-			Map.entry(GRAVEL_BEACH, new float[] {180, 180, 180}),
-			Map.entry(BEACH, new float[] {240, 230, 180}),
-			Map.entry(SNOW_DESERT, new float[] {240, 240, 255}),
-			Map.entry(TUNDRA, new float[] {210, 220, 220}),
-			Map.entry(DRY_TAIGA, new float[] {160, 190, 160}),
-			Map.entry(TAIGA, new float[] {100, 150, 100}),
-			Map.entry(PLAINS, new float[] {140, 200, 90}),
-			Map.entry(HILLS, new float[] {100, 170, 80}),
-			Map.entry(FOREST, new float[] {40, 120, 40}),
-			Map.entry(DESERT, new float[] {240, 220, 130}),
-			Map.entry(SUBTROPICAL_RAINFOREST, new float[] {60, 140, 60}),
-			Map.entry(RAINFOREST, new float[] {30, 100, 30}),
-			Map.entry(DENSE_RAINFOREST, new float[] {10, 80, 20})
-		);
-	
 	public static final Set<String> WATER_BIOMES = Set.of(
 	    FROZEN_OCEAN, HALF_FROZEN_OCEAN, OCEAN,
 	    FROZEN_SEA, HALF_FROZEN_SEA, SEA
@@ -105,12 +84,40 @@ public class Earth extends World {
 	);
 	
 	public Earth(long seed, float smoothness, float biomeSize, Handler handler) throws IOException {
-		super(handler, ShaderUtils.createProgram("res/shaders/chunk_vertex_shader.glsl", "res/shaders/chunk_fragment_shader.glsl"));
+		super(
+			handler, 
+			new Shader("res/shaders/chunk_vertex_shader.glsl", "res/shaders/chunk_fragment_shader.glsl"),
+			new Shader("res/shaders/batch_vertex_shader.glsl", "res/shaders/batch_fragment_shader.glsl")
+		);
+		
 		super.seed = seed;
 		super.smoothness = smoothness;
 		super.biomeSize = biomeSize;
 		
 		worldName = "Earth";
+		
+		biomes = Map.ofEntries(
+			Map.entry(FROZEN_OCEAN,        	new Vector3f(180, 200, 255)),
+			Map.entry(HALF_FROZEN_OCEAN,   	new Vector3f(150, 180, 240)),
+			Map.entry(OCEAN,               	new Vector3f(0,   80,  160)),
+			Map.entry(FROZEN_SEA,          	new Vector3f(170, 190, 255)),
+			Map.entry(HALF_FROZEN_SEA,     	new Vector3f(130, 170, 240)),
+			Map.entry(SEA,                	new Vector3f(0,  120,  200)),
+			Map.entry(TUNDRA_BEACH,       	new Vector3f(220, 230, 240)),
+			Map.entry(GRAVEL_BEACH,        	new Vector3f(180, 180, 180)),
+			Map.entry(BEACH,               	new Vector3f(240, 230, 180)),
+			Map.entry(SNOW_DESERT,         	new Vector3f(240, 240, 255)),
+			Map.entry(TUNDRA,              	new Vector3f(210, 220, 220)),
+			Map.entry(DRY_TAIGA,           	new Vector3f(160, 190, 160)),
+			Map.entry(TAIGA,               	new Vector3f(100, 150, 100)),
+			Map.entry(PLAINS,              	new Vector3f(140, 200,  90)),
+			Map.entry(HILLS,               	new Vector3f(100, 170,  80)),
+			Map.entry(FOREST,              	new Vector3f(40,  120,  40)),
+			Map.entry(DESERT,              	new Vector3f(240, 220, 130)),
+			Map.entry(SUBTROPICAL_RAINFOREST, new Vector3f(60, 140,  60)),
+			Map.entry(RAINFOREST,          	new Vector3f(30,  100,  30)),
+			Map.entry(DENSE_RAINFOREST,    	new Vector3f(10,   80,  20))
+		);
 		
 //		if(getTile(spawnTileX, spawnTileY).hasAttribute(Tile.ATTRIB_NO_SPAWN))
 //			setTile(spawnTileX, spawnTileY, Tile.getTile(Sand.class));
@@ -428,7 +435,7 @@ public class Earth extends World {
         
         float total = 0f;
         float r = 0f, g = 0f, b = 0f;
-        String biome = "#null";
+        String biome = BIOME_NULL;
         float bestScore = 0f;
         
         for (var entry : biomeScores.entrySet()) {
@@ -440,10 +447,10 @@ public class Earth extends World {
         		biome = entry.getKey();
         	}
         	
-            float[] c = BIOME_COLORS.get(entry.getKey());
-            r += c[0] * score;
-            g += c[1] * score;
-            b += c[2] * score;
+            Vector3f c = biomes.get(entry.getKey());
+            r += c.x * score;
+            g += c.y * score;
+            b += c.z * score;
             total += score;
         }
 

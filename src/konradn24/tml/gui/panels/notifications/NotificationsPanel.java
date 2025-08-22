@@ -10,6 +10,7 @@ import static org.lwjgl.nanovg.NanoVG.*;
 import konradn24.tml.Handler;
 import konradn24.tml.display.Display;
 import konradn24.tml.gui.graphics.Colors;
+import konradn24.tml.gui.graphics.Fonts;
 import konradn24.tml.gui.graphics.Style.AlignX;
 import konradn24.tml.gui.graphics.Style.AlignY;
 import konradn24.tml.gui.graphics.renderers.TextRenderer;
@@ -27,7 +28,7 @@ public class NotificationsPanel {
 	public static final int SHOW_DURATION = 6000;
 	public static final int FADE_DURATION = 2000;
 	public static final int FADE_START = SHOW_DURATION - FADE_DURATION;
-	public static final float BACKGROUND_ALPHA = 192;
+	public static final int BACKGROUND_ALPHA = 192;
 	
 	private List<Notification> queue;
 	
@@ -58,7 +59,7 @@ public class NotificationsPanel {
 				continue;
 			} else if(notificationTimeElapsed >= SHOW_DURATION - FADE_DURATION) {
 				float alphaFactor = 1 - (float) (notificationTimeElapsed - FADE_START) / FADE_DURATION;
-				notification.setAlpha((int) (BACKGROUND_ALPHA * alphaFactor));
+				notification.setAlpha(Math.round(BACKGROUND_ALPHA * alphaFactor));
 			}
 		}
 		
@@ -82,7 +83,10 @@ public class NotificationsPanel {
 				nvgFillColor(vg, notification.getCurrentAlphaBackground());
 				nvgFill(vg);
 				
+				nvgBeginPath(vg);
 				nvgFillColor(vg, notification.getCurrentAlphaColor());
+				nvgFontFace(vg, Fonts.GLOBAL_FONT);
+				nvgFontSize(vg, 28f);
 				TextRenderer.renderString(vg, notification.getText(), 0, y, WIDTH, NOTIFICATION_HEIGHT, AlignX.CENTER, AlignY.CENTER, Overflow.WRAP);
 				
 				notificationCount++;
@@ -98,7 +102,7 @@ public class NotificationsPanel {
 	}
 	
 	public void add(String text) {
-		Notification notification = new Notification(text, Colors.COLOR_TEXT, true);
+		Notification notification = new Notification(text, Colors.TEXT, true);
 		notification.setEmitTime(System.currentTimeMillis());
 		
 		add(notification);
@@ -112,7 +116,7 @@ public class NotificationsPanel {
 	}
 	
 	public void addPermanent(String text) {
-		Notification notification = new Notification(text, Colors.COLOR_TEXT, false);
+		Notification notification = new Notification(text, Colors.TEXT, false);
 		notification.setEmitTime(System.currentTimeMillis());
 		
 		add(notification);

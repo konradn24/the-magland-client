@@ -62,10 +62,10 @@ public class Slot extends Component {
 		bottomText.setFont(menu.getFont());
 		bottomText.setColor(menu.getTextColor());
 		
-		hoverColor = Colors.COLOR_LIGHT;
+		hoverColor = Colors.LIGHT;
 		hoverCursor = Cursor.HAND;
 		
-		disabledColor = Colors.COLOR_LIGHT;
+		disabledColor = Colors.LIGHT;
 	}
 	
 	public void update(float dt) {
@@ -104,6 +104,7 @@ public class Slot extends Component {
 		float iconX = x + width / 2 - iconWidth / 2;
 		float iconY = y + 2;
 		
+		nvgBeginPath(vg);
 		AssetsRenderer.renderTexture(vg, icon, iconX, iconY, iconWidth, iconHeight);
 		bottomText.renderGUI(vg);
 		

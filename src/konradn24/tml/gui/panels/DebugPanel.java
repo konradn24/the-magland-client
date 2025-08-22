@@ -11,6 +11,7 @@ import static org.lwjgl.nanovg.NanoVG.*;
 import org.lwjgl.nanovg.NVGColor;
 
 import konradn24.tml.Handler;
+import konradn24.tml.debug.commands.CommandHandler;
 import konradn24.tml.display.Display;
 import konradn24.tml.gui.graphics.Colors;
 import konradn24.tml.gui.graphics.Style;
@@ -33,11 +34,11 @@ public class DebugPanel {
 	public static final NVGColor WARNING_COLOR = Colors.rgba(255, 255, 0, 255);
 	
 	public static final float WIDTH = Display.x(0.96f);
-	public static final float LINE_HEIGHT = Display.y(0.008f);
+	public static final float LINE_HEIGHT = Display.y(0.02f);
 	public static final float X = Style.centerX(WIDTH);
 	public static final float Y = 0;
 	public static final float PADDING_X = Display.x(0.005f);
-	public static final float PADDING_Y = Display.y(0.01f);
+	public static final float PADDING_Y = Display.y(0.003f);
 	public static final float COMMAND_LINE_HEIGHT = Display.y(0.02f);
 	
 	private final float height;
@@ -70,7 +71,7 @@ public class DebugPanel {
 		).customize((label, i) -> {
 			label.setDisplayType(DisplayType.BOX);
 			label.setAlignX(AlignX.LEFT);
-			label.setAlignY(AlignY.CENTER);
+			label.setAlignY(AlignY.TOP);
 			label.setOverflow(Overflow.ELLIPSIS);
 			label.setColor(DEFAULT_COLOR);
 			
@@ -142,6 +143,12 @@ public class DebugPanel {
 				commandLine.setContent("");
 			}
 		}
+		
+		for(Label label : console.getComponents()) {
+			if(label.isOn() && !label.getContent().isEmpty()) {
+				handler.getMouseManager().enableTooltip(label.getContent(), label.getColor());
+			}
+		}
 	}
 	
 	public void renderGUI(long vg) {
@@ -149,11 +156,11 @@ public class DebugPanel {
 		
 		nvgBeginPath(vg);
 		nvgRect(vg, X, Y, WIDTH, height);
-		nvgFillColor(vg, Colors.COLOR_BACKGROUND);
+		nvgFillColor(vg, Colors.BACKGROUND);
 		nvgFill(vg);
 		
 		nvgStrokeWidth(vg, 3f);
-		nvgStrokeColor(vg, Colors.COLOR_OUTLINE);
+		nvgStrokeColor(vg, Colors.OUTLINE);
 		nvgStroke(vg);
 		
 		console.renderGUI(vg);
@@ -174,13 +181,13 @@ public class DebugPanel {
 		
 		commandLineHistoryPointer = -1;
 
-//		String response = CommandHandler.handle(this, command);
-//		
-//		if(CommandHandler.isError()) print(response, ERROR_COLOR);
-//		else if(CommandHandler.isWarning()) print(response, WARNING_COLOR);
-//		else if(!response.startsWith("~NULL")) print(response);
-//		
-//		Logging.info("CMD Out: " + response);
+		String response = CommandHandler.handle(this, command);
+		
+		if(CommandHandler.isError()) print(response, ERROR_COLOR);
+		else if(CommandHandler.isWarning()) print(response, WARNING_COLOR);
+		else if(!response.startsWith("~NULL")) print(response);
+		
+		Logging.info("CMD Out: " + response);
 	}
 	
 	public boolean loadFromFile(String path) {
@@ -260,7 +267,7 @@ public class DebugPanel {
 				open = !open;
 				clickCooldown = true;
 				
-				if(open) commandLine.setFocus(true);
+				commandLine.setFocus(open);
 			}
 		} else clickCooldown = false;
 		

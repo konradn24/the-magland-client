@@ -66,18 +66,18 @@ public class MessageBox {
 		this.x = Display.LOGICAL_WIDTH / 2 - width / 2;
 		this.y = Display.LOGICAL_HEIGHT / 2;
 		
-		barColor = Colors.COLOR_WINDOW_BAR_BACKGROUND;
-		windowColor = Colors.COLOR_WINDOW_BACKGROUND;
+		barColor = Colors.WINDOW_BAR_BACKGROUND;
+		windowColor = Colors.WINDOW_BACKGROUND;
 		
 		this.title = new Label(title, x + TEXT_MARGIN_X, y + TEXT_MARGIN_Y, width - TEXT_MARGIN_X * 2, BAR_HEIGHT, AlignX.LEFT, AlignY.CENTER, handler);
 		this.title.setFontSize(32f);
-		this.title.setColor(Colors.COLOR_TEXT);
+		this.title.setColor(Colors.TEXT);
 		this.title.setDisplayType(DisplayType.BOX);
 		this.title.setOverflow(Overflow.ELLIPSIS);
 		
 		this.message = new Label(message, x + TEXT_MARGIN_X, y + BAR_HEIGHT + TEXT_MARGIN_Y, width - TEXT_MARGIN_X * 2, MIN_HEIGHT, AlignX.LEFT, AlignY.TOP, handler);
 		this.message.setFontSize(24f);
-		this.message.setColor(Colors.COLOR_TEXT);
+		this.message.setColor(Colors.TEXT);
 		this.message.setDisplayType(DisplayType.BOX);
 		this.message.setOverflow(Overflow.WRAP);
 		
@@ -93,18 +93,18 @@ public class MessageBox {
 		this.x = Display.LOGICAL_WIDTH / 2 - width / 2;
 		this.y = Display.LOGICAL_HEIGHT / 2 - 100;
 		
-		barColor = Colors.COLOR_WINDOW_BAR_BACKGROUND;
-		windowColor = Colors.COLOR_WINDOW_BACKGROUND;
+		barColor = Colors.WINDOW_BAR_BACKGROUND;
+		windowColor = Colors.WINDOW_BACKGROUND;
 		
 		this.title = new Label(title, x + TEXT_MARGIN_X, y, width - TEXT_MARGIN_X * 2, BAR_HEIGHT, AlignX.LEFT, AlignY.CENTER, handler);
 		this.title.setFontSize(32f);
-		this.title.setColor(Colors.COLOR_TEXT);
+		this.title.setColor(Colors.TEXT);
 		this.title.setDisplayType(DisplayType.BOX);
 		this.title.setOverflow(Overflow.ELLIPSIS);
 		
 		this.message = new Label(message, x + TEXT_MARGIN_X, y + BAR_HEIGHT, width - TEXT_MARGIN_X * 2, MIN_HEIGHT, AlignX.LEFT, AlignY.TOP, handler);
 		this.message.setFontSize(24f);
-		this.message.setColor(Colors.COLOR_TEXT);
+		this.message.setColor(Colors.TEXT);
 		this.message.setDisplayType(DisplayType.BOX);
 		this.message.setOverflow(Overflow.WRAP);
 		
@@ -131,7 +131,7 @@ public class MessageBox {
 				buttonOk = new Button("Ok", x + width / 2 - BUTTON_WIDTH / 2, buttonsY, BUTTON_WIDTH, BUTTON_HEIGHT, handler);
 				
 				buttonOk.setOnLeftClick(() -> {
-					State.getState().getDialogsManager().queueCloseMessageBox(this);
+					State.getCurrentState().getDialogsManager().queueCloseMessageBox(this);
 					
 					if(callback != null)
 						callback.execute(YES);
@@ -152,7 +152,7 @@ public class MessageBox {
 				buttonNo = new Button("No", x + width / 2 - buttonsWidth / 2 + BUTTON_WIDTH + BUTTONS_MARGIN_X, buttonsY, BUTTON_WIDTH, BUTTON_HEIGHT, handler);
 			
 				buttonYes.setOnLeftClick(() -> {
-					State.getState().getDialogsManager().queueCloseMessageBox(this);
+					State.getCurrentState().getDialogsManager().queueCloseMessageBox(this);
 					
 					if(callback != null)
 						callback.execute(YES);
@@ -161,7 +161,7 @@ public class MessageBox {
 				});
 				
 				buttonNo.setOnLeftClick(() -> {
-					State.getState().getDialogsManager().queueCloseMessageBox(this);
+					State.getCurrentState().getDialogsManager().queueCloseMessageBox(this);
 					
 					if(callback != null)
 						callback.execute(NO);
@@ -185,7 +185,7 @@ public class MessageBox {
 				buttonCancel = new Button("Cancel", x + width / 2 - buttonsWidth / 2 + (BUTTON_WIDTH + BUTTONS_MARGIN_X) * 2, buttonsY, BUTTON_WIDTH, BUTTON_HEIGHT, handler);
 			
 				buttonYes.setOnLeftClick(() -> {
-					State.getState().getDialogsManager().queueCloseMessageBox(this);
+					State.getCurrentState().getDialogsManager().queueCloseMessageBox(this);
 					
 					if(callback != null)
 						callback.execute(YES);
@@ -194,7 +194,7 @@ public class MessageBox {
 				});
 				
 				buttonNo.setOnLeftClick(() -> {
-					State.getState().getDialogsManager().queueCloseMessageBox(this);
+					State.getCurrentState().getDialogsManager().queueCloseMessageBox(this);
 					
 					if(callback != null)
 						callback.execute(NO);
@@ -203,7 +203,7 @@ public class MessageBox {
 				});
 				
 				buttonCancel.setOnLeftClick(() -> {
-					State.getState().getDialogsManager().queueCloseMessageBox(this);
+					State.getCurrentState().getDialogsManager().queueCloseMessageBox(this);
 					
 					if(callback != null)
 						callback.execute(CANCEL);
@@ -257,7 +257,7 @@ public class MessageBox {
 		nvgBeginPath(vg);
 		nvgRect(vg, x, y, width, height);
 		nvgStrokeWidth(vg, 3f);
-		nvgStrokeColor(vg, Colors.COLOR_OUTLINE);
+		nvgStrokeColor(vg, Colors.OUTLINE);
 		nvgStroke(vg);
 		
 		title.renderGUI(vg);

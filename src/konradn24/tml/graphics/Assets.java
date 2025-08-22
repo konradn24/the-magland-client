@@ -12,7 +12,7 @@ public class Assets {
 	
 	public static final long NO_NVG = 0L;
 	
-	private static final int WIDTH = 32, HEIGHT = 32;
+	public static final int WIDTH = 32, HEIGHT = 32;
 	
 	private static Map<String, SpriteSheet> sheets = new HashMap<>();
 	private static Map<String, Texture> textures = new HashMap<>();
@@ -27,6 +27,8 @@ public class Assets {
 		registerSheet(vg, "buildings", "res/textures/buildings.png");
 		registerSheet(NO_NVG, "nature1", "res/textures/nature_pack_1.png");
 		registerSheet(NO_NVG, "nature2", "res/textures/nature_pack_2.png");
+		
+		register(vg, "background", "res/textures/background.png", false);
 		
 		register("general/null", 7, 7, false);
 		
@@ -109,6 +111,31 @@ public class Assets {
 		sheets.put(id, new SpriteSheet(vg, path));
 		
 		Logging.info("Assets: registered sheet \"" + id + "\"");
+	}
+	
+	public static void register(long vg, String id, String path, boolean generateCursor) {
+		if(textures.containsKey(id)) {
+			Logging.warning("Assets: texture \"" + id + "\" has been already registered");
+			return;
+		}
+		
+		Texture texture = new Texture(vg, path, generateCursor);
+		textures.put(id, texture);
+	}
+	
+	public static void register(String id, boolean generateCursor) {
+		if(textures.containsKey(id)) {
+			Logging.warning("Assets: texture \"" + id + "\" has been already registered");
+			return;
+		}
+		
+		String[] splittedID = id.split("/");
+		String sheetID = splittedID[0];
+		String textureID = splittedID[1];
+		
+		Texture texture = sheets.get(sheetID).getTexture(generateCursor);
+		
+		textures.put(textureID, texture);
 	}
 	
 	public static void register(String id, int x, int y, boolean generateCursor) {

@@ -35,10 +35,10 @@ public class Button extends Component {
 	private void init(String text, float x, float y, float width, float height) {
 		this.label = new Label(text, x, y, width, height, 10, handler);
 		this.label.setDisplayType(DisplayType.BOX);
-		this.label.setColor(Colors.COLOR_TEXT);
+		this.label.setColor(Colors.TEXT);
 		
-		color = Colors.COLOR_BACKGROUND;
-		outlineColor = Colors.COLOR_OUTLINE;
+		color = Colors.BACKGROUND;
+		outlineColor = Colors.OUTLINE;
 	}
 	
 	@Override

@@ -30,7 +30,7 @@ public class DialogsManager {
 			int index = messageBoxes.indexOf(toRemove);
 			messageBoxes.remove(index);
 			
-			Logging.info("Removed MessageBox (ID: " + index + ") - title: " + toRemove.getTitle());
+			Logging.info("Removed MessageBox (ID: " + index + ") - title: " + toRemove.getTitle().getContent());
 		}
 		
 		removeQueue.clear();
@@ -44,19 +44,19 @@ public class DialogsManager {
 	public void showMessageBox(MessageBox messageBox) {
 		messageBoxes.add(messageBox);
 		
-		Logging.info("Added MessageBox (ID: " + (messageBoxes.size() - 1) + ") - title: " + messageBox.getTitle());
+		Logging.info("Added MessageBox (ID: " + (messageBoxes.size() - 1) + ") - title: " + messageBox.getTitle().getContent());
 	}
 	
 	public void closeMessageBox(MessageBox messageBox) {
 		int index = messageBoxes.indexOf(messageBox);
 		if(index < 0) {
-			Logging.warning("Cannot remove MessageBox - provided object (title: " + messageBox.getTitle() + ") does not exist");
+			Logging.warning("Cannot remove MessageBox - provided object (title: " + messageBox.getTitle().getContent() + ") does not exist");
 			return;
 		}
 		
 		messageBoxes.remove(messageBox);
 		
-		Logging.info("Removed MessageBox (ID: " + index + ") - title: " + messageBox.getTitle());
+		Logging.info("Removed MessageBox (ID: " + index + ") - title: " + messageBox.getTitle().getContent());
 	}
 	
 	public void closeMessageBox(int index) {
@@ -68,18 +68,18 @@ public class DialogsManager {
 		MessageBox messageBox = messageBoxes.get(index);
 		messageBoxes.remove(index);
 		
-		Logging.info("Removed MessageBox (ID: " + index + ") - title: " + messageBox.getTitle());
+		Logging.info("Removed MessageBox (ID: " + index + ") - title: " + messageBox.getTitle().getContent());
 	}
 	
 	public void queueCloseMessageBox(MessageBox messageBox) {
 		int index = messageBoxes.indexOf(messageBox);
 		if(index < 0) {
-			Logging.warning("Cannot queue MessageBox removal - provided object (title: " + messageBox.getTitle() + ") does not exist");
+			Logging.warning("Cannot queue MessageBox removal - provided object (title: " + messageBox.getTitle().getContent() + ") does not exist");
 			return;
 		}
 		
 		removeQueue.add(messageBox);
 		
-		Logging.info("Queued MessageBox removal (ID: " + index + ") - title: " + messageBox.getTitle());
+		Logging.info("Queued MessageBox removal (ID: " + index + ") - title: " + messageBox.getTitle().getContent());
 	}
 }

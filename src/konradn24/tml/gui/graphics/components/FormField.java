@@ -21,7 +21,7 @@ public class FormField<T extends Component> extends Component {
 		label.setDisplayType(DisplayType.DEFAULT);
 	}
 	
-	public FormField(Class<T> inputClass, String labelContent, int x, int y, int width, int height, int inputWidth, int inputHeight, Handler handler) {
+	public FormField(Class<T> inputClass, String labelContent, float x, float y, float width, float height, float inputWidth, float inputHeight, Handler handler) {
 		super(x, y, width, height, handler);
 		
 		label = new Label(labelContent, x, y, width, height, AlignX.LEFT, AlignY.CENTER, handler);
@@ -57,6 +57,20 @@ public class FormField<T extends Component> extends Component {
 		}
 	}
 
+	@Override
+	public void setHoverOffsetX(float hoverOffsetX) {
+		super.setHoverOffsetX(hoverOffsetX);
+		label.setHoverOffsetX(hoverOffsetX);
+		input.setHoverOffsetX(hoverOffsetX);
+	}
+	
+	@Override
+	public void setHoverOffsetY(float hoverOffsetY) {
+		super.setHoverOffsetY(hoverOffsetY);
+		label.setHoverOffsetY(hoverOffsetY);
+		input.setHoverOffsetY(hoverOffsetY);
+	}
+	
 	public Label getLabel() {
 		return label;
 	}

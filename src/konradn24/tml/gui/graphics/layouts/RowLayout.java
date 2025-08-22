@@ -26,11 +26,11 @@ public class RowLayout<T extends Component> {
 		if(useComponentSize) {
 			this.componentWidth = width;
 		} else {
-			this.componentWidth = (width - count * spacing * 2) / count;
+			this.componentWidth = (width - (count - 1) * spacing) / count;
 		}
 		
 		if(this.componentWidth <= 0 || this.componentHeight <= 0) {
-			Logging.error("RowLayout: components have illegal size (" + this.componentWidth + "x" + this.componentHeight  + ")");
+			Logging.error("Row Layout: components have illegal size (" + this.componentWidth + "x" + this.componentHeight  + ")");
 		}
 		
 		for(int i = 0; i < count; i++) {
@@ -44,7 +44,7 @@ public class RowLayout<T extends Component> {
 				
 				components[i] = component;
 			} catch (Exception e) {
-				throw new RuntimeException("RowLayout: could not instantiate component", e);
+				throw new RuntimeException("Row Layout: could not instantiate component", e);
 			}
 		}
 	}

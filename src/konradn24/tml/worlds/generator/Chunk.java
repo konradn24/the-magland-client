@@ -9,6 +9,7 @@ import org.joml.Matrix4f;
 import konradn24.tml.entities.Entity;
 import konradn24.tml.graphics.ColorUtils;
 import konradn24.tml.graphics.renderer.ColorMesh;
+import konradn24.tml.graphics.shaders.Shader;
 import konradn24.tml.tiles.Tile;
 
 public class Chunk {
@@ -26,7 +27,7 @@ public class Chunk {
 		this.chunkY = chunkY;
 	}
 	
-	public void generateMesh(int chunkX, int chunkY, int shaderProgram) {
+	public void generateMesh(int chunkX, int chunkY, Shader shader) {
         List<Float> vertexList = new ArrayList<>();
         
         int worldX = chunkX * SIZE * Tile.SIZE;
@@ -61,7 +62,7 @@ public class Chunk {
             vertices[i] = vertexList.get(i);
         }
 
-        mesh = new ColorMesh(vertices, shaderProgram, new Matrix4f().translate(worldX, worldY, 0));
+        mesh = new ColorMesh(vertices, shader, new Matrix4f().translate(worldX, worldY, 0));
     }
 
 	public void render(Matrix4f viewModel) {

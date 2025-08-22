@@ -3,13 +3,16 @@ package konradn24.tml;
 import java.io.IOException;
 
 import konradn24.tml.camera.GameCamera;
-import konradn24.tml.entities.creatures.characters.Player;
+import konradn24.tml.debug.rules.GameRules;
+import konradn24.tml.debug.rules.RenderingRules;
+import konradn24.tml.entities.dynamic.characters.Player;
 import konradn24.tml.gui.PlayGUI;
 import konradn24.tml.input.KeyManager;
 import konradn24.tml.input.MouseManager;
-import konradn24.tml.rules.GameRules;
-import konradn24.tml.rules.RenderingRules;
+import konradn24.tml.saving.SavesManager;
 import konradn24.tml.settings.Settings;
+import konradn24.tml.states.State;
+import konradn24.tml.states.gamestates.play.PlayState;
 import konradn24.tml.utils.Logging;
 import konradn24.tml.worlds.generator.World;
 
@@ -21,7 +24,7 @@ public class Handler {
 	private GameRules gameRules;
 	private RenderingRules renderingRules;
 	
-//	private SavesManager savesManager;
+	private SavesManager savesManager;
 	
 	public Handler(Game game){
 		this.game = game;
@@ -38,25 +41,29 @@ public class Handler {
 		this.gameRules = new GameRules();
 		this.renderingRules = new RenderingRules();
 		
-//		this.savesManager = new SavesManager(this);
+		this.savesManager = new SavesManager(this);
 		
 		Logging.info("Handler: instance initialized");
 	}
 	
+	public PlayState getPlayState() {
+		return (PlayState) State.getState(PlayState.class);
+	}
+	
 	public Player getPlayer() {
-		return game.getPlayState().getPlayer();
+		return getPlayState().getPlayer();
 	}
 	
 	public World getWorld() {
-		return game.getPlayState().getWorld();
+		return getPlayState().getWorld();
 	}
 	
-	public GameCamera getCamera(){
-		return game.getPlayState().getCamera();
+	public GameCamera getCamera() {
+		return getPlayState().getCamera();
 	}
 	
 	public PlayGUI getPlayGUI() {
-		return game.getPlayState().getGUI();
+		return getPlayState().getGUI();
 	}
 	
 	public KeyManager getKeyManager(){
@@ -103,7 +110,7 @@ public class Handler {
 		this.renderingRules = renderingRules;
 	}
 
-//	public SavesManager getSavesManager() {
-//		return savesManager;
-//	}
+	public SavesManager getSavesManager() {
+		return savesManager;
+	}
 }

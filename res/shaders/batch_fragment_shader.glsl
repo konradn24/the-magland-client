@@ -1,20 +1,17 @@
 #version 330 core
 
-in vec4 fColor;
-in vec2 fTexCoords;
-in float fTexId;
+uniform sampler2D uTexture;
 
-uniform sampler2D uTextures[8];
+in vec2 texCoords;
+in vec4 color;
+flat in float useTex;
 
-out vec4 color;
+out vec4 fragColor;
 
-void main()
-{
-    if (fTexId > 0) {
-        int id = int(fTexId);
-        color = fColor * texture(uTextures[id], fTexCoords);
-        //color = vec4(fTexCoords, 0, 1);
+void main() {
+	if(useTex == 1.0) {
+    	fragColor = texture(uTexture, texCoords);
     } else {
-        color = fColor;
+    	fragColor = color;
     }
 }

@@ -41,19 +41,43 @@ public class TextRenderer {
 		String clippedText = text;
 		if (overflow == Overflow.HIDE || overflow == Overflow.ELLIPSIS) {
 			float[] bounds = new float[4];
+			float textWidth = 0;
 			StringBuilder sb = new StringBuilder();
+			
 			for (int i = 0; i < text.length(); i++) {
 				String t = sb.toString() + text.charAt(i);
 				nvgTextBounds(vg, 0, 0, t, bounds);
-				if (bounds[2] - bounds[0] > width)
+				textWidth = bounds[2] - bounds[0];
+				
+				if (textWidth > width)
 					break;
+				
 				sb.append(text.charAt(i));
 			}
 
 			if (overflow == Overflow.ELLIPSIS && sb.length() < text.length()) {
+				sb.delete(sb.length() - 3, sb.length());
 				sb.append("...");
 			}
+			
 			clippedText = sb.toString();
+			
+			float drawX = switch (alignX) {
+				case LEFT -> x;
+				case CENTER -> x + textWidth / 2f;
+				case RIGHT -> x + textWidth;
+			};
+	
+			float drawY = switch (alignY) {
+				case TOP -> y;
+				case CENTER -> y + height / 2f - lineHeight / 2f;
+				case BOTTOM -> y + height - lineHeight;
+			};
+			
+			nvgTextAlign(vg, (alignX == AlignX.LEFT ? NVG_ALIGN_LEFT
+					: alignX == AlignX.CENTER ? NVG_ALIGN_CENTER : NVG_ALIGN_RIGHT) | NVG_ALIGN_TOP);
+			nvgText(vg, drawX, drawY, clippedText);
+			return;
 		}
 
 		// Split into lines with wrapping

@@ -8,17 +8,18 @@ import org.joml.Matrix4f;
 import org.lwjgl.BufferUtils;
 
 import konradn24.tml.display.Display;
+import konradn24.tml.graphics.shaders.Shader;
 
 public class ColorMesh {
 	private int vaoID;
 	private int vboID;
 	private int vertexCount;
 	
-	private int shaderProgram;
+	private Shader shader;
 	private Matrix4f modelMatrix;
 	
-	public ColorMesh(float[] vertices, int shaderProgram, Matrix4f modelMatrix) {
-		this.shaderProgram = shaderProgram;
+	public ColorMesh(float[] vertices, Shader shader, Matrix4f modelMatrix) {
+		this.shader = shader;
 		this.modelMatrix = modelMatrix;
 		
 		vertexCount = vertices.length / 5;
@@ -48,29 +49,11 @@ public class ColorMesh {
 	}
 	
 	public void render(Matrix4f viewMatrix) {
-		glUseProgram(shaderProgram);
+		shader.use();
 		
-		int locProjection = glGetUniformLocation(shaderProgram, "projection");
-		
-		if(locProjection != -1) {
-			FloatBuffer buf = BufferUtils.createFloatBuffer(16);
-			Display.PROJECTION.get(buf);
-			glUniformMatrix4fv(locProjection, false, buf);
-		}
-		
-		int locView = glGetUniformLocation(shaderProgram, "view");
-		if(locView != -1) {
-			FloatBuffer viewBuf = BufferUtils.createFloatBuffer(16);
-			viewMatrix.get(viewBuf);
-			glUniformMatrix4fv(locView, false, viewBuf);
-		}
-		
-		int locModel = glGetUniformLocation(shaderProgram, "model");
-		if(locModel != -1) {
-			FloatBuffer buf = BufferUtils.createFloatBuffer(16);
-			modelMatrix.get(buf);
-			glUniformMatrix4fv(locModel, false, buf);
-		}
+		shader.uploadMat4f("projection", Display.PROJECTION);
+		shader.uploadMat4f("view", viewMatrix);
+		shader.uploadMat4f("model", modelMatrix);
 		
 		glBindVertexArray(vaoID);
 		glEnableVertexAttribArray(0);
@@ -79,7 +62,7 @@ public class ColorMesh {
 		glDrawArrays(GL_TRIANGLES, 0, vertexCount);
 
 		glBindVertexArray(0);
-		glUseProgram(0);
+		shader.detach();
 	}
 	
 	public void cleanup() {

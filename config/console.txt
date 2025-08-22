@@ -1,4 +1,5 @@
 game enable flying
+rendering enable collisionBoxes
 add ancientAxe 3
 add stone 4
 add stick 4

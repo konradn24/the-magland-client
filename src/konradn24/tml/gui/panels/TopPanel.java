@@ -40,22 +40,24 @@ public class TopPanel {
 	public void renderGUI(long vg) {
 		nvgBeginPath(vg);
 		nvgRect(vg, 0, 0, WIDTH, HEIGHT);
-		nvgFillColor(vg, Colors.COLOR_BACKGROUND);
+		nvgFillColor(vg, Colors.BACKGROUND);
 		nvgFill(vg);
 		
 		nvgStrokeWidth(vg, 3f);
-		nvgStrokeColor(vg, Colors.COLOR_OUTLINE);
+		nvgStrokeColor(vg, Colors.OUTLINE);
 		nvgStroke(vg);
-		
-		nvgFontFace(vg, Fonts.GLOBAL_FONT);
-		nvgFontSize(vg, 24f);
-		nvgFillColor(vg, Colors.COLOR_TEXT);
 		
 		for(Map.Entry<String, ResourceUI> entry : resources.entrySet()) {
 			ResourceUI resource = entry.getValue();
 			
 			if(resource.icon != null) {
+				nvgBeginPath(vg);
 				AssetsRenderer.renderTexture(vg, resource.icon, resource.x, RESOURCE_Y, RESOURCE_HEIGHT, RESOURCE_HEIGHT);
+				
+				nvgBeginPath(vg);
+				nvgFontFace(vg, Fonts.GLOBAL_FONT);
+				nvgFontSize(vg, 24f);
+				nvgFillColor(vg, Colors.TEXT);
 				TextRenderer.renderString(
 					vg, Double.toString(resource.value), 
 					resource.x + RESOURCE_HEIGHT + RESOURCE_ICON_MARGIN_RIGHT, RESOURCE_Y, 
@@ -63,6 +65,11 @@ public class TopPanel {
 					AlignX.LEFT, AlignY.CENTER, Overflow.HIDE
 				);
 			} else {
+				nvgBeginPath(vg);
+				nvgFontFace(vg, Fonts.GLOBAL_FONT);
+				nvgFontSize(vg, 24f);
+				nvgFillColor(vg, Colors.TEXT);
+				
 				TextRenderer.renderString(
 					vg, entry.getKey() + ": " + Double.toString(resource.value), 
 					resource.x + RESOURCE_HEIGHT + RESOURCE_ICON_MARGIN_RIGHT, RESOURCE_Y, 
@@ -72,6 +79,10 @@ public class TopPanel {
 			}
 		}
 		
+		nvgBeginPath(vg);
+		nvgFontFace(vg, Fonts.GLOBAL_FONT);
+		nvgFontSize(vg, 24f);
+		nvgFillColor(vg, Colors.TEXT);
 		TextRenderer.renderString(vg, "Era: " + getEra(era), 0, 0, WIDTH - RESOURCE_MARGIN_RIGHT, HEIGHT, AlignX.RIGHT, AlignY.CENTER, Overflow.ELLIPSIS);
 	}
 	

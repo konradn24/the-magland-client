@@ -324,7 +324,7 @@ public class MouseManager {
 	        float boxWidth = textWidth + padding * 2;
 	        float boxHeight = textHeight + padding * 2;
 	        
-	        if(mouseX + offsetFromCursor + boxWidth < Display.LOGICAL_WIDTH) {
+	        if(mouseX - offsetFromCursor - boxWidth < 0) {
 	        	boxX = (float) (mouseX + offsetFromCursor);
 	        } else {
 	        	boxX = (float) (mouseX - offsetFromCursor - boxWidth);
@@ -338,14 +338,14 @@ public class MouseManager {
 
 	        nvgBeginPath(vg);
 	        nvgRoundedRect(vg, boxX, boxY, boxWidth, boxHeight, cornerRadius);
-	        nvgFillColor(vg, Colors.COLOR_BACKGROUND);
+	        nvgFillColor(vg, Colors.BACKGROUND);
 	        nvgFill(vg);
 	        
-	        nvgStrokeColor(vg, Colors.COLOR_OUTLINE);
+	        nvgStrokeColor(vg, Colors.OUTLINE);
 	        nvgStrokeWidth(vg, 1.0f);
 	        nvgStroke(vg);
 
-	        nvgFillColor(vg, tooltipColor != null ? tooltipColor : Colors.COLOR_TEXT);
+	        nvgFillColor(vg, tooltipColor != null ? tooltipColor : Colors.TEXT);
 	        nvgText(vg, boxX + padding, boxY + padding, tooltip);
 	    }
 	}

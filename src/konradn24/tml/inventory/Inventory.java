@@ -19,7 +19,7 @@ import konradn24.tml.gui.graphics.Colors;
 import konradn24.tml.gui.graphics.widgets.slots.SlotMenu;
 import konradn24.tml.gui.panels.context.ContextPanel;
 import konradn24.tml.gui.panels.context.GUIContext;
-import konradn24.tml.inventory.items.Item;
+import konradn24.tml.items.Item;
 import konradn24.tml.utils.Logging;
 
 public class Inventory implements GUIContext {
@@ -48,7 +48,7 @@ public class Inventory implements GUIContext {
 		this.owner = owner;
 		this.handler = handler;
 		this.title = title;
-		this.titleColor = Colors.COLOR_TEXT;
+		this.titleColor = Colors.TEXT;
 		this.storage = storage;
 		this.weightLimit = weightLimit;
 		

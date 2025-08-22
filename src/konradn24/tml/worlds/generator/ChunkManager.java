@@ -10,25 +10,28 @@ import konradn24.tml.tiles.Tile;
 
 public class ChunkManager {
 
+	public static final int LOAD_RADIUS = 2;
+	
 	private final Map<Point, Chunk> loadedChunks = new HashMap<>();
 	private final World world;
 	
-	private long lastUnloadTime = System.currentTimeMillis();
-	private static final int UNLOAD_INTERVAL = 5000;
+	private float lastUpdateChunkX, lastUpdateChunkY;
 	
 	public ChunkManager(World world) {
 		this.world = world;
 	}
 	
-	public void update(int playerChunkX, int playerChunkY, int radius) {
-		loadNearChunks(playerChunkX, playerChunkY, radius);
-		
-		long now = System.currentTimeMillis();
-		
-		if(now - lastUnloadTime >= UNLOAD_INTERVAL) {
-			unloadFarChunks(playerChunkX, playerChunkY, radius);
-			lastUnloadTime = now;
+	public void update(int chunkX, int chunkY) {
+		if(lastUpdateChunkX == chunkX && lastUpdateChunkY == chunkY) {
+			return;
 		}
+		
+		reload(chunkX, chunkY);
+	}
+	
+	public void reload(int chunkX, int chunkY) {
+		loadNearChunks(chunkX, chunkY, LOAD_RADIUS);
+		unloadFarChunks(chunkX, chunkY);
 	}
 	
 	public void render(Matrix4f viewMatrix) {
@@ -65,9 +68,9 @@ public class ChunkManager {
 		return loadedChunks.get(key);
 	}
 	
-	public void loadNearChunks(int playerChunkX, int playerChunkY, int radius) {
-		for(int x = playerChunkX - radius; x < playerChunkX + radius; x++) {
-			for(int y = playerChunkY - radius; y < playerChunkY + radius; y++) {
+	public void loadNearChunks(int chunkX, int chunkY, int radius) {
+		for(int x = chunkX - radius; x < chunkX + radius; x++) {
+			for(int y = chunkY - radius; y < chunkY + radius; y++) {
 				Point key = new Point(x, y);
 				
 				if(!loadedChunks.containsKey(key)) {
@@ -78,12 +81,12 @@ public class ChunkManager {
 		}
 	}
 	
-	public void unloadFarChunks(int playerChunkX, int playerChunkY, int radius) {
+	public void unloadFarChunks(int chunkX, int chunkY) {
 		loadedChunks.entrySet().removeIf(entry -> {
-			int chunkX = entry.getKey().x;
-			int chunkY = entry.getKey().y;
+			int iChunkX = entry.getKey().x;
+			int iChunkY = entry.getKey().y;
 			
-			if(Math.abs(chunkX - playerChunkX) > radius || Math.abs(chunkY - playerChunkY) > radius) {
+			if(Math.abs(iChunkX - chunkX) > LOAD_RADIUS || Math.abs(iChunkY - chunkY) > LOAD_RADIUS) {
 				world.getEntityManager().removeEntitiesFromChunk(entry.getValue());
 				entry.getValue().cleanup();
 				return true;
@@ -111,7 +114,7 @@ public class ChunkManager {
 			}
 		}
 		
-		chunk.generateMesh(chunkX, chunkY, world.getShaderProgram());
+		chunk.generateMesh(chunkX, chunkY, world.getShader());
 		
 		world.getEntityManager().addEntitiesFromChunk(chunk);
 		

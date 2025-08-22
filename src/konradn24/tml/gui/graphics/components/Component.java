@@ -5,6 +5,7 @@ import konradn24.tml.Handler;
 public abstract class Component {
 	
 	protected float x, y, width, height;
+	protected float hoverOffsetX, hoverOffsetY;
 	
 	protected boolean invisible;
 	
@@ -47,7 +48,7 @@ public abstract class Component {
 		if(handler == null)
 			return false;
 		
-		if(handler.getMouseManager().isOn(x, y, width, height)) {
+		if(handler.getMouseManager().isOn(x + hoverOffsetX, y + hoverOffsetY, width, height)) {
 			return true;
 		} else {
 			return false;
@@ -150,6 +151,22 @@ public abstract class Component {
 
 	public void setHeight(float height) {
 		this.height = height;
+	}
+
+	public float getHoverOffsetX() {
+		return hoverOffsetX;
+	}
+
+	public void setHoverOffsetX(float hoverOffsetX) {
+		this.hoverOffsetX = hoverOffsetX;
+	}
+
+	public float getHoverOffsetY() {
+		return hoverOffsetY;
+	}
+
+	public void setHoverOffsetY(float hoverOffsetY) {
+		this.hoverOffsetY = hoverOffsetY;
 	}
 
 	public boolean isInvisible() {

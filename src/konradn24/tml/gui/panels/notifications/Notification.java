@@ -9,7 +9,7 @@ public class Notification {
 
 	private String text;
 	private NVGColor color, background;
-	private float alpha;
+	private int alpha;
 	private boolean fade;
 	
 	private Function onClick;
@@ -21,7 +21,7 @@ public class Notification {
 		this.color = color;
 		this.fade = fade;
 		
-		this.background = Colors.COLOR_BACKGROUND;
+		this.background = Colors.BACKGROUND;
 		this.alpha = NotificationsPanel.BACKGROUND_ALPHA;
 	}
 
@@ -34,7 +34,7 @@ public class Notification {
 	}
 	
 	public NVGColor getCurrentAlphaColor() {
-		return color.a(alpha);
+		return Colors.alpha(color, alpha);
 	}
 	
 	public NVGColor getBackground() {
@@ -42,18 +42,18 @@ public class Notification {
 	}
 	
 	public NVGColor getCurrentAlphaBackground() {
-		return background.a(alpha);
+		return Colors.alpha(background, alpha);
 	}
 	
 	public void setBackground(NVGColor color) {
 		this.background = color;
 	}
 
-	public float getAlpha() {
+	public int getAlpha() {
 		return alpha;
 	}
 
-	public void setAlpha(float alpha) {
+	public void setAlpha(int alpha) {
 		this.alpha = alpha;
 	}
 

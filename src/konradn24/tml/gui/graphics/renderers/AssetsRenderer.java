@@ -5,20 +5,29 @@ import static org.lwjgl.nanovg.NanoVG.*;
 import org.lwjgl.nanovg.NVGColor;
 import org.lwjgl.nanovg.NVGPaint;
 
+import konradn24.tml.graphics.Assets;
 import konradn24.tml.graphics.renderer.Texture;
+import konradn24.tml.gui.graphics.Colors;
 
 public class AssetsRenderer {
 
 	public static void renderTexture(long vg, Texture texture, float x, float y, float width, float height) {
+		if(texture.sheet.getNvgID() == Assets.NO_NVG) {
+			nvgRect(vg, x, y, width, height);
+			nvgFillColor(vg, Colors.PURPLE);
+			nvgFill(vg);
+			
+			return;
+		}
+		
 		float srcX = texture.u0 * texture.sheet.getWidth();
 		float srcY = texture.v0 * texture.sheet.getHeight();
 		float srcW = (texture.u1 - texture.u0) * texture.sheet.getWidth();
 		float srcH = (texture.v1 - texture.v0) * texture.sheet.getHeight();
 		
 		NVGPaint paint = NVGPaint.calloc();
-		nvgBeginPath(vg);
-		nvgRect(vg, x, y, width, height);
 		
+		nvgRect(vg, x, y, width, height);
 		nvgScissor(vg, x, y, width, height);
 		
 		nvgImagePattern(
@@ -41,8 +50,6 @@ public class AssetsRenderer {
 	}
 	
 	public static void renderDropdownIcon(long vg, float x, float y, float size, NVGColor color) {
-	    nvgBeginPath(vg);
-
 	    nvgMoveTo(vg, x, y);                  	// left
 	    nvgLineTo(vg, x + size, y);           	// right
 	    nvgLineTo(vg, x + size / 2, y + size);	// bottom-middle

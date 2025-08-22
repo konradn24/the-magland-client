@@ -14,6 +14,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
+import konradn24.tml.states.State;
+import konradn24.tml.states.gamestates.play.PlayState;
 import konradn24.tml.utils.Logging;
 
 public class Launcher {
@@ -77,13 +79,13 @@ public static final String VERSION = "ALPHA3";
 	private static void shutdownHandler() {
 		Logging.info("Runtime shutdown...");
 		
-//		if(State.getState() != null && State.getState().equals(game.gameState)) {
-//			if(game.tryAutoSave()) {
-//				Logging.info("Runtime shutdown: auto save success");
-//			} else {
-//				Logging.error("Runtime shutdown: auto save failed");
-//			}
-//		}
+		if(State.isCurrentState(PlayState.class)) {
+			if(game.tryAutoSave()) {
+				Logging.info("Runtime shutdown: auto save success");
+			} else {
+				Logging.error("Runtime shutdown: auto save failed");
+			}
+		}
 		
 		if(Logging.saveLog()) {
 			Logging.info("Runtime shutdown: save log success");

@@ -4,7 +4,7 @@ import konradn24.tml.Handler;
 import konradn24.tml.gui.graphics.widgets.msgbox.MessageBox;
 import konradn24.tml.gui.graphics.widgets.slots.Slot;
 import konradn24.tml.gui.graphics.widgets.slots.SlotMenu;
-import konradn24.tml.inventory.items.Item;
+import konradn24.tml.items.Item;
 import konradn24.tml.states.State;
 import konradn24.tml.utils.Logging;
 
@@ -36,7 +36,7 @@ public class InventorySlot extends Slot {
 		
 		new SlotAction("Information", () ->  {
 			MessageBox messageBox = new MessageBox(MessageBox.TYPE_OK, "Item info", property.item.getInfo(), handler);
-			State.getState().getDialogsManager().showMessageBox(messageBox);
+			State.showMessageBox(messageBox);
 		}),
 	};
 	

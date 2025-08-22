@@ -64,8 +64,8 @@ public class Dropdown extends Component {
 	private void init() {
 		font = Fonts.GLOBAL_FONT;
 		fontSize = Fonts.DEFAULT_SIZE;
-		color = Colors.COLOR_TEXT_LIGHT;
-		background = Colors.COLOR_BACKGROUND;
+		color = Colors.TEXT_LIGHT;
+		background = Colors.BACKGROUND;
 		
 		options = new LinkedHashMap<>();
 		closeOnFocusLost = true;
@@ -102,7 +102,7 @@ public class Dropdown extends Component {
 			Label label = entry.getKey();
 			Runnable action = entry.getValue();
 			
-			if(handler.getMouseManager().isLeftReleasedOn(x, label.getY(), width, label.getHeight()) && action != null) {
+			if(handler.getMouseManager().isLeftReleasedOn(x + hoverOffsetX, label.y + label.hoverOffsetY, width, label.height) && action != null) {
 				handler.getMouseManager().resetLeftRelease();
 				handler.getMouseManager().lockLeft();
 				
@@ -147,9 +147,27 @@ public class Dropdown extends Component {
 		
 		nvgBeginPath(vg);
 		nvgRect(vg, x, y, width, optionHeight * options.size());
-		nvgStrokeColor(vg, Colors.COLOR_OUTLINE);
+		nvgStrokeColor(vg, Colors.OUTLINE);
 		nvgStrokeWidth(vg, 2f);
 		nvgStroke(vg);
+	}
+	
+	@Override
+	public void setHoverOffsetX(float hoverOffsetX) {
+		super.setHoverOffsetX(hoverOffsetX);
+		
+		options.keySet().forEach(label -> {
+			label.setHoverOffsetX(hoverOffsetX);
+		});
+	}
+	
+	@Override
+	public void setHoverOffsetY(float hoverOffsetY) {
+		super.setHoverOffsetY(hoverOffsetY);
+
+		options.keySet().forEach(label -> {
+			label.setHoverOffsetY(hoverOffsetY);
+		});
 	}
 	
 	public void addOption(String text, Runnable action) {

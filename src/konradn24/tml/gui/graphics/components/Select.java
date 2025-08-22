@@ -1,5 +1,7 @@
 package konradn24.tml.gui.graphics.components;
 
+import static org.lwjgl.nanovg.NanoVG.nvgBeginPath;
+
 import konradn24.tml.Handler;
 import konradn24.tml.display.Display;
 import konradn24.tml.gui.graphics.Colors;
@@ -10,6 +12,7 @@ public class Select extends Component {
 
 	public static final float DEFAULT_OPTION_HEIGHT = Display.y(.0296f);
 	public static final float SELECT_ICON_OFFSET = Display.x(.0042f);
+	public static final float SELECT_ICON_SIZE_FACTOR = 0.6f;
 	
 	protected String selected;
 	
@@ -35,7 +38,7 @@ public class Select extends Component {
 	public Select(int x, int y, int width, int height, Handler handler) {
 		super(x, y, width, height, handler);
 		
-		selectIconSize = (int) (height * 0.8);
+		selectIconSize = (int) (height * SELECT_ICON_SIZE_FACTOR);
 		
 		button = new Button(selected, x, y, width, height, handler);
 		button.label.setWidth(width - selectIconSize - SELECT_ICON_OFFSET);
@@ -58,11 +61,7 @@ public class Select extends Component {
 	public void renderGUI(long vg) {
 		button.renderGUI(vg);
 		
-//		g.drawImage(
-//				Assets.selectIcon, button.x + button.width - selectIconSize - SELECT_ICON_OFFSET, button.y + button.height / 2 - selectIconSize / 2, 
-//				selectIconSize, selectIconSize, null
-//		);
-		
+		nvgBeginPath(vg);
 		AssetsRenderer.renderDropdownIcon(vg, 
 			button.x + button.width - selectIconSize - SELECT_ICON_OFFSET, 
 			button.y + button.height / 2 - selectIconSize / 2, selectIconSize, 
@@ -89,31 +88,49 @@ public class Select extends Component {
 		setSelected(options[0]);
 	}
 	
-	public void setX(int x) {
+	@Override
+	public void setX(float x) {
 		super.setX(x);
 		button.setX(x);
 		dropdown.setX(x);
 	}
 	
-	public void setY(int y) {
+	@Override
+	public void setY(float y) {
 		super.setY(y);
 		button.setY(y);
 		dropdown.setY(y + height);
 	}
 	
-	public void setWidth(int width) {
+	@Override
+	public void setWidth(float width) {
 		super.setWidth(width);
 		button.setWidth(width);
 		button.label.setWidth(width - selectIconSize - SELECT_ICON_OFFSET);
 		dropdown.setWidth(width);
 	}
 	
-	public void setHeight(int height) {
+	@Override
+	public void setHeight(float height) {
 		super.setHeight(height);
 		button.setHeight(height);
 		dropdown.setY(y + height);
-		selectIconSize = (int) (height * 0.8);
+		selectIconSize = (int) (height * SELECT_ICON_SIZE_FACTOR);
 		button.label.setWidth(width - selectIconSize - SELECT_ICON_OFFSET);
+	}
+	
+	@Override
+	public void setHoverOffsetX(float hoverOffsetX) {
+		super.setHoverOffsetX(hoverOffsetX);
+		button.setHoverOffsetX(hoverOffsetX);
+		dropdown.setHoverOffsetX(hoverOffsetX);
+	}
+	
+	@Override
+	public void setHoverOffsetY(float hoverOffsetY) {
+		super.setHoverOffsetY(hoverOffsetY);
+		button.setHoverOffsetY(hoverOffsetY);
+		dropdown.setHoverOffsetY(hoverOffsetY);
 	}
 	
 	public String getSelected() {

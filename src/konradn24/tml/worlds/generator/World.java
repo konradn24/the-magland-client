@@ -1,24 +1,36 @@
 package konradn24.tml.worlds.generator;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
 
 import konradn24.tml.Handler;
 import konradn24.tml.entities.EntityManager;
+import konradn24.tml.graphics.renderer.BatchRenderer;
+import konradn24.tml.graphics.shaders.Shader;
 import konradn24.tml.tiles.Grass;
 import konradn24.tml.tiles.Tile;
 import konradn24.tml.tiles.TileData;
 
 public class World {
+	
 	public static final float PLAYER_SPAWN_TILE_X = 0;
 	public static final float PLAYER_SPAWN_TILE_Y = 0;
+	
+	public static final String BIOME_NULL = "#null";
 	
 	protected Handler handler;
 	protected long seed;
 	protected float smoothness = 120, biomeSize = 150;
 	
 	protected ChunkManager chunkManager;
-	protected int shaderProgram;
+	protected Shader shader;
+	
+	protected Map<String, Vector3f> biomes = new HashMap<>();
 	
 	// Meta
 	protected String worldName = "";
@@ -28,18 +40,22 @@ public class World {
 	// Entities
 	protected EntityManager entityManager;
 	
-	public World(Handler handler, int shaderProgram) throws IOException {
+	public World(Handler handler, Shader chunkShader, Shader batchShader) throws IOException {
 		this.handler = handler;
-		this.shaderProgram = shaderProgram;
+		this.shader = chunkShader;
 		chunkManager = new ChunkManager(this);
 		entityManager = new EntityManager(handler);
+		
+		BatchRenderer.init(batchShader);
 	}
 	
-	public World(Handler handler, String path, int shaderProgram) throws IOException {
+	public World(Handler handler, String path, Shader chunkShader, Shader batchShader) throws IOException {
 		this.handler = handler;
-		this.shaderProgram = shaderProgram;
+		this.shader = chunkShader;
 		chunkManager = new ChunkManager(this);
 		entityManager = new EntityManager(handler);
+		
+		BatchRenderer.init(batchShader);
 		
 //		loadWorld(path);
 	}
@@ -52,14 +68,12 @@ public class World {
 	}
 	
 	public void updateAll(float dt) {
-		chunkManager.update(0, 0, 1);
 		update(dt);
-		
 		entityManager.update(dt);
-		chunkManager.update(handler.getPlayer().getChunkX(), handler.getPlayer().getChunkY(), handler.getSettings().getChunkLoadRadius());
+		chunkManager.update(handler.getPlayer().getChunkX(), handler.getPlayer().getChunkY());
 	}
 	
-	public void renderAll(){
+	public void renderAll(Matrix4f viewMatrix){
 //		int xStart = (int) handler.getGameCamera().getxOffset() / Tile.TILE_WIDTH - 2;
 //		int xEnd = (int) Math.ceil((handler.getGameCamera().getxOffset() + Display.LOGICAL_WIDTH) / Tile.TILE_WIDTH) + 2;
 //		int yStart = (int) handler.getGameCamera().getyOffset() / Tile.TILE_HEIGHT - 2;
@@ -76,9 +90,9 @@ public class World {
 //			}
 //		}
 		
-//		chunkManager.render(handler.getCamera().getViewMatrix());
+		chunkManager.render(viewMatrix);
 		render();
-		entityManager.render();
+		entityManager.render(viewMatrix);
 //		renderFog(g); // TODO Weather
 	}
 	
@@ -137,14 +151,18 @@ public class World {
 		return worldName;
 	}
 
-	public int getShaderProgram() {
-		return shaderProgram;
+	public Shader getShader() {
+		return shader;
 	}
 
-	public void setShaderProgram(int shaderProgram) {
-		this.shaderProgram = shaderProgram;
+	public void setShader(Shader shader) {
+		this.shader = shader;
 	}
 
+	public Map<String, Vector3f> getBiomes() {
+		return biomes;
+	}
+	
 	public void setWorldName(String worldName) {
 		this.worldName = worldName;
 	}

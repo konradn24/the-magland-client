@@ -95,13 +95,13 @@ public class ScrollPanel extends Component {
         	
         	nvgBeginPath(vg);
         	nvgRect(vg, x + width - SCROLLBAR_WIDTH - SCROLLBAR_MARGIN_X, y + SCROLLBAR_MARGIN_Y + thumbY, SCROLLBAR_WIDTH, thumbHeight);
-        	nvgFillColor(vg, Colors.COLOR_BACKGROUND_LIGHT);
+        	nvgFillColor(vg, Colors.BACKGROUND_LIGHT);
         	nvgFill(vg);
         	
         	nvgBeginPath(vg);
         	nvgRect(vg, x + width - SCROLLBAR_WIDTH - SCROLLBAR_MARGIN_X, y + SCROLLBAR_MARGIN_Y, SCROLLBAR_WIDTH, height);
         	nvgStrokeWidth(vg, 3f);
-        	nvgStrokeColor(vg, Colors.COLOR_OUTLINE);
+        	nvgStrokeColor(vg, Colors.OUTLINE);
         	nvgStroke(vg);
         }
 	}

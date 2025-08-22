@@ -7,6 +7,7 @@ import static org.lwjgl.glfw.GLFW.*;
 import org.lwjgl.nanovg.NanoVG;
 import static org.lwjgl.opengl.GL11.*;
 
+import konradn24.tml.debug.commands.CommandHandler;
 import konradn24.tml.display.Cursor;
 import konradn24.tml.display.Display;
 import konradn24.tml.graphics.Assets;
@@ -14,7 +15,11 @@ import konradn24.tml.input.KeyManager;
 import konradn24.tml.input.MouseManager;
 import konradn24.tml.states.Overlay;
 import konradn24.tml.states.State;
-import konradn24.tml.states.gamestates.PlayState;
+import konradn24.tml.states.gamestates.CreditsState;
+import konradn24.tml.states.gamestates.MenuState;
+import konradn24.tml.states.gamestates.SingleplayerLoadSaveState;
+import konradn24.tml.states.gamestates.play.PlayState;
+import konradn24.tml.states.gamestates.settings.SettingsState;
 import konradn24.tml.timers.FrameLimiter;
 import konradn24.tml.utils.Logging;
 
@@ -31,15 +36,14 @@ public class Game implements Runnable {
 	// Initializing
 	private String initializingInfo = "";
 	private boolean initializing = true;
+	private Throwable initializationError;
+	
 	private boolean running = false;
 	private Thread thread;
 	private boolean locked;
 	
 	// FPS
 	private FrameLimiter frameLimiter;
-	
-	// Game states
-	private PlayState playState;
 	
 	// Handler
 	private Handler handler;
@@ -53,33 +57,37 @@ public class Game implements Runnable {
 		Assets.init(display.getVG());
 		
 		new Thread(() -> {
-			initializingInfo = "Creating handler";
-			handler = new Handler(this);
-			
-			initializingInfo = "Initializing display";
-			keyManager = new KeyManager();
-			mouseManager = new MouseManager();
-			
-			keyManager.init(display);
-			mouseManager.init(display);
-			
-			frameLimiter = new FrameLimiter(60); // TODO
-			
-			initializingInfo = "Initializing states";
-			playState = new PlayState(handler);
-//			menuState = new MenuState(handler);
-//			settingsState = new SettingsState(handler);
-//			creditsState = new CreditsState(handler);
-//			singleplayerLoadSaveState = new SingleplayerLoadSaveState(handler);
-			
-			initializingInfo = "Finishing";
-//			CommandHandler.init(handler);
-			refreshSettings(List.of("ALL"));
-//			
-			Logging.info("Initialization completed. Elapsed time: " + (System.currentTimeMillis() - Launcher.time) + "ms");
-			playState.getGUI().getDebugPanel().print("Initialization completed. Elapsed time: " + (System.currentTimeMillis() - Launcher.time) + "ms");
-			
-	        initializing = false;
+			try {
+				initializingInfo = "Creating handler";
+				handler = new Handler(this);
+				
+				initializingInfo = "Initializing display";
+				keyManager = new KeyManager();
+				mouseManager = new MouseManager();
+				
+				keyManager.init(display);
+				mouseManager.init(display);
+				
+				frameLimiter = new FrameLimiter(60);
+				
+				initializingInfo = "Initializing states";
+				State.register(PlayState.class, handler);
+				State.register(MenuState.class, handler);
+				State.register(SettingsState.class, handler);
+				State.register(CreditsState.class, handler);
+				State.register(SingleplayerLoadSaveState.class, handler);
+				
+				initializingInfo = "Finishing";
+				CommandHandler.init(handler);
+				refreshSettings(List.of("ALL"));
+				
+				Logging.info("Initialization completed. Elapsed time: " + (System.currentTimeMillis() - Launcher.time) + "ms");
+				((PlayState) State.getState(PlayState.class)).getGUI().getDebugPanel().print("Initialization completed. Elapsed time: " + (System.currentTimeMillis() - Launcher.time) + "ms");
+				
+		        initializing = false;
+			} catch (Exception e) {
+				initializationError = e;
+			}
 	    }).start();
 		
 		while(initializing && !display.shouldClose()) {
@@ -94,14 +102,18 @@ public class Game implements Runnable {
 			}
 		}
 		
-		State.setState(playState, null);
+		if(initializationError != null) {
+			throw new RuntimeException(initializationError);
+		}
+		
+		State.setState(MenuState.class, null);
 	}
 	
 	private void update(float dt) {
 		display.setCursor(Cursor.ARROW);
 		mouseManager.disableTooltip();
 		
-		if(State.getState() != null) {
+		if(State.getCurrentState() != null) {
 			if(!locked) {
 				if(Overlay.isActive()) {
 					Overlay.getOverlay().update(dt);
@@ -111,16 +123,16 @@ public class Game implements Runnable {
 						Overlay.clear();
 					}
 				} else {
-					State.getState().update(dt);
+					State.getCurrentState().update(dt);
 					
-					if(!State.getState().isNoHistory() && keyManager.isPressed(GLFW_KEY_ESCAPE)) {
+					if(!State.getCurrentState().isNoHistory() && keyManager.isPressed(GLFW_KEY_ESCAPE)) {
 						keyManager.lockKey(GLFW_KEY_ESCAPE);
-						State.getState().onBack();
+						State.getCurrentState().onBack();
 					}
 				}
 			}
 			
-			State.getState().getDialogsManager().update(dt);
+			State.getCurrentState().getDialogsManager().update(dt);
 		}
 		
 		keyManager.update();
@@ -131,8 +143,8 @@ public class Game implements Runnable {
 		glClearColor(0, 0, 0, 1);
 		glClear(GL_COLOR_BUFFER_BIT);
 		
-		if(State.getState() != null) {
-			State.getState().render();
+		if(State.getCurrentState() != null) {
+			State.getCurrentState().render();
 		}
 		
 //		handler.getRenderingRules().render(handler);
@@ -141,15 +153,15 @@ public class Game implements Runnable {
 	private void renderGUI(long vg) {
 		NanoVG.nvgBeginFrame(display.getVG(), Display.LOGICAL_WIDTH, Display.LOGICAL_HEIGHT, 1);
 		
-		if(State.getState() != null) {
-			State.getState().renderGUI(vg);
+		if(State.getCurrentState() != null) {
+			State.getCurrentState().renderGUI(vg);
 			
 			if(Overlay.isActive()) {
 				Overlay.getOverlay().renderGUI(vg);
 			}
 		}
 		
-		State.getState().getDialogsManager().renderGUI(vg);
+		State.getCurrentState().getDialogsManager().renderGUI(vg);
 		
 		mouseManager.renderGUITooltip(vg, display.getViewportWidth(), display.getViewportHeight());
 		
@@ -170,11 +182,7 @@ public class Game implements Runnable {
 			glfwPollEvents();
 			
 			update(dt);
-			
-			glPushMatrix();
 			render();
-			glPopMatrix();
-			
 			renderGUI(display.getVG());
 			
 			glfwSwapBuffers(display.getWindow());
@@ -201,18 +209,10 @@ public class Game implements Runnable {
 	
 	public void refreshSettings(List<String> changed) {
 		if(changed.contains("fullscreen") || changed.contains("ALL")) {
-			if(handler.getSettings().isFullscreen() && !display.isFullscreen()) {
-				display.destroy();
-				display.createDisplay(true);
-				
-				keyManager.init(display);
-				mouseManager.init(display);
-			} else if(!handler.getSettings().isFullscreen() && display.isFullscreen()) {
-				display.destroy();
-				display.createDisplay(false);
-				
-				keyManager.init(display);
-				mouseManager.init(display);
+			if(handler.getSettings().isFullscreen()) {
+				display.enableFullscreen();
+			} else {
+				display.disableFullscreen();
 			}
 		}
 		
@@ -222,7 +222,11 @@ public class Game implements Runnable {
 	}
 	
 	public boolean tryAutoSave() {
-		return false;
+		if(handler == null || handler.getSavesManager() == null) {
+			return false;
+		}
+		
+		return handler.getSavesManager().save();
 	}
 	
 	public KeyManager getKeyManager(){
@@ -247,9 +251,5 @@ public class Game implements Runnable {
 
 	public FrameLimiter getFrameLimiter() {
 		return frameLimiter;
-	}
-
-	public PlayState getPlayState() {
-		return playState;
 	}
 }

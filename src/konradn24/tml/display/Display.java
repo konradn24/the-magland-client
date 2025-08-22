@@ -5,6 +5,9 @@ import static org.lwjgl.glfw.GLFW.*;
 import org.lwjgl.nanovg.NVGColor;
 import org.lwjgl.nanovg.NanoVG;
 import org.lwjgl.nanovg.NanoVGGL3;
+import org.lwjgl.opengl.GL43;
+import org.lwjgl.opengl.GLDebugMessageCallback;
+
 import static org.lwjgl.opengl.GL.*;
 import static org.lwjgl.opengl.GL11.*;
 
@@ -15,6 +18,7 @@ import org.lwjgl.system.MemoryUtil;
 
 import konradn24.tml.graphics.renderer.Texture;
 import konradn24.tml.gui.graphics.Fonts;
+import konradn24.tml.utils.Logging;
 
 public class Display {
 
@@ -24,6 +28,7 @@ public class Display {
 	
 	private long window;
 	private long vg;
+	private int windowedX, windowedY, windowedWidth, windowedHeight;
 
 	private int windowWidth, windowHeight;
 	private int viewportX, viewportY, viewportWidth, viewportHeight;
@@ -33,12 +38,12 @@ public class Display {
 
 	public Display(String title) {
 		this.title = title;
-		createDisplay(false);
+		this.fullscreen = false;
+		
+		createDisplay();
 	}
 
-	public void createDisplay(boolean fullscreen) {
-		this.fullscreen = fullscreen;
-
+	public void createDisplay() {
 		if (!glfwInit()) {
 			throw new IllegalStateException("Unable to initialize GLFW");
 		}
@@ -46,13 +51,11 @@ public class Display {
 		glfwDefaultWindowHints();
 		glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
-		long monitor = fullscreen ? glfwGetPrimaryMonitor() : MemoryUtil.NULL;
-
 		GLFWVidMode videoMode = glfwGetVideoMode(glfwGetPrimaryMonitor());
 		windowWidth = videoMode.width();
 		windowHeight = videoMode.height();
 
-		window = glfwCreateWindow(windowWidth, windowHeight, title, monitor, MemoryUtil.NULL);
+		window = glfwCreateWindow(windowWidth, windowHeight, title, MemoryUtil.NULL, MemoryUtil.NULL);
 		if (window == MemoryUtil.NULL) {
 			throw new RuntimeException("Failed to create GLFW window");
 		}
@@ -69,7 +72,17 @@ public class Display {
 		
 		glfwGetWindowSize(window, widthBuffer, heightBuffer);
 		
-		onResize(widthBuffer.get(), heightBuffer.get());
+		int width = widthBuffer.get(0), height = heightBuffer.get(0);
+		
+		onResize(width, height);
+		
+		int[] xpos = new int[1];
+		int[] ypos = new int[1];
+		glfwGetWindowPos(window, xpos, ypos);
+		windowedX = xpos[0];
+		windowedY = ypos[0];
+		windowedWidth = width;
+		windowedHeight = height;
 		
 		vg = NanoVGGL3.nnvgCreate(NanoVGGL3.NVG_ANTIALIAS);
 		
@@ -83,10 +96,36 @@ public class Display {
 			throw new RuntimeException("Could not load global font");
 		}
 		
-		glDisable(GL_DEPTH_TEST);
-		glDisable(GL_CULL_FACE);
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		GL43.glDebugMessageCallback((source, type, id, severity, length, message, userParam) -> {
+		    Logging.error("OpenGL: " + GLDebugMessageCallback.getMessage(length, message));
+		}, 0);
+	}
+	
+	public void enableFullscreen() {
+        fullscreen = true;
+        
+        int[] xpos = new int[1];
+        int[] ypos = new int[1];
+        int[] w = new int[1];
+        int[] h = new int[1];
+        glfwGetWindowPos(window, xpos, ypos);
+        glfwGetWindowSize(window, w, h);
+
+        windowedX = xpos[0];
+        windowedY = ypos[0];
+        windowedWidth = w[0];
+        windowedHeight = h[0];
+        
+        long monitor = glfwGetPrimaryMonitor();
+        var mode = glfwGetVideoMode(monitor);
+
+        glfwSetWindowMonitor(window, monitor, 0, 0, mode.width(), mode.height(), mode.refreshRate());
+    }
+	
+	public void disableFullscreen() {
+		fullscreen = false;
+		
+		glfwSetWindowMonitor(window, MemoryUtil.NULL, windowedX, windowedY, windowedWidth, windowedHeight, 0);
 	}
 
 	private void onResize(int width, int height) {

@@ -1,11 +1,16 @@
 package konradn24.tml.states;
 
+import konradn24.tml.Handler;
+
 public abstract class Overlay {
 	
 	private static Overlay currentOverlay = null;
 	
 	public static void setOverlay(Overlay overlay) {
-		currentOverlay.cleanup();
+		if(currentOverlay != null) {
+			currentOverlay.cleanup();
+		}
+		
 		currentOverlay = overlay;
 		currentOverlay.init();
 	}
@@ -24,13 +29,13 @@ public abstract class Overlay {
 	
 	// CLASS
 
-	public Overlay(Class<? extends State> stateClass/*, Handler handler*/) {
+	public Overlay(Class<? extends State> stateClass, Handler handler) {
 		this.stateClass = stateClass;
-//		this.handler = handler;
+		this.handler = handler;
 	}
 	
 	protected Class<? extends State> stateClass;
-//	protected Handler handler;
+	protected Handler handler;
 	
 	public abstract void init();
 	public abstract void update(float dt);

@@ -1,5 +1,9 @@
 {
   "fullscreen": false,
-  "fpsLimit": 60,
-  "autoSaveInterval": 1
+  "fpsLimit": 120,
+  "autoSaveInterval": 1,
+  "controls": {
+    "debugPanelKey": 290,
+    "debugStatsKey": 292
+  }
 }

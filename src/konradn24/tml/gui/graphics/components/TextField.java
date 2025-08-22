@@ -31,7 +31,7 @@ public class TextField extends Component {
 		
 		placeholder = new Label(handler);
 		placeholder.setDisplayType(DisplayType.BOX);
-		placeholder.setColor(Colors.COLOR_TEXT_PLACEHOLDER);
+		placeholder.setColor(Colors.TEXT_PLACEHOLDER);
 		
 		text = new Label(handler);
 		text.setDisplayType(DisplayType.BOX);
@@ -42,7 +42,7 @@ public class TextField extends Component {
 		
 		placeholder = new Label("", x + paddingX, y + paddingY, width - paddingX, height - paddingY, AlignX.LEFT, AlignY.CENTER, handler);
 		placeholder.setDisplayType(DisplayType.BOX);
-		placeholder.setColor(Colors.COLOR_TEXT_PLACEHOLDER);
+		placeholder.setColor(Colors.TEXT_PLACEHOLDER);
 		
 		text = new Label("", x + paddingX, y + paddingY, width - paddingX, height - paddingY, AlignX.LEFT, AlignY.CENTER, handler);
 		text.setDisplayType(DisplayType.BOX);
@@ -114,7 +114,7 @@ public class TextField extends Component {
 		if(disabled) {
 			nvgBeginPath(vg);
 			nvgRoundedRect(vg, x, y, width, height, 5);
-			nvgFillColor(vg, Colors.COLOR_BACKGROUND_LIGHT);
+			nvgFillColor(vg, Colors.BACKGROUND_LIGHT);
 			nvgFill(vg);
 			
 			return;
@@ -122,11 +122,11 @@ public class TextField extends Component {
 		
 		nvgBeginPath(vg);
 		nvgRoundedRect(vg, x, y, width, height, 5);
-		nvgFillColor(vg, Colors.COLOR_BACKGROUND);
+		nvgFillColor(vg, Colors.BACKGROUND);
 		nvgFill(vg);
 		
 		nvgStrokeWidth(vg, 2f);
-		nvgStrokeColor(vg, focus ? Colors.COLOR_OUTLINE : Colors.rgba(0, 0, 0, 255));
+		nvgStrokeColor(vg, focus ? Colors.OUTLINE : Colors.rgba(0, 0, 0, 255));
 		nvgStroke(vg);
 	}
 	
@@ -171,6 +171,11 @@ public class TextField extends Component {
 	
 	public void setContent(String content) {
 		this.fullContent = content;
+		
+		if(focus) {
+			handler.getKeyManager().setTypingBuffer(content);
+		}
+		
 		contentUpdated = true;
 	}
 	
@@ -187,7 +192,8 @@ public class TextField extends Component {
 	}
 
 	public void setFocus(boolean focus) {
-		this.focus = focus;
+		if(focus) enableFocus();
+		else disableFocus();
 	}
 
 	public boolean isDisabled() {

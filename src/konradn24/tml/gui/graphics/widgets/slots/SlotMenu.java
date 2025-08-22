@@ -29,7 +29,7 @@ public class SlotMenu<T extends Slot> {
 		
 		font = Fonts.GLOBAL_FONT;
 		fontSize = Fonts.DEFAULT_SIZE;
-		textColor = Colors.COLOR_TEXT;
+		textColor = Colors.TEXT;
 		bottomTextOffsetY = 15;
 		
 		slots = new GridLayout<T>(

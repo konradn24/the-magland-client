@@ -11,16 +11,17 @@ import org.joml.Vector4f;
 
 import konradn24.tml.Handler;
 import konradn24.tml.entities.actions.Action;
-import konradn24.tml.entities.creatures.characters.Player;
+import konradn24.tml.entities.dynamic.characters.Player;
 import konradn24.tml.entities.statics.Pouch;
 import konradn24.tml.graphics.Assets;
 import konradn24.tml.graphics.renderer.Animation;
-import konradn24.tml.graphics.renderer.BatchSprite;
+import konradn24.tml.graphics.renderer.BatchRenderer;
 import konradn24.tml.graphics.renderer.Texture;
+import konradn24.tml.gui.graphics.Colors;
 import konradn24.tml.inventory.Inventory;
 import konradn24.tml.inventory.InventoryProperty;
-import konradn24.tml.inventory.items.Item;
-import konradn24.tml.inventory.tools.Tool;
+import konradn24.tml.items.Item;
+import konradn24.tml.items.tools.Tool;
 import konradn24.tml.tiles.Tile;
 import konradn24.tml.utils.Logging;
 import konradn24.tml.utils.Modules;
@@ -39,13 +40,11 @@ public abstract class Entity {
 	public static final byte UP = 1, RIGHT = 2, DOWN = 3, LEFT = 4;
 	
 	protected Transform transform;
+	protected Transform bounds;
 	protected float originX, originY;
-
-	protected float boundsX, boundsY, boundsWidth, boundsHeight;
 	
 	protected Texture texture, customActionIcon;
 	protected Animation animation;
-	protected BatchSprite sprite;
 	
 	protected int health, maxHealth;
 	protected boolean visible, dead, killable;
@@ -84,27 +83,19 @@ public abstract class Entity {
 		}
 		
 		this.transform = new Transform();
-		this.transform.size.x = texture.width;
-		this.transform.size.y = texture.height;
+		this.transform.size.x = texture.assetWidth * Tile.SIZE;
+		this.transform.size.y = texture.assetHeight * Tile.SIZE;
+		
+		this.bounds = new Transform();
 		
 		init();
 		
 		this.transform.position.x = x * Tile.SIZE - originX;
 		this.transform.position.y = y * Tile.SIZE - originY;
-		this.transform.calculateZIndex();
-		
-		if(texture == null) {
-			this.sprite = new BatchSprite(new Vector4f(0, 0, 0, 1), transform);
-		} else {
-			this.sprite = new BatchSprite(texture, transform);
-		}
 	}
 	
 	public Entity(Handler handler, float x, float y, float width, float height) {
 		this.handler = handler;
-		this.transform = new Transform();
-		this.transform.size.x = width * Tile.SIZE;
-		this.transform.size.y = height * Tile.SIZE;
 		health = DEFAULT_HEALTH;
 		maxHealth = DEFAULT_HEALTH;
 		killable = true;
@@ -123,17 +114,16 @@ public abstract class Entity {
 			this.texture = this.animation.getCurrentFrame();
 		}
 		
+		this.transform = new Transform();
+		this.transform.size.x = width * Tile.SIZE;
+		this.transform.size.y = height * Tile.SIZE;
+		
+		this.bounds = new Transform();
+		
 		init();
 		
 		this.transform.position.x = (int) (x * Tile.SIZE - originX);
 		this.transform.position.y = (int) (y * Tile.SIZE - originY);
-		this.transform.calculateZIndex();
-		
-		if(texture == null) {
-			this.sprite = new BatchSprite(new Vector4f(0, 0, 0, 1), transform);
-		} else {
-			this.sprite = new BatchSprite(texture, transform);
-		}
 	}
 	
 	// Abstracts
@@ -145,8 +135,20 @@ public abstract class Entity {
 	// Additional methods
 	public void renderGUI(long vg) {}
 	
-	protected void updateSprite() {
-		sprite.update(transform);
+	public void renderDebug() {
+		//Collision boxes
+		if(handler.getRenderingRules().collisionBoxes && !bounds.isZero()) {
+			BatchRenderer.renderQuad(
+				transform.position.x + bounds.position.x, 
+				transform.position.y + bounds.position.y, 
+				bounds.size.x, bounds.size.y,
+				new Vector4f(255, 0, 255, 0.4f)
+			);
+		}
+		
+		if(handler.getRenderingRules().tags && hover()) {
+			handler.getMouseManager().enableTooltip(getDebugAddress(), Colors.PURPLE);
+		}
 	}
 	
 	protected void updateAnimation() {
@@ -159,18 +161,22 @@ public abstract class Entity {
 		switch(lookingDirection) {
 			case UP: {
 				animation = up;
+				break;
 			}
 			
 			case RIGHT: {
 				animation = right;
+				break;
 			}
 			
 			case LEFT: {
 				animation = left;
+				break;
 			}
 			
 			default: {
 				animation = down;
+				break;
 			}
 		}
 	}
@@ -299,35 +305,6 @@ public abstract class Entity {
 			return false;
 	}
 	
-	//Checking collisions
-	public boolean collidesWithAny(float xOffset, float yOffset) {
-		if(!hasBounds())
-			return false;
-		
-		for(Entity entity : handler.getWorld().getEntityManager().getEntities()) {
-			if(entity.equals(this) || !entity.hasBounds())
-				continue;
-			
-			if(collidesWith(entity, xOffset, yOffset))
-				return true;
-		}
-		
-		return false;
-	}
-	
-	public boolean collidesWith(Entity entity, float xOffset, float yOffset) {
-		if(!hasBounds())
-			return false;
-		
-		if(entity.equals(this) || !entity.hasBounds())
-			return false;
-		
-		float boundsX = this.boundsX + xOffset;
-		float boundsY = this.boundsY + yOffset;
-		
-		return (boundsX >= entity.boundsX && boundsX <= entity.boundsX + entity.boundsWidth && boundsY >= boundsY && entity.boundsY <= entity.boundsY + entity.boundsHeight);
-	}
-	
 	public boolean isPlayerOn() {
 		float playerX = handler.getPlayer().getX();
 		float playerY = handler.getPlayer().getY();
@@ -341,22 +318,6 @@ public abstract class Entity {
 		int distance = (int) Math.hypot(transform.position.x - handler.getPlayer().getX(), transform.position.y - handler.getPlayer().getY());
 		
 		return distance;
-	}
-	
-	public void renderDebug() {
-		//Collision boxes
-//		if(handler.getRenderingRules().collisionBoxes && bounds != null) {
-//			g.setColor(Color.black);
-//			g.fillRect((int) (x + bounds.x - handler.getCamera().getxOffset()),
-//					(int) (y + bounds.y - handler.getCamera().getyOffset()),
-//					bounds.width, bounds.height);
-//		}
-//		
-//		if(handler.getRenderingRules().tags) {
-//			g.setColor(Color.magenta);
-//			g.setFont(Presets.FONT_GLOBAL);
-//			g.drawString(getDebugAddress(), (int) getScreenX(), (int) getScreenY());
-//		}
 	}
 	
 	public String getDebugAddress() {
@@ -449,7 +410,7 @@ public abstract class Entity {
 	public float getScreenY() {
 		return transform.position.y - handler.getCamera().getPosition().y;
 	}
-
+	
 	public Texture getTexture() {
 		return texture;
 	}
@@ -464,10 +425,6 @@ public abstract class Entity {
 
 	public void setAnimation(Animation animation) {
 		this.animation = animation;
-	}
-
-	BatchSprite getSprite() {
-		return sprite;
 	}
 
 	public boolean isKillable() {
@@ -504,33 +461,17 @@ public abstract class Entity {
 		setHealth(health);
 	}
 	
-	public float getBoundsX() {
-		return boundsX;
-	}
-	
-	public float getBoundsY() {
-		return boundsY;
-	}
-	
-	public float getBoundsWidth() {
-		return boundsWidth;
-	}
-	
-	public float getBoundsHeight() {
-		return boundsHeight;
+	public Transform getBounds() {
+		return bounds;
 	}
 
 	public void setBounds(float boundsX, float boundsY, float boundsWidth, float boundsHeight) {
-		this.boundsX = boundsX;
-		this.boundsY = boundsY;
-		this.boundsWidth = boundsWidth;
-		this.boundsHeight = boundsHeight;
+		this.bounds.position.x = boundsX;
+		this.bounds.position.y = boundsY;
+		this.bounds.size.x = boundsWidth;
+		this.bounds.size.y = boundsHeight;
 	}
 	
-	public boolean hasBounds() {
-		return boundsWidth > 0 && boundsHeight > 0;
-	}
-
 	public void setOrigin(Origin origin) {
 		switch(origin) {
 			case TOP_LEFT: {

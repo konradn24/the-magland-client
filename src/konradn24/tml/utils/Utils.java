@@ -13,6 +13,8 @@ import java.util.function.Consumer;
 
 public class Utils {
 	
+	public static final float EPS = 1e-6f;
+	
 	public static String loadFileAsString(String path){
 		StringBuilder builder = new StringBuilder();
 		
@@ -112,6 +114,10 @@ public class Utils {
     }
 	
 	public static int clamp(int v, int min, int max) {
+        return Math.max(min, Math.min(max, v));
+    }
+	
+	public static float clamp(float v, float min, float max) {
         return Math.max(min, Math.min(max, v));
     }
 	

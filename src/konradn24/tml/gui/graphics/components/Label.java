@@ -32,22 +32,22 @@ public class Label extends Component {
 	
 	public Label(Handler handler) {
 		super(handler);
-		init("", Fonts.GLOBAL_FONT, Colors.COLOR_TEXT);
+		init("", Fonts.GLOBAL_FONT, Colors.TEXT);
 	}
 	
 	public Label(String content, Handler handler) {
 		super(handler);
-		init(content, Fonts.GLOBAL_FONT, Colors.COLOR_TEXT);
+		init(content, Fonts.GLOBAL_FONT, Colors.TEXT);
 	}
 	
 	public Label(String content, float x, float y, Handler handler) {
 		super(x, y, handler);
-		init(content, Fonts.GLOBAL_FONT, Colors.COLOR_TEXT);
+		init(content, Fonts.GLOBAL_FONT, Colors.TEXT);
 	}
 	
 	public Label(String content, float x, float y, float width, float height, AlignX alignX, AlignY alignY, Handler handler) {
 		super(x, y, width, height, handler);
-		init(content, Fonts.GLOBAL_FONT, Colors.COLOR_TEXT);
+		init(content, Fonts.GLOBAL_FONT, Colors.TEXT);
 		
 		this.alignX = alignX;
 		this.alignY = alignY;
@@ -55,7 +55,7 @@ public class Label extends Component {
 	
 	public Label(String content, float x, float y, float width, float height, float padding, Handler handler) {
 		super(x, y, width, height, handler);
-		init(content, Fonts.GLOBAL_FONT, Colors.COLOR_TEXT);
+		init(content, Fonts.GLOBAL_FONT, Colors.TEXT);
 		
 		this.padding = padding;
 	}
@@ -86,12 +86,14 @@ public class Label extends Component {
 			nvgFill(vg);
 		}
 		
+		nvgBeginPath(vg);
 		nvgFontFace(vg, font);
 		nvgFontSize(vg, fontSize);
 		nvgFillColor(vg, color);
 		
 		switch(displayType) {
 			case DEFAULT: {
+				nvgBeginPath(vg);
 				nvgTextAlign(vg, NVG_ALIGN_CENTER | NVG_ALIGN_MIDDLE);
 				nvgText(vg, x, y, content);
 				
@@ -104,6 +106,7 @@ public class Label extends Component {
 			}
 			
 			case ORIGIN: {
+				nvgBeginPath(vg);
 				nvgTextAlign(vg, NVG_ALIGN_LEFT | NVG_ALIGN_TOP);
 				nvgText(vg, x, y, content);
 				
@@ -116,6 +119,7 @@ public class Label extends Component {
 			}
 			
 			case BOX: {
+				nvgBeginPath(vg);
 				TextRenderer.renderString(vg, content, x, y, width, height, alignX, alignY, overflow);
 				
 				break;

@@ -16,30 +16,28 @@ public class ProgressBar extends Component {
 	
 	public ProgressBar(Handler handler) {
 		super(handler);
-		
-		this.minValue = 0;
-		this.maxValue = 1;
+		init(0, 1);
 	}
 	
 	public ProgressBar(float x, float y, float width, float height, Handler handler) {
 		super(x, y, width, height, handler);
-		
-		this.minValue = 0;
-		this.maxValue = 1;
+		init(0, 1);
 	}
 	
 	public ProgressBar(float x, float y, float width, float height, float maxValue, Handler handler) {
 		super(x, y, width, height, handler);
-		
-		this.minValue = 0;
-		this.maxValue = maxValue;
+		init(0, maxValue);
 	}
 	
 	public ProgressBar(float x, float y, float width, float height, float minValue, float maxValue, Handler handler) {
 		super(x, y, width, height, handler);
-		
+		init(minValue, maxValue);
+	}
+	
+	private void init(float minValue, float maxValue) {
 		this.minValue = minValue;
 		this.maxValue = maxValue;
+		this.color = Colors.GREEN;
 	}
 	
 	@Override
@@ -64,7 +62,7 @@ public class ProgressBar extends Component {
 		nvgFillColor(vg, color);
 		nvgFill(vg);
 		
-		nvgStrokeColor(vg, Colors.COLOR_OUTLINE);
+		nvgStrokeColor(vg, Colors.OUTLINE);
 		nvgStrokeWidth(vg, 3f);
 		nvgStroke(vg);
 	}
