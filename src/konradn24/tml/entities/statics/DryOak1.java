@@ -5,7 +5,7 @@ import konradn24.tml.items.tools.Tool;
 
 public class DryOak1 extends StaticEntity {
 
-	public DryOak1(Handler handler, float x, float y) {
+	public DryOak1(Handler handler, double x, double y) {
 		super(handler, x, y);
 	}
 

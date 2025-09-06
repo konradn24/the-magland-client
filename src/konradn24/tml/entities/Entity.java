@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import org.joml.Vector2f;
 import org.joml.Vector4f;
 
 import konradn24.tml.Handler;
@@ -62,7 +63,7 @@ public abstract class Entity {
 	
 	// REAL (X, Y) CONSTRUCTORS
 	
-	public Entity(Handler handler, float x, float y) {
+	public Entity(Handler handler, double x, double y) {
 		this.handler = handler;
 		health = DEFAULT_HEALTH;
 		maxHealth = DEFAULT_HEALTH;
@@ -94,7 +95,7 @@ public abstract class Entity {
 		this.transform.position.y = y * Tile.SIZE - originY;
 	}
 	
-	public Entity(Handler handler, float x, float y, float width, float height) {
+	public Entity(Handler handler, double x, double y, double width, double height) {
 		this.handler = handler;
 		health = DEFAULT_HEALTH;
 		maxHealth = DEFAULT_HEALTH;
@@ -122,8 +123,8 @@ public abstract class Entity {
 		
 		init();
 		
-		this.transform.position.x = (int) (x * Tile.SIZE - originX);
-		this.transform.position.y = (int) (y * Tile.SIZE - originY);
+		this.transform.position.x = x * Tile.SIZE - originX;
+		this.transform.position.y = y * Tile.SIZE - originY;
 	}
 	
 	// Abstracts
@@ -139,9 +140,9 @@ public abstract class Entity {
 		//Collision boxes
 		if(handler.getRenderingRules().collisionBoxes && !bounds.isZero()) {
 			BatchRenderer.renderQuad(
-				transform.position.x + bounds.position.x, 
-				transform.position.y + bounds.position.y, 
-				bounds.size.x, bounds.size.y,
+				(float) (getScreenX() + bounds.position.x),
+				(float) (getScreenY() + bounds.position.y),
+				(float) bounds.size.x, (float) bounds.size.y,
 				new Vector4f(255, 0, 255, 0.4f)
 			);
 		}
@@ -281,8 +282,8 @@ public abstract class Entity {
 	}
 	
 	public boolean hover() {
-		float screenX = getScreenX();
-		float screenY = getScreenY();
+		double screenX = getScreenX();
+		double screenY = getScreenY();
 		
 		if(handler.getMouseManager().getMouseX() >= screenX && handler.getMouseManager().getMouseX() <= screenX + transform.size.x &&
 		   handler.getMouseManager().getMouseY() >= screenY && handler.getMouseManager().getMouseY() <= screenY + transform.size.y)
@@ -306,10 +307,10 @@ public abstract class Entity {
 	}
 	
 	public boolean isPlayerOn() {
-		float playerX = handler.getPlayer().getX();
-		float playerY = handler.getPlayer().getY();
-		float playerWidth = handler.getPlayer().getWidth();
-		float playerHeight = handler.getPlayer().getHeight();
+		double playerX = handler.getPlayer().getX();
+		double playerY = handler.getPlayer().getY();
+		double playerWidth = handler.getPlayer().getWidth();
+		double playerHeight = handler.getPlayer().getHeight();
 		
 		return (transform.position.x >= playerX && transform.position.x <= playerX + playerWidth && transform.position.y >= playerY && transform.position.y <= playerY + playerHeight);
 	}
@@ -327,51 +328,51 @@ public abstract class Entity {
 		return classAddress;
 	}
 	
-	public float getX() {
+	public double getX() {
 		return transform.position.x + originX;
 	}
 	
-	public float getWorldX() {
+	public double getWorldX() {
 		return (transform.position.x + originX) / Tile.SIZE;
 	}
 
-	public void setX(float x) {
+	public void setX(double x) {
 		this.transform.position.x = x - originX;
 	}
 	
-	public void setWorldX(float x) {
+	public void setWorldX(double x) {
 		this.transform.position.x = x * Tile.SIZE - originX;
 	}
 
-	public float getY() {
+	public double getY() {
 		return transform.position.y + originY;
 	}
 	
-	public float getWorldY() {
+	public double getWorldY() {
 		return (transform.position.y + originY) / Tile.SIZE;
 	}
 
-	public void setY(float y) {
+	public void setY(double y) {
 		this.transform.position.y = y - originY;
 	}
 	
-	public void setWorldY(float y) {
+	public void setWorldY(double y) {
 		this.transform.position.y = y * Tile.SIZE - originY;
 	}
 	
-	public float getRealX() {
+	public double getRealX() {
 		return transform.position.x;
 	}
 	
-	public void setRealX(float x) {
+	public void setRealX(double x) {
 		this.transform.position.x = x;
 	}
 	
-	public float getRealY() {
+	public double getRealY() {
 		return transform.position.y;
 	}
 	
-	public void setRealY(float y) {
+	public void setRealY(double y) {
 		this.transform.position.y = y;
 	}
 	
@@ -383,19 +384,19 @@ public abstract class Entity {
 		return Math.floorDiv((int) getWorldY(), Chunk.SIZE);
 	}
 
-	public float getWidth() {
+	public double getWidth() {
 		return transform.size.x;
 	}
 
-	public void setWidth(float width) {
+	public void setWidth(double width) {
 		this.transform.size.x = width;
 	}
 
-	public float getHeight() {
+	public double getHeight() {
 		return transform.size.y;
 	}
 
-	public void setHeight(float height) {
+	public void setHeight(double height) {
 		this.transform.size.y = height;
 	}
 	
@@ -403,12 +404,19 @@ public abstract class Entity {
 		return transform;
 	}
 	
+	public Vector2f getScreenPosition() {
+		float screenX = (float) (transform.position.x - handler.getCamera().getPosition().x);
+		float screenY = (float) (transform.position.y - handler.getCamera().getPosition().y);
+		
+		return new Vector2f(screenX, screenY);
+	}
+	
 	public float getScreenX() {
-		return transform.position.x - handler.getCamera().getPosition().x;
+		return (float) (transform.position.x - handler.getCamera().getPosition().x);
 	}
 
 	public float getScreenY() {
-		return transform.position.y - handler.getCamera().getPosition().y;
+		return (float) (transform.position.y - handler.getCamera().getPosition().y);
 	}
 	
 	public Texture getTexture() {
@@ -465,7 +473,7 @@ public abstract class Entity {
 		return bounds;
 	}
 
-	public void setBounds(float boundsX, float boundsY, float boundsWidth, float boundsHeight) {
+	public void setBounds(double boundsX, double boundsY, double boundsWidth, double boundsHeight) {
 		this.bounds.position.x = boundsX;
 		this.bounds.position.y = boundsY;
 		this.bounds.size.x = boundsWidth;
@@ -481,50 +489,50 @@ public abstract class Entity {
 			}
 			
 			case TOP_RIGHT: {
-				originX = transform.size.x;
+				originX = (float) transform.size.x;
 				originY = 0;
 				break;
 			}
 			
 			case BOTTOM_RIGHT: {
-				originX = transform.size.x;
-				originY = transform.size.y;
+				originX = (float) transform.size.x;
+				originY = (float) transform.size.y;
 				break;
 			}
 			
 			case BOTTOM_LEFT: {
 				originX = 0;
-				originY = transform.size.y;
+				originY = (float) transform.size.y;
 				break;
 			}
 			
 			case LEFT: {
 				originX = 0;
-				originY = transform.size.y / 2;
+				originY = (float) transform.size.y / 2;
 				break;
 			}
 			
 			case TOP: {
-				originX = transform.size.x / 2;
+				originX = (float) transform.size.x / 2;
 				originY = 0;
 				break;
 			}
 			
 			case RIGHT: {
-				originX = transform.size.x;
-				originY = transform.size.y / 2;
+				originX = (float) transform.size.x;
+				originY = (float) transform.size.y / 2;
 				break;
 			}
 			
 			case BOTTOM: {
-				originX = transform.size.x / 2;
-				originY = transform.size.y;
+				originX = (float) transform.size.x / 2;
+				originY = (float) transform.size.y;
 				break;
 			}
 			
 			default: {
-				originX = transform.size.x / 2;
-				originY = transform.size.y / 2;
+				originX = (float) transform.size.x / 2;
+				originY = (float) transform.size.y / 2;
 				break;
 			}
 		}
@@ -563,7 +571,7 @@ public abstract class Entity {
 	}
 
 	public Tile standsOnTile() {
-		return handler.getWorld().getChunkManager().getTile((int) getWorldX(), (int) getWorldY());
+		return handler.getWorld().getChunkManager().getTile(getWorldX(), getWorldY());
 	}
 
 	public List<InventoryProperty> getLoot() {

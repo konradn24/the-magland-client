@@ -242,8 +242,6 @@ public class MessageBox {
 			initButtons(null, null);
 		}
 		
-		float y = this.y - height / 2;
-		
 		nvgBeginPath(vg);
 		nvgRect(vg, x, y + BAR_HEIGHT, width, height - BAR_HEIGHT);
 		nvgFillColor(vg, windowColor);

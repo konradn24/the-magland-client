@@ -5,7 +5,7 @@ import konradn24.tml.items.tools.Tool;
 
 public class Yucca1 extends StaticEntity {
 
-	public Yucca1(Handler handler, float x, float y) {
+	public Yucca1(Handler handler, double x, double y) {
 		super(handler, x, y, 1, 1);
 	}
 

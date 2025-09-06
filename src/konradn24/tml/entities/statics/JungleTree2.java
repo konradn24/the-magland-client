@@ -5,7 +5,7 @@ import konradn24.tml.items.tools.Tool;
 
 public class JungleTree2 extends StaticEntity {
 
-	public JungleTree2(Handler handler, float x, float y) {
+	public JungleTree2(Handler handler, double x, double y) {
 		super(handler, x, y);
 	}
 	

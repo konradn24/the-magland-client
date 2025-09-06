@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Random;
 
 import org.joml.Matrix4f;
+import org.joml.Vector2d;
 
 import konradn24.tml.entities.Entity;
 import konradn24.tml.graphics.ColorUtils;
@@ -30,9 +31,6 @@ public class Chunk {
 	public void generateMesh(int chunkX, int chunkY, Shader shader) {
         List<Float> vertexList = new ArrayList<>();
         
-        int worldX = chunkX * SIZE * Tile.SIZE;
-        int worldY = chunkY * SIZE * Tile.SIZE;
-
         for (int y = 0; y < SIZE; y++) {
             for (int x = 0; x < SIZE; x++) {
                 Tile tile = tiles[x][y];
@@ -62,12 +60,18 @@ public class Chunk {
             vertices[i] = vertexList.get(i);
         }
 
-        mesh = new ColorMesh(vertices, shader, new Matrix4f().translate(worldX, worldY, 0));
+        mesh = new ColorMesh(vertices, shader);
     }
 
-	public void render(Matrix4f viewModel) {
+	public void render(Vector2d cameraPosition) {
 		if(mesh != null) {
-			mesh.render(viewModel);
+	        double x = chunkX * (double) SIZE * Tile.SIZE;
+	        double y = chunkY * (double) SIZE * Tile.SIZE;
+
+	        float screenX = (float) (x - cameraPosition.x);
+	        float screenY = (float) (y - cameraPosition.y);
+	        
+			mesh.render(new Matrix4f().translate(screenX, screenY, 0));
 		}
 	}
 

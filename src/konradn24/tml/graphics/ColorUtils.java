@@ -1,5 +1,7 @@
 package konradn24.tml.graphics;
 
+import org.joml.Vector3f;
+
 public class ColorUtils {
 
     public static float[] rgbToHsb(float r, float g, float b) {
@@ -55,6 +57,13 @@ public class ColorUtils {
 
     public static float clamp01(float v) {
         return Math.max(0f, Math.min(1f, v));
+    }
+    
+    public static Vector3f lerp(Vector3f c1, Vector3f c2, float t) {
+        float r = c1.x   * (1 - t) + c2.x   * t;
+        float g = c1.y * (1 - t) + c2.y * t;
+        float b = c1.z  * (1 - t) + c2.z  * t;
+        return new Vector3f(r, g, b);
     }
 }
 

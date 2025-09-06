@@ -74,14 +74,14 @@ public class Player extends DynamicEntity {
 	// Timers
 	private long lastSearchGroundTime;
 	
-	public Player(Handler handler, float x, float y) {
+	public Player(Handler handler, double x, double y) {
 		super(handler, x, y, DynamicEntity.DEFAULT_CREATURE_WIDTH, DynamicEntity.DEFAULT_CREATURE_HEIGHT);
 	}
 	
 	@Override
 	protected void init() {
 		// Bounds
-		setBounds(transform.centerX() - 4, transform.bottom() - 8, 8, 8);
+		setBounds(transform.size.x / 2 - 4, transform.size.y - 8, 8, 8);
 		
 		setOrigin(Origin.CENTER);
 		
@@ -354,8 +354,8 @@ public class Player extends DynamicEntity {
 	}
 	
 	public Tile getTileAhead() {
-		float x = 0;
-		float y = 0;
+		double x = 0;
+		double y = 0;
 		
 		if(lookingDirection == UP) {
 			x = this.transform.position.x + this.transform.size.x / 2;
@@ -378,7 +378,7 @@ public class Player extends DynamicEntity {
 	}
 	
 	public int getTileAheadX() {
-		float x = 0;
+		double x = 0;
 		
 		if(lookingDirection == UP) {
 			x = this.transform.position.x + this.transform.size.x / 2;
@@ -396,7 +396,7 @@ public class Player extends DynamicEntity {
 	}
 	
 	public int getTileAheadY() {
-		float y = 0;
+		double y = 0;
 		
 		if(lookingDirection == UP) {
 			y = this.transform.position.y - Tile.SIZE;

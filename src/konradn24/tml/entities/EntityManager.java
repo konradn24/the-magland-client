@@ -8,8 +8,6 @@ import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
 
-import org.joml.Matrix4f;
-
 import konradn24.tml.Handler;
 import konradn24.tml.entities.actions.Action;
 import konradn24.tml.graphics.Assets;
@@ -139,7 +137,7 @@ public class EntityManager {
 		removeStack.clear();
 	}
 	
-	public void render(Matrix4f viewMatrix) {
+	public void render() {
 		// Sorting entities to make good-looking depth illusion
 //		sortedEntities.clear();
 //		
@@ -156,7 +154,7 @@ public class EntityManager {
 //			sortedEntities.sort(renderSorter);
 //		} catch(IllegalArgumentException e) {}
 		
-		BatchRenderer.render(entities, handler.getCamera().getViewMatrix());
+		BatchRenderer.render(entities);
 		
 		for(Entity entity : entities) {
 			entity.render();
@@ -214,7 +212,7 @@ public class EntityManager {
 		entities.add(entity);
 	}
 	
-	public boolean addEntity(Class<? extends Entity> entityClass, float x, float y) {
+	public boolean addEntity(Class<? extends Entity> entityClass, double x, double y) {
 		Entity entity = getEntityInstance(entityClass, x, y);
 		
 		if(entity == null) {
@@ -264,7 +262,7 @@ public class EntityManager {
 		return found.get(0);
 	}
 	
-	public Entity getEntityByPosition(Class<? extends Entity> entityClass, float x, float y) {
+	public Entity getEntityByPosition(Class<? extends Entity> entityClass, double x, double y) {
 		List<Entity> found = entities.stream().filter(entity -> entity.getClass().equals(entityClass) && entity.getWorldX() == x && entity.getWorldY() == y)
 				.collect(Collectors.toList());
 		if(found.isEmpty())
@@ -295,9 +293,9 @@ public class EntityManager {
 		this.entities = entities;
 	}
 	
-	public Entity getEntityInstance(Class<? extends Entity> entityClass, float x, float y) {
+	public Entity getEntityInstance(Class<? extends Entity> entityClass, double x, double y) {
 		try {
-			Entity entity = entityClass.getConstructor(Handler.class, float.class, float.class).newInstance(handler, x, y);
+			Entity entity = entityClass.getConstructor(Handler.class, double.class, double.class).newInstance(handler, x, y);
 		
 			return entity;
 		} catch(InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException

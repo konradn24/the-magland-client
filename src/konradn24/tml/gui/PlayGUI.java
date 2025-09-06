@@ -28,7 +28,7 @@ public class PlayGUI {
 	public static final int DEBUG_STATS_ROWS = 4;
 	public static final int DEBUG_STATS_COLUMNS = 3;
 	
-	private TopPanel topBar;
+	private TopPanel topPanel;
 	private ContextPanel contextPanel;
 	private NotificationsPanel notificationsPanel;
 	
@@ -36,7 +36,7 @@ public class PlayGUI {
 	private GridLayout<Label> debugStats;
 	
 	public PlayGUI(Handler handler) {
-		topBar = new TopPanel();
+		topPanel = new TopPanel();
 		contextPanel = new ContextPanel();
 		notificationsPanel = new NotificationsPanel(handler);
 		
@@ -61,7 +61,7 @@ public class PlayGUI {
 	
 	public void update(float dt) {
 		if(!debugPanel.isOpen()) {
-			topBar.update(dt);
+			topPanel.update(dt);
 			contextPanel.update(dt);
 			notificationsPanel.update(dt);
 		}
@@ -69,7 +69,7 @@ public class PlayGUI {
 		debugPanel.update(dt);
 	}
 	
-	public void updateDebugStats(float dt, int entitiesCount, float playerWorldX, float playerWorldY, String biome) {
+	public void updateDebugStats(float dt, int entitiesCount, double playerWorldX, double playerWorldY, String biome) {
 		debugStats.forEach((label, i) -> {
 			String text = switch(i) {
 				case 0 -> "Entities: " + entitiesCount;
@@ -97,7 +97,7 @@ public class PlayGUI {
 	}
 	
 	public void renderGUI(long vg) {
-		topBar.renderGUI(vg);
+		topPanel.renderGUI(vg);
 		contextPanel.renderGUI(vg);
 		notificationsPanel.renderGUI(vg);
 		
@@ -125,11 +125,11 @@ public class PlayGUI {
 	}
 	
 	public TopPanel getTopBar() {
-		return topBar;
+		return topPanel;
 	}
 	
 	public void setTopBar(TopPanel topBar) {
-		this.topBar = topBar;
+		this.topPanel = topBar;
 	}
 
 	public ContextPanel getContextPanel() {

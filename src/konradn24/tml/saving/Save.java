@@ -10,7 +10,7 @@ public class Save {
 	private int slot;
 	private String name;
 	private long seed;
-	private float playerWorldX, playerWorldY;
+	private double playerWorldX, playerWorldY;
 	
 	public Save(int slot, String name, long seed) {
 		// Meta data
@@ -62,19 +62,19 @@ public class Save {
 		this.seed = seed;
 	}
 
-	public float getPlayerWorldX() {
+	public double getPlayerWorldX() {
 		return playerWorldX;
 	}
 
-	public void setPlayerWorldX(float playerWorldX) {
+	public void setPlayerWorldX(double playerWorldX) {
 		this.playerWorldX = playerWorldX;
 	}
 
-	public float getPlayerWorldY() {
+	public double getPlayerWorldY() {
 		return playerWorldY;
 	}
 
-	public void setWorldPlayerY(float playerWorldY) {
+	public void setWorldPlayerY(double playerWorldY) {
 		this.playerWorldY = playerWorldY;
 	}
 

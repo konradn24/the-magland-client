@@ -113,6 +113,10 @@ public class Utils {
         return Math.max(0f, Math.min(1f, v));
     }
 	
+	public static double clamp01(double v) {
+        return Math.max(0f, Math.min(1f, v));
+    }
+	
 	public static int clamp(int v, int min, int max) {
         return Math.max(min, Math.min(max, v));
     }
@@ -120,6 +124,18 @@ public class Utils {
 	public static float clamp(float v, float min, float max) {
         return Math.max(min, Math.min(max, v));
     }
+	
+	public static double clamp(double v, double min, double max) {
+        return Math.max(min, Math.min(max, v));
+    }
+	
+	public static float remap01(float v) { 
+		return (v + 1f) * 0.5f;
+	}
+	
+	public static double remap01(double v) { 
+		return (v + 1f) * 0.5f;
+	}
 	
 	public static float gaussian(float x, float mean, float deviation) {
 	    float exponent = -((x - mean) * (x - mean)) / (2f * deviation * deviation);

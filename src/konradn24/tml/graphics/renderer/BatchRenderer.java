@@ -1,6 +1,5 @@
 package konradn24.tml.graphics.renderer;
 
-import org.joml.Matrix4f;
 import org.joml.Vector4f;
 import org.lwjgl.BufferUtils;
 
@@ -42,8 +41,8 @@ public class BatchRenderer {
 	private static Comparator<Entity> entitiesSorter = new Comparator<Entity>() {
 		@Override
 		public int compare(Entity a, Entity b) {
-			float y1 = a.getRealY() + a.getHeight();
-			float y2 = b.getRealY() + b.getHeight();
+			double y1 = a.getRealY() + a.getHeight();
+			double y2 = b.getRealY() + b.getHeight();
 			
 			if(y1 < y2)
 				return -1;
@@ -86,7 +85,7 @@ public class BatchRenderer {
 		shader.detach();
 	}
 
-	public static void render(List<Entity> entities, Matrix4f viewMatrix) {
+	public static void render(List<Entity> entities) {
 		entities.sort(entitiesSorter);
 
 		vertexBuffer.clear();
@@ -98,18 +97,18 @@ public class BatchRenderer {
 			
 			if (sheetID != currentSheetID || !vertexBuffer.hasRemaining()) {
 				if (vertexBuffer.position() > 0) {
-					flush(vertexBuffer, currentSheetID, viewMatrix);
+					flush(vertexBuffer, currentSheetID);
 					vertexBuffer.clear();
 				}
 				
 				currentSheetID = sheetID;
 			}
 
-			addQuadToBuffer(e.getRealX(), e.getRealY(), e.getWidth(), e.getHeight(), e.getTexture(), new Vector4f(1, 1, 1, 1));
+			addQuadToBuffer(e.getScreenPosition().x, e.getScreenPosition().y, (float) e.getWidth(), (float) e.getHeight(), e.getTexture(), new Vector4f(1, 1, 1, 1));
 		}
 
 		if (vertexBuffer.position() > 0) {
-			flush(vertexBuffer, currentSheetID, viewMatrix);
+			flush(vertexBuffer, currentSheetID);
 		}
 	}
 	
@@ -117,12 +116,12 @@ public class BatchRenderer {
 		quads.add(new BatchQuad(x, y, w, h, color));
 	}
 	
-	public static void renderAllQuads(Matrix4f viewMatrix) {
+	public static void renderAllQuads() {
 		vertexBuffer.clear();
 
 		for (BatchQuad quad : quads) {
 			if(!vertexBuffer.hasRemaining() && vertexBuffer.position() > 0) {
-				flush(vertexBuffer, 0, viewMatrix);
+				flush(vertexBuffer, 0);
 				vertexBuffer.clear();
 			}
 			
@@ -130,7 +129,7 @@ public class BatchRenderer {
 		}
 
 		if (vertexBuffer.position() > 0) {
-			flush(vertexBuffer, 0, viewMatrix);
+			flush(vertexBuffer, 0);
 		}
 		
 		quads.clear();
@@ -159,7 +158,7 @@ public class BatchRenderer {
 		vertexBuffer.put(x).put(y + h).put(uvs[6]).put(uvs[7]).put(color.x).put(color.y).put(color.z).put(color.w).put(useTex); // upper left
 	}
 
-	private static void flush(FloatBuffer buffer, int currentSheetID, Matrix4f viewMatrix) {
+	private static void flush(FloatBuffer buffer, int currentSheetID) {
 		buffer.flip();
 		
 		glDisable(GL_DEPTH_TEST);
@@ -173,7 +172,6 @@ public class BatchRenderer {
 		glBindTexture(GL_TEXTURE_2D, currentSheetID);
 
 		shader.use();
-		shader.uploadMat4f("view", viewMatrix);
 		
 		glBindVertexArray(vaoId);
 		glDrawArrays(GL_QUADS, 0, buffer.limit() / VERTEX_SIZE);

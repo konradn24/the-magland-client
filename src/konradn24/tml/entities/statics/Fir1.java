@@ -5,7 +5,7 @@ import konradn24.tml.items.tools.Tool;
 
 public class Fir1 extends StaticEntity {
 
-	public Fir1(Handler handler, float x, float y) {
+	public Fir1(Handler handler, double x, double y) {
 		super(handler, x, y);
 	}
 

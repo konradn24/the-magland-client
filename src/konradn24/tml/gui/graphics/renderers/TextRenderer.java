@@ -64,8 +64,8 @@ public class TextRenderer {
 			
 			float drawX = switch (alignX) {
 				case LEFT -> x;
-				case CENTER -> x + textWidth / 2f;
-				case RIGHT -> x + textWidth;
+				case CENTER -> x + width / 2f;
+				case RIGHT -> x + width;
 			};
 	
 			float drawY = switch (alignY) {

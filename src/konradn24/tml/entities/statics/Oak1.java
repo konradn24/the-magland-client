@@ -5,7 +5,7 @@ import konradn24.tml.items.tools.Tool;
 
 public class Oak1 extends StaticEntity {
 
-	public Oak1(Handler handler, float x, float y) {
+	public Oak1(Handler handler, double x, double y) {
 		super(handler, x, y);
 	}
 

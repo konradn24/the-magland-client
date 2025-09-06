@@ -4,7 +4,7 @@ import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.util.Map;
 
-import org.joml.Vector2f;
+import org.joml.Vector2d;
 import org.lwjgl.glfw.GLFW;
 
 import konradn24.tml.Handler;
@@ -19,7 +19,7 @@ import konradn24.tml.states.State;
 import konradn24.tml.states.gamestates.MenuState;
 import konradn24.tml.tiles.Tile;
 import konradn24.tml.utils.Logging;
-import konradn24.tml.worlds.Earth;
+import konradn24.tml.worlds.FullPangea;
 import konradn24.tml.worlds.generator.World;
 
 public class PlayState extends State {
@@ -52,7 +52,7 @@ public class PlayState extends State {
 		
 		// Player
 		player = new Player(handler, 0, 0);
-		camera = new GameCamera(new Vector2f(0, 0));
+		camera = new GameCamera(new Vector2d(0, 0));
 		camera.centerOnEntity(player);
 		
 		// Worlds
@@ -81,7 +81,7 @@ public class PlayState extends State {
 		Save save = handler.getSavesManager().getCurrentSave();
 
 		try {
-			world = new Earth(save.getSeed(), 100, 400, handler);
+			world = new FullPangea(save.getSeed(), 100, 400, handler);
 		} catch (IOException e) {
 			Logging.error("World initialization error!");
 			Logging.error(e);
@@ -160,8 +160,8 @@ public class PlayState extends State {
 
 	@Override
 	public void render() {
-		world.renderAll(camera.getViewMatrix());
-		BatchRenderer.renderAllQuads(camera.getViewMatrix());
+		world.renderAll();
+		BatchRenderer.renderAllQuads();
 	}
 	
 	@Override

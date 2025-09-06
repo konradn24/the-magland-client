@@ -5,7 +5,7 @@ import konradn24.tml.items.tools.Tool;
 
 public class Aloe1 extends StaticEntity {
 
-	public Aloe1(Handler handler, float x, float y) {
+	public Aloe1(Handler handler, double x, double y) {
 		super(handler, x, y, 1, 1);
 	}
 

@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
 import konradn24.tml.Handler;
@@ -18,13 +17,14 @@ import konradn24.tml.tiles.TileData;
 
 public class World {
 	
-	public static final float PLAYER_SPAWN_TILE_X = 0;
-	public static final float PLAYER_SPAWN_TILE_Y = 0;
+	public static final double PLAYER_SPAWN_TILE_X = 0;
+	public static final double PLAYER_SPAWN_TILE_Y = 0;
 	
 	public static final String BIOME_NULL = "#null";
 	
 	protected Handler handler;
 	protected long seed;
+	protected int sizeX, sizeY;
 	protected float smoothness = 120, biomeSize = 150;
 	
 	protected ChunkManager chunkManager;
@@ -40,7 +40,9 @@ public class World {
 	// Entities
 	protected EntityManager entityManager;
 	
-	public World(Handler handler, Shader chunkShader, Shader batchShader) throws IOException {
+	public World(int sizeX, int sizeY, Handler handler, Shader chunkShader, Shader batchShader) throws IOException {
+		this.sizeX = sizeX;
+		this.sizeY = sizeY;
 		this.handler = handler;
 		this.shader = chunkShader;
 		chunkManager = new ChunkManager(this);
@@ -73,7 +75,7 @@ public class World {
 		chunkManager.update(handler.getPlayer().getChunkX(), handler.getPlayer().getChunkY());
 	}
 	
-	public void renderAll(Matrix4f viewMatrix){
+	public void renderAll(){
 //		int xStart = (int) handler.getGameCamera().getxOffset() / Tile.TILE_WIDTH - 2;
 //		int xEnd = (int) Math.ceil((handler.getGameCamera().getxOffset() + Display.LOGICAL_WIDTH) / Tile.TILE_WIDTH) + 2;
 //		int yStart = (int) handler.getGameCamera().getyOffset() / Tile.TILE_HEIGHT - 2;
@@ -90,9 +92,9 @@ public class World {
 //			}
 //		}
 		
-		chunkManager.render(viewMatrix);
+		chunkManager.render(handler.getCamera().getPosition());
 		render();
-		entityManager.render(viewMatrix);
+		entityManager.render();
 //		renderFog(g); // TODO Weather
 	}
 	

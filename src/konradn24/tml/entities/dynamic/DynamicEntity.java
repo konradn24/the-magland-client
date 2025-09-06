@@ -18,7 +18,7 @@ public abstract class DynamicEntity extends Entity {
 	
 //	protected AIController ai;
 
-	public DynamicEntity(Handler handler, float x, float y, int width, int height) {
+	public DynamicEntity(Handler handler, double x, double y, int width, int height) {
 		super(handler, x, y, width, height);
 		speed = DEFAULT_SPEED;
 		xMove = 0;

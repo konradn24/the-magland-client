@@ -16,22 +16,23 @@ public class Collision {
 	 * @return result with t(0..1) and collision normal 
 	 */
 
-	public static SweepResult sweep(Transform moving, Transform target, float dx, float dy) {
+	public static SweepResult sweep(Transform moving, Transform target, double dx, double dy) {
 		SweepResult res = new SweepResult();
-        final float EPS = 1e-6f;
+        final double EPS = 1e-9;
 
         if (moving.intersects(target)) {
             res.overlap = true;
             res.collided = true;
-            res.t = 0f;
-            res.nx = 0f; res.ny = 0f;
+            res.t = 0.0;
+            res.nx = 0.0;
+            res.ny = 0.0;
             return res;
         }
 
-        float broadLeft  = Math.min(moving.left(), moving.left() + dx);
-        float broadTop   = Math.min(moving.top(),  moving.top()  + dy);
-        float broadRight = Math.max(moving.right(), moving.right() + dx);
-        float broadBottom= Math.max(moving.bottom(), moving.bottom() + dy);
+        double broadLeft  = Math.min(moving.left(), moving.left() + dx);
+        double broadTop   = Math.min(moving.top(),  moving.top()  + dy);
+        double broadRight = Math.max(moving.right(), moving.right() + dx);
+        double broadBottom= Math.max(moving.bottom(), moving.bottom() + dy);
 
         Transform broad = new Transform(broadLeft, broadTop, broadRight - broadLeft, broadBottom - broadTop);
         if (!broad.intersects(target)) {
@@ -39,7 +40,7 @@ public class Collision {
             return res;
         }
 
-        float xEntry, yEntry, xExit, yExit;
+        double xEntry, yEntry, xExit, yExit;
 
         if (dx > 0f) {
             xEntry = target.left() - moving.right();
@@ -57,25 +58,25 @@ public class Collision {
             yExit  = target.top() - moving.bottom();
         }
 
-        float txEntry, txExit, tyEntry, tyExit;
+        double txEntry, txExit, tyEntry, tyExit;
         if (Math.abs(dx) < EPS) {
-            txEntry = Float.NEGATIVE_INFINITY;
-            txExit  = Float.POSITIVE_INFINITY;
+            txEntry = Double.NEGATIVE_INFINITY;
+            txExit  = Double.POSITIVE_INFINITY;
         } else {
             txEntry = xEntry / dx;
             txExit  = xExit  / dx;
         }
 
         if (Math.abs(dy) < EPS) {
-            tyEntry = Float.NEGATIVE_INFINITY;
-            tyExit  = Float.POSITIVE_INFINITY;
+            tyEntry = Double.NEGATIVE_INFINITY;
+            tyExit  = Double.POSITIVE_INFINITY;
         } else {
             tyEntry = yEntry / dy;
             tyExit  = yExit  / dy;
         }
 
-        float tEntry = Math.max(txEntry, tyEntry);
-        float tExit  = Math.min(txExit, tyExit);
+        double tEntry = Math.max(txEntry, tyEntry);
+        double tExit  = Math.min(txExit, tyExit);
 
         if (tEntry > tExit || tEntry < 0f || tEntry > 1f) {
             res.collided = false;
@@ -96,7 +97,7 @@ public class Collision {
         return res;
     }
 	
-	public static SweepResult sweep(Entity moving, Entity target, float dx, float dy) {
+	public static SweepResult sweep(Entity moving, Entity target, double dx, double dy) {
 		if(moving.getBounds().isZero() || target.getBounds().isZero() || moving == target) {
 			return new SweepResult();
 		}
@@ -108,7 +109,7 @@ public class Collision {
 		);
 	}
 	
-	public static float sweep(Transform moving, List<Transform> targets, float dx, float dy) {
+	public static double sweep(Transform moving, List<Transform> targets, double dx, double dy) {
 		SweepResult earliest = new SweepResult();
 		
 		if(moving.isZero()) {
@@ -126,7 +127,7 @@ public class Collision {
 		return earliest.t;
 	}
 	
-	public static SweepResult sweep(Entity moving, List<Entity> targets, float dx, float dy) {
+	public static SweepResult sweep(Entity moving, List<Entity> targets, double dx, double dy) {
 		SweepResult earliest = new SweepResult();
 		
 		if(moving.getBounds().isZero()) {

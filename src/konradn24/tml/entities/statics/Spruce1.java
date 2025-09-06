@@ -5,7 +5,7 @@ import konradn24.tml.items.tools.Tool;
 
 public class Spruce1 extends StaticEntity {
 
-	public Spruce1(Handler handler, float x, float y) {
+	public Spruce1(Handler handler, double x, double y) {
 		super(handler, x, y);
 	}
 

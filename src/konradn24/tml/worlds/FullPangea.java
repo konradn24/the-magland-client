@@ -42,7 +42,7 @@ import konradn24.tml.utils.Utils;
 import konradn24.tml.worlds.generator.GenerationData;
 import konradn24.tml.worlds.generator.World;
 
-public class Earth extends World {
+public class FullPangea extends World {
 
 	//Spawn areas
 //	private SpawnArea[] zombieSpawns;
@@ -83,9 +83,9 @@ public class Earth extends World {
 	    SUBTROPICAL_RAINFOREST, RAINFOREST, DENSE_RAINFOREST
 	);
 	
-	public Earth(long seed, float smoothness, float biomeSize, Handler handler) throws IOException {
+	public FullPangea(long seed, float smoothness, float biomeSize, Handler handler) throws IOException {
 		super(
-			handler, 
+			20004000, 20004000, handler, 
 			new Shader("res/shaders/chunk_vertex_shader.glsl", "res/shaders/chunk_fragment_shader.glsl"),
 			new Shader("res/shaders/batch_vertex_shader.glsl", "res/shaders/batch_fragment_shader.glsl")
 		);
@@ -103,14 +103,14 @@ public class Earth extends World {
 			Map.entry(FROZEN_SEA,          	new Vector3f(170, 190, 255)),
 			Map.entry(HALF_FROZEN_SEA,     	new Vector3f(130, 170, 240)),
 			Map.entry(SEA,                	new Vector3f(0,  120,  200)),
-			Map.entry(TUNDRA_BEACH,       	new Vector3f(220, 230, 240)),
-			Map.entry(GRAVEL_BEACH,        	new Vector3f(180, 180, 180)),
-			Map.entry(BEACH,               	new Vector3f(240, 230, 180)),
+			Map.entry(TUNDRA_BEACH,       	new Vector3f(102, 128, 102)),
+			Map.entry(GRAVEL_BEACH,        	new Vector3f(128, 128, 128)),
+			Map.entry(BEACH,               	new Vector3f(208, 217, 93)),
 			Map.entry(SNOW_DESERT,         	new Vector3f(240, 240, 255)),
-			Map.entry(TUNDRA,              	new Vector3f(210, 220, 220)),
+			Map.entry(TUNDRA,              	new Vector3f(102, 102, 102)),
 			Map.entry(DRY_TAIGA,           	new Vector3f(160, 190, 160)),
-			Map.entry(TAIGA,               	new Vector3f(100, 150, 100)),
-			Map.entry(PLAINS,              	new Vector3f(140, 200,  90)),
+			Map.entry(TAIGA,               	new Vector3f(114, 242, 124)),
+			Map.entry(PLAINS,              	new Vector3f(135, 255, 79)),
 			Map.entry(HILLS,               	new Vector3f(100, 170,  80)),
 			Map.entry(FOREST,              	new Vector3f(40,  120,  40)),
 			Map.entry(DESERT,              	new Vector3f(240, 220, 130)),
@@ -125,253 +125,7 @@ public class Earth extends World {
 //		entityManager.addEntity(new House(handler, 64 * 16, 64 * 7));
 	}
 	
-//	protected void generation(int x, int y, float altitude, float temperature, float humidity) {
-//		/*
-//		 * ALTITUDE
-//		 * -1.0 -0.15	ocean
-//		 * -0.15 0		sea
-//		 * 0 0.1		beach
-//		 * 0.1 0.6		plains
-//		 * 0.6 1.0		hills
-//		 * 
-//		 * TEMPERATURE
-//		 * -1.0 -0.8 	extreme ice desert
-//		 * -0.8 -0.65 	ice desert
-//		 * -0.65 -0.5	tundra
-//		 * -0.5 -0.15	taiga
-//		 * -0.15 0.4	moderate
-//		 * 0.4 0.7		desert/subtropical
-//		 * 0.7 1.0		rainforest
-//		 * 
-//		 * HUMIDITY
-//		 * -1.0 -0.3	desert
-//		 * -0.3 0.25	grassy
-//		 * 0.25 1.0		forests
-//		 */
-//		
-//		// OCEAN
-//		if(altitude < -0.15) {
-//			if(temperature < -0.8) {
-//				setTile(x, y, Tile.getTile(Ice.class).set(FROZEN_OCEAN));
-//			} else if(temperature < -0.65)
-//				if(random.nextDouble() < 0.5)
-//					setTile(x, y, Tile.getTile(Ice.class).set(HALF_FROZEN_OCEAN));
-//				else
-//					setTile(x, y, Tile.getTile(DeepWater.class).set(HALF_FROZEN_OCEAN));
-//			else
-//				setTile(x, y, Tile.getTile(DeepWater.class).set(OCEAN));
-//		
-//		// SEA
-//		} else if(altitude < 0) {
-//			if(temperature < -0.65)
-//				setTile(x, y, Tile.getTile(Ice.class).set(FROZEN_SEA));
-//			else if(temperature < -0.5)
-//				if(random.nextDouble() < 0.35)
-//					setTile(x, y, Tile.getTile(Ice.class).set(HALF_FROZEN_SEA));
-//				else
-//					setTile(x, y, Tile.getTile(Water.class).set(HALF_FROZEN_SEA));
-//			else
-//				setTile(x, y, Tile.getTile(Water.class).set(SEA));
-//			
-//		// BEACH
-//		} else if(altitude < 0.1) {
-//			if(temperature < -0.5)
-//				setTile(x, y, Tile.getTile(Tundra.class).set(TUNDRA_BEACH));
-//			else if(temperature < -0.3)
-//				setTile(x, y, Tile.getTile(Gravel.class).set(GRAVEL_BEACH));
-//			else
-//				setTile(x, y, Tile.getTile(Sand.class).set(BEACH));
-//			
-//		// FLAT TERRAIN
-//		} else if(altitude < 0.6) {
-//			// Snowy
-//			if(temperature < -0.65) {
-//				setTile(x, y, Tile.getTile(Snow.class).set(SNOW_DESERT));
-//			
-//			// Tundra
-//			} else if(temperature < -0.5) {
-//				if(random.nextDouble() < 0.25)
-//					setTile(x, y, Tile.getTile(Snow.class).set(TUNDRA));
-//				else
-//					setTile(x, y, Tile.getTile(Tundra.class).set(TUNDRA));
-//			
-//			// Low density taiga or taiga
-//			} else if(temperature < -0.15) {
-//				if(humidity < -0.3) { // Low humidity = low density taiga
-//					if(random.nextDouble() < 0.125)
-//						setTile(x, y, Tile.getTile(Dirt.class).set(DRY_TAIGA));
-//					else
-//						setTile(x, y, Tile.getTile(TaigaGrass.class).set(DRY_TAIGA));
-//					
-//					if(random.nextDouble() < 0.075)
-//						entities.add(Entity.random(random, new Entity[] { new TaigaTree1(handler, x, y), new TaigaTree2(handler, x, y), new TaigaTree3(handler, x, y) }, new double[] { 0.9, 0.95, 1 }));
-//				} else { // Better humidity = taiga
-//					if(random.nextDouble() < 0.125)
-//						setTile(x, y, Tile.getTile(Dirt.class).set(TAIGA));
-//					else
-//						setTile(x, y, Tile.getTile(TaigaGrass.class).set(TAIGA));
-//					
-//					if(random.nextDouble() < 0.125)
-//						entities.add(Entity.random(random, new Entity[] { new TaigaTree1(handler, x, y), new TaigaTree2(handler, x, y), new TaigaTree3(handler, x, y) }, new double[] { 0.9, 0.95, 1 }));
-//				}
-//			
-//			// Plains or forest
-//			} else if(temperature < 0.4) {
-//				if(humidity < -0.3) { // Low humidity = plains
-//					setTile(x, y, Tile.getTile(Grass.class).set(PLAINS));
-//				} else { // Better humidity = forest
-//					setTile(x, y, Tile.getTile(Grass.class).set(FOREST));
-//					
-//					if(random.nextDouble() < 0.225)
-//						entities.add(Entity.random(random, new Entity[]{ new Tree1(handler, x, y), new Tree2(handler, x, y), new Tree3(handler, x, y) }, new double[]{ 0.5, 0.75, 1 }));
-//				}
-//			
-//			// Desert, low density rainforest or rainforest
-//			} else if(temperature < 0.7) {
-//				if(humidity < -0.45) { // Very low humidity = desert 
-//					setTile(x, y, Tile.getTile(Sand.class).set(DESERT));
-//				} else if(humidity < -0.25) { // Low humidity = low density rainforest
-//					if(random.nextDouble() < 0.25)
-//						setTile(x, y, Tile.getTile(Grass.class).set(SUBTROPICAL_RAINFOREST));
-//					else
-//						setTile(x, y, Tile.getTile(RainforestGrass.class).set(SUBTROPICAL_RAINFOREST));
-//					
-//					if(random.nextDouble() < 0.1)
-//						entityManager.addEntity(new JungleTree1(handler, x, y));
-//				} else { // Better and high humidity = rainforest
-//					if(random.nextDouble() < 0.25)
-//						setTile(x, y, Tile.getTile(Grass.class).set(RAINFOREST));
-//					else
-//						setTile(x, y, Tile.getTile(RainforestGrass.class).set(RAINFOREST));
-//					
-//					if(random.nextDouble() < 0.18)
-//						entityManager.addEntity(new JungleTree1(handler, x, y));
-//				}
-//			
-//			// Rainforest or dense rainforest
-//			} else {
-//				if(humidity < -0.3) { // Low humidity = rainforest
-//					setTile(x, y, Tile.getTile(RainforestGrass.class).set(RAINFOREST));
-//					
-//					if(random.nextDouble() < 0.275)
-//						entityManager.addEntity(new JungleTree1(handler, x, y));
-//				} else {
-//					setTile(x, y, Tile.getTile(RainforestGrass.class).set(DENSE_RAINFOREST));
-//					
-//					if(random.nextDouble() < 0.375) // Better or high humidity = dense rainforest
-//						entityManager.addEntity(new JungleTree1(handler, x, y));
-//				}
-//			}
-//			
-//		// MIDDLE
-//		} else {
-//			// Snowy
-//			if(temperature < -0.65) {
-//				setTile(x, y, Tile.getTile(Snow.class).set(SNOW_DESERT));
-//			
-//			// Tundra
-//			} else if(temperature < -0.5) {
-//				if(random.nextDouble() < 0.5)
-//					setTile(x, y, Tile.getTile(Snow.class).set(TUNDRA));
-//				else
-//					setTile(x, y, Tile.getTile(Tundra.class).set(TUNDRA));
-//			
-//			// Tundra or taiga
-//			} else if(temperature < -0.15) {
-//				if(humidity < 0.25) { // Low humidity = tundra
-//					if(random.nextDouble() < 0.5)
-//						setTile(x, y, Tile.getTile(Snow.class).set(TUNDRA));
-//					else
-//						setTile(x, y, Tile.getTile(Tundra.class).set(TUNDRA));
-//				} else { // Better humidity = taiga
-//					if(random.nextDouble() < 0.125)
-//						setTile(x, y, Tile.getTile(Dirt.class).set(TAIGA));
-//					else
-//						setTile(x, y, Tile.getTile(TaigaGrass.class).set(TAIGA));
-//					
-//					if(random.nextDouble() < 0.2)
-//						entities.add(Entity.random(random, new Entity[] { new TaigaTree1(handler, x, y), new TaigaTree2(handler, x, y), new TaigaTree3(handler, x, y) }, new double[] { 0.9, 0.95, 1 }));
-//				}
-//			
-//			// Plains or forest
-//			} else if(temperature < 0.4) {
-//				if(humidity < 0.25) { // Low humidity = plains
-//					if(random.nextDouble() < 0.025)
-//						setTile(x, y, Tile.getTile(Gravel.class).set(HILLS));
-//					else
-//						setTile(x, y, Tile.getTile(Grass.class).set(HILLS));
-//					
-//					if(random.nextDouble() < 0.005)
-//						entityManager.addEntity(new Tree1(handler, x, y));
-//				} else { // Better humidity = forest
-//					setTile(x, y, Tile.getTile(Grass.class).set(FOREST));
-//					
-//					if(random.nextDouble() < 0.225)
-//						entities.add(Entity.random(random, new Entity[]{ new Tree1(handler, x, y), new Tree2(handler, x, y), new Tree3(handler, x, y) }, new double[]{ 0.5, 0.75, 1 }));
-//				}
-//			
-//			// Desert, low density rainforest or rainforest
-//			} else if(temperature < 0.7) {
-//				if(humidity < -0.3) { // Low humidity = desert
-//					setTile(x, y, Tile.getTile(Sand.class).set(DESERT));
-//				} else if(humidity < 0.25) { // Medium humidity = low density rainforest
-//					if(random.nextDouble() < 0.3)
-//						setTile(x, y, Tile.getTile(RainforestGrass.class).set(SUBTROPICAL_RAINFOREST));
-//					else
-//						setTile(x, y, Tile.getTile(Grass.class).set(SUBTROPICAL_RAINFOREST));
-//					
-//					if(random.nextDouble() < 0.05)
-//						entityManager.addEntity(new JungleTree1(handler, x, y));
-//				} else { // High humidity = rainforest
-//					setTile(x, y, Tile.getTile(RainforestGrass.class).set(RAINFOREST));
-//					
-//					if(random.nextDouble() < 0.225)
-//						entityManager.addEntity(new JungleTree1(handler, x, y));
-//				}
-//			
-//			// Desert, rainforest or dense rainforest
-//			} else {
-//				if(humidity < -0.3) { // Low humidity = desert
-//					setTile(x, y, Tile.getTile(Sand.class).set(DESERT));
-//				} else if(humidity < 0.25) { // Medium humidity = rainforest
-//					setTile(x, y, Tile.getTile(RainforestGrass.class).set(RAINFOREST));
-//					
-//					if(random.nextDouble() < 0.275)
-//						entityManager.addEntity(new JungleTree1(handler, x, y));
-//				} else { // High humidity = dense rainforest
-//					setTile(x, y, Tile.getTile(RainforestGrass.class).set(DENSE_RAINFOREST));
-//					
-//					if(random.nextDouble() < 0.375)
-//						entityManager.addEntity(new JungleTree1(handler, x, y));
-//				}
-//			}
-//		}
-//	}
-	
 	protected GenerationData generation(int x, int y, float altitude, float temperature, float humidity) {
-		/*
-		 * ALTITUDE
-		 * 0.00 – 0.425    ocean
-		 * 0.425 – 0.50    sea
-		 * 0.50 – 0.55     beach
-		 * 0.55 – 0.80     plains
-		 * 0.80 – 1.00     hills
-		 * 
-		 * TEMPERATURE
-		 * 0.00 – 0.10     extreme ice desert
-		 * 0.10 – 0.175    ice desert
-		 * 0.175 – 0.25    tundra
-		 * 0.25 – 0.425    taiga
-		 * 0.425 – 0.70    moderate
-		 * 0.70 – 0.85     desert / subtropical
-		 * 0.85 – 1.00     rainforest
-		 * 
-		 * HUMIDITY
-		 * 0.00 – 0.35     desert
-		 * 0.35 – 0.625    grassy
-		 * 0.625 – 1.00    forests
-		 */
-		
 		long tileSeed = (x * 73856093L) ^ (y * 19349663L);
 		
 		altitude = Utils.clamp01((altitude + 1f) / 2f);
@@ -458,7 +212,7 @@ public class Earth extends World {
         	Logging.error("No biome match at (" + x + "," + y + ") a=" + altitude + " t=" + temperature + " h=" + humidity);
         	return new GenerationData(Tile.getTile(Dirt.class).set(biome, new float[] { 0, 0, 0 }, tileSeed), null);
         }
-
+        
         float red = Math.min(255f, Math.round(r / total)) / 255f;
         float green = Math.min(255f, Math.round(g / total)) / 255f;
         float blue = Math.min(255f, Math.round(b / total)) / 255f;
@@ -505,7 +259,7 @@ public class Earth extends World {
         } else if(biome == PLAINS) {
         	tileClass = Grass.class;
         	
-        	if(random.nextFloat() < 0.02f)
+        	if(random.nextFloat() < 0.01f)
         		entities.add(Entity.random(random, new Entity[] { new Oak1(handler, x, y), new DryOak1(handler, x, y) }, new float[] { 0.75f, 1 }));
 		} else if(biome == HILLS) {
         	tileClass = random.nextFloat() < 0.25f ? Dirt.class : Grass.class;

@@ -5,7 +5,7 @@ import konradn24.tml.items.tools.Tool;
 
 public class SaguaroCactus2 extends StaticEntity {
 
-	public SaguaroCactus2(Handler handler, float x, float y) {
+	public SaguaroCactus2(Handler handler, double x, double y) {
 		super(handler, x, y, 1, 2);
 	}
 

@@ -5,7 +5,7 @@ import konradn24.tml.items.tools.Tool;
 
 public class Pine2 extends StaticEntity {
 
-	public Pine2(Handler handler, float x, float y) {
+	public Pine2(Handler handler, double x, double y) {
 		super(handler, x, y);
 	}
 

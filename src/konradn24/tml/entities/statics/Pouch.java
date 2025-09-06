@@ -6,7 +6,7 @@ import konradn24.tml.inventory.Inventory;
 
 public class Pouch extends StaticEntity {
 
-	public Pouch(Handler handler, float x, float y) {
+	public Pouch(Handler handler, double x, double y) {
 		super(handler, x, y, 0.5f, 0.5f);
 	}
 

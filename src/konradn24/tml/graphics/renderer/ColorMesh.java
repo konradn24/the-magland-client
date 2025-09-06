@@ -16,11 +16,9 @@ public class ColorMesh {
 	private int vertexCount;
 	
 	private Shader shader;
-	private Matrix4f modelMatrix;
 	
-	public ColorMesh(float[] vertices, Shader shader, Matrix4f modelMatrix) {
+	public ColorMesh(float[] vertices, Shader shader) {
 		this.shader = shader;
-		this.modelMatrix = modelMatrix;
 		
 		vertexCount = vertices.length / 5;
 		
@@ -48,11 +46,10 @@ public class ColorMesh {
 		glBindVertexArray(0);
 	}
 	
-	public void render(Matrix4f viewMatrix) {
+	public void render(Matrix4f modelMatrix) {
 		shader.use();
 		
 		shader.uploadMat4f("projection", Display.PROJECTION);
-		shader.uploadMat4f("view", viewMatrix);
 		shader.uploadMat4f("model", modelMatrix);
 		
 		glBindVertexArray(vaoID);

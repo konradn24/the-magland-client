@@ -5,7 +5,7 @@ import konradn24.tml.items.tools.Tool;
 
 public class Tree2 extends StaticEntity {
 
-	public Tree2(Handler handler, float x, float y) {
+	public Tree2(Handler handler, double x, double y) {
 		super(handler, x, y, 2, 3);
 	}
 

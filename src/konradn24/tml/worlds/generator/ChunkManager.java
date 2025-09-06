@@ -2,10 +2,12 @@ package konradn24.tml.worlds.generator;
 
 import java.awt.Point;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-import org.joml.Matrix4f;
+import org.joml.Vector2d;
 
+import konradn24.tml.tiles.Grass;
 import konradn24.tml.tiles.Tile;
 
 public class ChunkManager {
@@ -26,6 +28,9 @@ public class ChunkManager {
 			return;
 		}
 		
+		lastUpdateChunkX = chunkX;
+		lastUpdateChunkY = chunkY;
+		
 		reload(chunkX, chunkY);
 	}
 	
@@ -34,9 +39,9 @@ public class ChunkManager {
 		unloadFarChunks(chunkX, chunkY);
 	}
 	
-	public void render(Matrix4f viewMatrix) {
+	public void render(Vector2d cameraPosition) {
 		for(Chunk chunk : loadedChunks.values()) {
-			chunk.render(viewMatrix);
+			chunk.render(cameraPosition);
 		}
 	}
 	
@@ -104,6 +109,13 @@ public class ChunkManager {
 				int worldX = chunkX * Chunk.SIZE + tx;
 				int worldY = chunkY * Chunk.SIZE + ty;
 				
+				if(Math.abs(worldX) > world.sizeX / 2 || Math.abs(worldY) > world.sizeY / 2) {
+					GenerationData data = new GenerationData(Tile.getTile(Grass.class), List.of());
+					chunk.tiles[tx][ty] = data.tile;
+					
+					continue;
+				}
+				
 				float altitude = OpenSimplex2S.noise2_ImproveX(world.seed, worldX / world.smoothness, worldY / world.smoothness);
 				float temperature = OpenSimplex2S.noise2_ImproveX(world.seed + 420, worldX / world.biomeSize, worldY / world.biomeSize);
 				float humidity = OpenSimplex2S.noise2_ImproveX(world.seed + 840, worldX / world.biomeSize, worldY / world.biomeSize);
@@ -130,19 +142,19 @@ public class ChunkManager {
 		world.entityManager.getEntities().clear();
 	}
 	
-	public Tile getTile(float worldX, float worldY) {
+	public Tile getTile(double worldX, double worldY) {
 		int chunkX = (int) Math.floor(worldX / Chunk.SIZE);
 		int chunkY = (int) Math.floor(worldY / Chunk.SIZE);
 		
-		int localX = Math.floorMod((int) Math.floor(worldX), Chunk.SIZE);
-		int localY = Math.floorMod((int) Math.floor(worldY), Chunk.SIZE);
+		int localX = Math.floorMod((long) Math.floor(worldX), Chunk.SIZE);
+		int localY = Math.floorMod((long) Math.floor(worldY), Chunk.SIZE);
 		
 		Chunk chunk = getChunk(chunkX, chunkY);
 		
 		return chunk.getTile(localX, localY);
 	}
 	
-	public static Point getChunkLocation(float worldX, float worldY) {
+	public static Point getChunkLocation(double worldX, double worldY) {
 		int chunkX = (int) Math.floor(worldX / Chunk.SIZE);
 		int chunkY = (int) Math.floor(worldY / Chunk.SIZE);
 		
